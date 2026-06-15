@@ -38,6 +38,9 @@ outputs/figures/*
 *.log
 failed_demos.txt
 
+# --- Local caches (e.g. Liquipedia wikitext) ---
+.cache/
+
 # --- Keep directory placeholders everywhere ---
 !**/.gitkeep
 

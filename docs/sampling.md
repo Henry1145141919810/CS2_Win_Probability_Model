@@ -34,7 +34,7 @@ after filtering, drawn from Tier-1 pro CS2, Jan 2024 – Dec 2025.
 | **Side balance** | track CT vs T win rate | Inferno is historically CT-sided; don't let it skew the label |
 | **Temporal spread** | roughly even across 2024 H1/H2, 2025 H1/H2 | Avoid era/meta overfit |
 
-Log every collected map in `configs/demo_manifest.csv` so these can be checked and reported.
+Log every collected map in `configs/inferno_matches_liquipedia.csv` so these can be checked and reported.
 
 ## 3. Target allocation
 
@@ -58,7 +58,8 @@ HLTV has no global "filter results by map" button, so per event:
    download the `.rar` (one archive per series; contains a `.dem` per map).
 4. Drop the `.rar` into `demos/raw/`. (Keep the whole archive — extraction is automated;
    non-Inferno maps in the archive are ignored at parse time.)
-5. Add a row to `configs/demo_manifest.csv`.
+5. Update the matching row in `configs/inferno_matches_liquipedia.csv`
+   (set `downloaded`, `rar_filename`).
 
 Tip: HLTV's per-event **stats → maps** view, and Liquipedia event pages, both show which
 maps each series played — faster than opening every match.
