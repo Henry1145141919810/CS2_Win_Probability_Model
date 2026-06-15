@@ -86,6 +86,18 @@ def reconstruct(rounds: pl.DataFrame, ticks: pl.DataFrame) -> dict:
     }
 
 
+def clean_rounds(rounds: pl.DataFrame, ticks: pl.DataFrame) -> pl.DataFrame | None:
+    """Return the real (clinch-trimmed) rounds for a valid demo, else None.
+
+    Trims phantom trailing rounds recorded after the map was decided. Keeps the
+    rounds table columns (round_num, freeze_end, end, winner, ...) for assembly.
+    """
+    res = reconstruct(rounds, ticks)
+    if not res["valid"]:
+        return None
+    return rounds.sort("round_num").head(res["real_rounds"])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--write", action="store_true")
