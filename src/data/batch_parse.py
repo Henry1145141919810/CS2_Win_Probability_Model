@@ -39,8 +39,10 @@ FAIL_LOG = ROOT / "failed_demos.txt"
 CHANNELS = ["ticks", "kills", "rounds", "bomb", "grenades"]
 
 # Focused player props (subset of awpy DEFAULT_PLAYER_PROPS) — enough for all 4 pillars.
+# team_clan_name is needed to track each TEAM through the halftime side-swap (labels are
+# per-side 'ct'/'t', but first-to-13 and map completeness are per-team).
 PLAYER_PROPS = [
-    "team_name", "X", "Y", "Z", "health", "armor_value",
+    "team_name", "team_clan_name", "X", "Y", "Z", "health", "armor_value",
     "inventory", "current_equip_value", "has_defuser", "has_helmet",
     "last_place_name", "flash_duration",
 ]
@@ -85,13 +87,20 @@ def _downsample_ticks(ticks, stride: int):
 
 def parse_one(dem_path: Path, out: Path, stride: int, overwrite: bool) -> str:
     from awpy import Demo
+    try:
+        from . import awpy_patch  # when imported as a package
+    except ImportError:
+        import awpy_patch  # when run as a script (src/data on sys.path)
+    awpy_patch.apply()  # fixes int-encoded winner column on some demos
 
     stem = dem_path.stem
     targets = {ch: out / ch / f"{stem}.parquet" for ch in CHANNELS}
     if not overwrite and all(p.exists() for p in targets.values()):
         return "skip"
 
-    dem = Demo(dem_path)
+    # CS2 GOTV is 64-tick; awpy's Demo() default of 128 is wrong (header carries no
+    # tickrate) and would corrupt any time-from-tick math. Verified empirically =64.
+    dem = Demo(dem_path, tickrate=64)
     dem.parse(player_props=PLAYER_PROPS, other_props=WORLD_PROPS)
 
     written = 0

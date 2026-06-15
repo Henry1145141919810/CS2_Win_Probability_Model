@@ -1,0 +1,28 @@
+demo,raw_rounds,valid,mode,team_score,clans,winner_team,real_rounds,n_phantom,ct_side_wins,t_side_wins
+apeks-vs-furia-m1-inferno,21,false,no-clinch,--,FURIA/Apeks,,21,0,5,16
+big-vs-apeks-m1-inferno,19,true,regulation,6-13,Apeks/BIG,BIG,19,0,7,12
+cloud9-vs-vitality-m1-inferno,21,true,regulation,8-13,Cloud9/Vitality,Vitality,21,0,8,13
+complexity-vs-vitality-m1-inferno,35,true,overtime,19-16,Vitality/Complexity Gaming,Vitality,35,0,21,14
+ecstatic-vs-furia-m2-inferno,30,true,overtime,14-16,ECSTATIC/FURIA,FURIA,30,0,17,13
+ecstatic-vs-g2-m1-inferno,20,true,regulation,13-7,G2 Esports/ECSTATIC,G2 Esports,20,0,9,11
+ecstatic-vs-imperial-m2-inferno,23,true,regulation,10-13,ECSTATIC/Imperial Esports,Imperial Esports,23,0,10,13
+eternal-fire-vs-faze-m1-inferno,29,true,regulation,13-11,FaZe Clan/Eternal Fire,FaZe Clan,24,5,14,10
+eternal-fire-vs-gamerlegion-m2-inferno,15,true,regulation,2-13,GamerLegion/Eternal Fire,Eternal Fire,15,0,5,10
+eternal-fire-vs-natus-vincere-m2-inferno,22,true,regulation,9-13,Eternal Fire/Natus Vincere,Natus Vincere,22,0,9,13
+eternal-fire-vs-rebels-m1-inferno,16,false,no-clinch,--,Rebels Gaming/Eternal Fire,,16,0,7,9
+eternal-fire-vs-virtus-pro-m3-inferno,20,true,regulation,13-7,Eternal Fire/Virtus.Pro,Eternal Fire,20,0,9,11
+faze-vs-g2-m1-inferno,22,true,regulation,9-13,G2 Esports/FaZe Clan,FaZe Clan,22,0,11,11
+faze-vs-natus-vincere-m3-inferno,16,true,regulation,13-3,Natus Vincere/FaZe Clan,Natus Vincere,16,0,9,7
+g2-vs-furia-inferno,16,true,regulation,13-3,G2 Esports/FURIA,G2 Esports,16,0,9,7
+gamerlegion-vs-virtuspro-m2-inferno,17,false,no-clinch,--,GamerLegion/Virtus.Pro,,17,0,3,14
+legacy-vs-apeks-m2-inferno,20,true,regulation,13-7,Legacy/Apeks,Legacy,20,0,15,5
+m80-vs-rooster-m1-inferno,15,false,no-clinch,--,M80/Rooster,,15,0,10,5
+mouz-vs-g2-m1-inferno,22,true,regulation,9-13,MOUZ/G2 Esports,G2 Esports,22,0,9,13
+pain-vs-themongolz-m3-inferno,41,true,overtime,19-22,The MongolZ/paiN Gaming,paiN Gaming,41,0,23,18
+rooster-vs-virtus-pro-inferno,16,false,no-clinch,--,Virtus.Pro/Rooster,,16,0,9,7
+themongolz-vs-amkal-m3-inferno,23,true,regulation,10-13,AMKAL ESPORTS/The MongolZ,The MongolZ,23,0,10,13
+virtus-pro-vs-g2-m2-inferno,24,true,regulation,11-13,Virtus.Pro/G2 Esports,G2 Esports,24,0,15,9
+virtus-pro-vs-imperial-inferno,19,true,regulation,6-13,Virtus.Pro/Imperial Esports,Imperial Esports,19,0,11,8
+virtuspro-vs-pain-inferno,22,true,regulation,13-9,Virtus.Pro/paiN Gaming,Virtus.Pro,22,0,11,11
+vitality-vs-eternal-fire-inferno,23,true,regulation,13-10,Eternal Fire/Vitality,Eternal Fire,23,0,11,12
+vitality-vs-faze-m3-inferno,21,true,regulation,8-13,Vitality/FaZe Clan,FaZe Clan,21,0,11,10

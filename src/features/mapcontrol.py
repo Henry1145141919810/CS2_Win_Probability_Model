@@ -43,20 +43,31 @@ def nav_grid(map_name: str = "de_inferno"):
     return np.asarray(xy, float), np.asarray(sizes, float), np.asarray(z, float)
 
 
+def _norm_side(teams):
+    """Normalize awpy side labels to 'CT'/'T'. Accepts 'ct'/'CT'/'CounterTerrorist'
+    and 't'/'T'/'TERRORIST' (case-insensitive)."""
+    out = []
+    for s in teams:
+        sl = str(s).lower()
+        out.append("CT" if sl.startswith("c") else "T")
+    return np.asarray(out)
+
+
 def voronoi_owner(px, py, teams, map_name: str = "de_inferno"):
     """Assign each nav area to the nearest alive player's team.
 
     Args:
         px, py: 1-D arrays of ALIVE player x / y world coords.
-        teams:  1-D array of team labels ('CT'/'T') aligned with px/py.
+        teams:  1-D array of side labels aligned with px/py. awpy uses lowercase
+                'ct'/'t'; normalized internally to 'CT'/'T'.
     Returns:
-        owner_team: array[N_areas] of the controlling team per nav area
+        owner_team: array[N_areas] of the controlling team ('CT'/'T') per nav area
                     (or None per element if no players supplied).
     """
     xy, _, _ = nav_grid(map_name)
     px = np.asarray(px, float)
     py = np.asarray(py, float)
-    teams = np.asarray(teams)
+    teams = _norm_side(teams)
     if px.size == 0:
         return np.full(len(xy), None, dtype=object)
     tree = cKDTree(np.column_stack([px, py]))
