@@ -26,6 +26,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from data.validate_parquet import clean_rounds  # noqa: E402
 from features.economy import economy_features  # noqa: E402
 from features.mapcontrol import control_features, control_trend, control_volatility  # noqa: E402
+from features.positional import tactical_features  # noqa: E402
 
 ROUNDS_DIR = ROOT / "data" / "parquet" / "rounds"
 TICKS_DIR = ROOT / "data" / "parquet" / "ticks"
@@ -58,7 +59,9 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
             ctrl_series.append(mc["ct_voronoi_control_pct"])
             mc["control_trend"] = control_trend(ctrl_series)
             mc["control_volatility"] = control_volatility(ctrl_series)
-            rows.append({"match_id": match_id, "tick": tick, **feats, **mc, "ct_won": label})
+            tac = tactical_features(snap)
+            rows.append({"match_id": match_id, "tick": tick, **feats, **mc, **tac,
+                         "ct_won": label})
         # update running score AFTER the round
         if rr["winner"] == "ct":
             ct_score += 1

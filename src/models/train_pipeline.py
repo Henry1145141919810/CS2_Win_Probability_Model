@@ -31,11 +31,14 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 from features.economy import ECONOMY_COLS  # noqa: E402
 from features.mapcontrol import MAPCONTROL_COLS  # noqa: E402
+from features.positional import TACTICAL_COLS  # noqa: E402
 
 DATA = ROOT / "data" / "training_dataset.parquet"
 FEATURE_SETS = {
-    "A": ECONOMY_COLS,                       # economy only (baseline)
-    "B": ECONOMY_COLS + MAPCONTROL_COLS,     # + map control
+    "A": ECONOMY_COLS,                                    # economy only (baseline)
+    "B": ECONOMY_COLS + MAPCONTROL_COLS,                  # + map control
+    "D": ECONOMY_COLS + TACTICAL_COLS,                    # + tactical readiness
+    "E": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL_COLS,  # all available (Pillar 3 pending)
 }
 WINDOWS = [5, 10, 15, 20, 25]
 
