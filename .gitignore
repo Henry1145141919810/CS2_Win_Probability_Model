@@ -1,0 +1,109 @@
+# ---------------------------------------------------------------------------
+# CS2 Win Probability Model — gitignore
+# Large data artifacts and binaries are NOT tracked. Code + small CSVs are.
+# Directory structure is preserved via .gitkeep files (force-kept below).
+# ---------------------------------------------------------------------------
+
+# --- Demos (huge .rar / .dem files, ~hundreds of GB) ---
+demos/raw/*
+demos/extracted/*
+
+# --- Parsed parquet channels ---
+data/parquet/**/*.parquet
+data/parquet/**/*.pq
+
+# --- Engineered features ---
+features/**/*.parquet
+features/**/*.pq
+
+# --- Final training/test datasets ---
+data/*.parquet
+data/training_dataset.parquet
+
+# --- Trained models / checkpoints ---
+models/*.pkl
+models/*.pt
+models/*.pth
+models/*.cbm
+models/*.json
+models/*.txt
+checkpoints/
+*.ckpt
+
+# --- Outputs / figures (regenerable) ---
+outputs/figures/*
+!outputs/figures/.gitkeep
+
+# --- Logs ---
+*.log
+failed_demos.txt
+
+# --- Keep directory placeholders everywhere ---
+!**/.gitkeep
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+.conda/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# --- Testing / coverage ---
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# ---------------------------------------------------------------------------
+# Editors / OS
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------------------
+# Internal planning docs (contain funding / supervisor / process notes)
+# ---------------------------------------------------------------------------
+preprocess.md
+*.docx
+
+# ---------------------------------------------------------------------------
+# Secrets / credentials
+# ---------------------------------------------------------------------------
+.env
+*.pem
+*.key
+secrets.*
