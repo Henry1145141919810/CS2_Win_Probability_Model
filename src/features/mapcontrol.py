@@ -22,6 +22,8 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 NAVS_DIR = Path.home() / ".awpy" / "navs"
+ZONE_MAP_PATH = Path(__file__).resolve().parents[2] / "configs" / "inferno_zone_map.parquet"
+NAMED_ZONES = ["a_site", "b_site", "banana", "mid", "ct_spawn"]
 
 
 @lru_cache(maxsize=4)
@@ -97,37 +99,44 @@ def voronoi_control(px, py, teams, map_name: str = "de_inferno", weight: str = "
     }
 
 
-# --- PROVISIONAL Inferno named zones (axis-aligned x/y boxes). CALIBRATE before use. ---
-# Boxes are (x_min, x_max, y_min, y_max) in world units. These are rough guesses from
-# the nav coordinate bounds and MUST be validated on a radar overlay (Week 2).
-INFERNO_ZONES_PROVISIONAL: dict[str, tuple[float, float, float, float]] = {
-    # placeholder extents — intentionally empty until calibrated against a real round.
-}
+@lru_cache(maxsize=2)
+def _zone_labels(map_name: str = "de_inferno"):
+    """Per-nav-area macro-zone labels (aligned to nav_grid order). Built by
+    build_zone_map.py; returns all-'other' if the map file is missing."""
+    if not ZONE_MAP_PATH.exists():
+        n = len(nav_grid(map_name)[1])
+        return np.array(["other"] * n)
+    import polars as pl
+    return pl.read_parquet(ZONE_MAP_PATH)["zone"].to_numpy()
 
 
-def zone_control(px, py, teams, zones: dict, map_name: str = "de_inferno",
-                 weight: str = "area"):
-    """Per-zone CT control fraction. `zones` maps name -> (xmin,xmax,ymin,ymax).
-
-    A nav area belongs to a zone if its centroid falls inside the box. Returns
-    {f'ct_{zone}_control': frac} for each zone (NaN if the zone contains no areas).
-    """
-    xy, sizes, _ = nav_grid(map_name)
+def zone_control(px, py, teams, map_name: str = "de_inferno"):
+    """CT control fraction within each named macro-zone (area-weighted)."""
+    _, sizes, _ = nav_grid(map_name)
     owner = voronoi_owner(px, py, teams, map_name)
-    out: dict[str, float] = {}
+    zones = _zone_labels(map_name)
     if owner[0] is None:
-        return {f"ct_{z}_control": np.nan for z in zones}
-    w = sizes if weight == "area" else np.ones_like(sizes)
-    for name, (xmin, xmax, ymin, ymax) in zones.items():
-        in_zone = (xy[:, 0] >= xmin) & (xy[:, 0] <= xmax) & \
-                  (xy[:, 1] >= ymin) & (xy[:, 1] <= ymax)
-        denom = w[in_zone].sum()
-        if denom == 0:
-            out[f"ct_{name}_control"] = np.nan
-            continue
-        ct = w[in_zone & (owner == "CT")].sum()
-        out[f"ct_{name}_control"] = float(ct / denom)
+        return {f"ct_{z}_control": np.nan for z in NAMED_ZONES}
+    out = {}
+    for z in NAMED_ZONES:
+        m = zones == z
+        denom = sizes[m].sum()
+        out[f"ct_{z}_control"] = float(sizes[m & (owner == "CT")].sum() / denom) if denom else np.nan
     return out
+
+
+def control_features(px, py, teams, map_name: str = "de_inferno") -> dict:
+    """All instantaneous map-control features: overall + deficit + per-zone."""
+    return {**voronoi_control(px, py, teams, map_name),
+            **zone_control(px, py, teams, map_name)}
+
+
+MAPCONTROL_COLS = [
+    "ct_voronoi_control_pct", "control_deficit",
+    "ct_a_site_control", "ct_b_site_control", "ct_banana_control",
+    "ct_mid_control", "ct_ct_spawn_control",
+    "control_trend", "control_volatility",
+]
 
 
 def control_trend(series, window: int = 10) -> float:

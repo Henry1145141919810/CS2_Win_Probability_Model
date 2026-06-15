@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 from data.validate_parquet import clean_rounds  # noqa: E402
 from features.economy import economy_features  # noqa: E402
-from features.mapcontrol import voronoi_control  # noqa: E402
+from features.mapcontrol import control_features, control_trend, control_volatility  # noqa: E402
 
 ROUNDS_DIR = ROOT / "data" / "parquet" / "rounds"
 TICKS_DIR = ROOT / "data" / "parquet" / "ticks"
@@ -46,14 +46,18 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
         label = 1 if rr["winner"] == "ct" else 0
         rt = ticks.filter((pl.col("round_num") == rn) & (pl.col("tick") >= rr["freeze_end"])
                           & (pl.col("tick") <= rr["end"]))
+        ctrl_series = []  # CT overall control over the round, for trend/volatility
         for tick in sorted(rt["tick"].unique().to_list()):
             snap = rt.filter(pl.col("tick") == tick)
             if snap.height < 2:
                 continue
+            alive = snap.filter(pl.col("health") > 0)
             feats = economy_features(snap, rr, tick, ct_score, t_score)
-            mc = voronoi_control(snap.filter(pl.col("health") > 0)["X"].to_list(),
-                                 snap.filter(pl.col("health") > 0)["Y"].to_list(),
-                                 snap.filter(pl.col("health") > 0)["side"].to_list())
+            mc = control_features(alive["X"].to_list(), alive["Y"].to_list(),
+                                  alive["side"].to_list())
+            ctrl_series.append(mc["ct_voronoi_control_pct"])
+            mc["control_trend"] = control_trend(ctrl_series)
+            mc["control_volatility"] = control_volatility(ctrl_series)
             rows.append({"match_id": match_id, "tick": tick, **feats, **mc, "ct_won": label})
         # update running score AFTER the round
         if rr["winner"] == "ct":
