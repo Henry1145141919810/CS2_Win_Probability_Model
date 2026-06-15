@@ -98,6 +98,7 @@ Thumbs.db
 # Internal planning docs (contain funding / supervisor / process notes)
 # ---------------------------------------------------------------------------
 preprocess.md
+process.md
 *.docx
 
 # ---------------------------------------------------------------------------
