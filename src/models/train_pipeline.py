@@ -107,10 +107,39 @@ def delong_pvalue(y_true, p1, p2):
     return aucs[0], aucs[1], p
 
 
+def block_bootstrap(df, oof_a, oof_b, B=500, seed=42):
+    """Match-level block bootstrap CIs from fixed out-of-fold predictions.
+
+    Resamples whole matches with replacement (the independent unit; rounds within a
+    match are correlated) and recomputes AUC for the baseline (A) and a feature set,
+    plus their difference. Returns percentile 95% CIs. This bootstraps the metric on
+    fixed OOF preds (cheap); the heavier full-retrain bootstrap is the cloud variant.
+    """
+    rng = np.random.default_rng(seed)
+    y = df["ct_won"].to_numpy()
+    groups = df["match_id"].to_numpy()
+    uniq = np.unique(groups)
+    idx_by_match = {m: np.where(groups == m)[0] for m in uniq}
+    a_s, b_s, d_s = [], [], []
+    for _ in range(B):
+        pick = rng.choice(uniq, size=len(uniq), replace=True)
+        idx = np.concatenate([idx_by_match[m] for m in pick])
+        yy = y[idx]
+        if len(np.unique(yy)) < 2:
+            continue
+        aa = roc_auc_score(yy, oof_a[idx]); bb = roc_auc_score(yy, oof_b[idx])
+        a_s.append(aa); b_s.append(bb); d_s.append(bb - aa)
+    q = lambda s: (np.percentile(s, 2.5), np.percentile(s, 97.5))
+    return {"auc_a": (np.mean(a_s), *q(a_s)), "auc_b": (np.mean(b_s), *q(b_s)),
+            "diff": (np.mean(d_s), *q(d_s))}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--models", default="logreg,xgb")
     ap.add_argument("--sets", default="A,B")
+    ap.add_argument("--bootstrap", type=int, default=0,
+                    help="match-level block-bootstrap B iterations for AUC + (set-A) diff CIs")
     args = ap.parse_args()
     models = args.models.split(",")
     sets = args.sets.split(",")
@@ -138,6 +167,21 @@ def main():
                 a, b, p = delong_pvalue(y, oof_store[(mdl, "A")], oof_store[(mdl, s)])
                 print(f"DeLong {mdl}: set {s} (AUC {b:.4f}) vs A (AUC {a:.4f})  "
                       f"delta={b-a:+.4f}  p={p:.4g}")
+
+    # --- block-bootstrap CIs (plan: B=500 for AUC + E-vs-A difference) ---
+    if args.bootstrap:
+        print(f"\nMatch-level block bootstrap (B={args.bootstrap}):")
+        for mdl in models:
+            for s in sets:
+                if s == "A" or (mdl, "A") not in oof_store or (mdl, s) not in oof_store:
+                    continue
+                bs = block_bootstrap(df, oof_store[(mdl, "A")], oof_store[(mdl, s)],
+                                     B=args.bootstrap)
+                ma, la, ua = bs["auc_a"]; mb, lb, ub = bs["auc_b"]; md, ld, ud = bs["diff"]
+                print(f"  {mdl} set {s}: AUC {mb:.4f} (95% CI {lb:.4f}-{ub:.4f}) | "
+                      f"A {ma:.4f} ({la:.4f}-{ua:.4f}) | "
+                      f"diff {md:+.4f} (95% CI {ld:+.4f} to {ud:+.4f})"
+                      f"{'  [excludes 0]' if ld > 0 or ud < 0 else ''}")
 
     # --- time-window AUC (headline) ---
     print(f"\nTime-window AUC (the control-signal-emergence analysis):")
