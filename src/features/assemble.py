@@ -27,9 +27,11 @@ from data.validate_parquet import clean_rounds  # noqa: E402
 from features.economy import economy_features  # noqa: E402
 from features.mapcontrol import control_features, control_trend, control_volatility  # noqa: E402
 from features.positional import tactical_features  # noqa: E402
+from features.bomb import plant_info, bomb_features  # noqa: E402
 
 ROUNDS_DIR = ROOT / "data" / "parquet" / "rounds"
 TICKS_DIR = ROOT / "data" / "parquet" / "ticks"
+BOMB_DIR = ROOT / "data" / "parquet" / "bomb"
 OUT = ROOT / "data" / "training_dataset.parquet"
 
 
@@ -39,6 +41,7 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
     clean = clean_rounds(rounds, ticks)
     if clean is None:
         return None
+    bomb_plants = plant_info(pl.read_parquet(BOMB_DIR / f"{match_id}.parquet"))
 
     rows = []
     ct_score = t_score = 0  # cumulative side wins BEFORE current round
@@ -60,7 +63,8 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
             mc["control_trend"] = control_trend(ctrl_series)
             mc["control_volatility"] = control_volatility(ctrl_series)
             tac = tactical_features(snap)
-            rows.append({"match_id": match_id, "tick": tick, **feats, **mc, **tac,
+            bmb = bomb_features(snap, bomb_plants.get(rn), tick)
+            rows.append({"match_id": match_id, "tick": tick, **feats, **mc, **tac, **bmb,
                          "ct_won": label})
         # update running score AFTER the round
         if rr["winner"] == "ct":

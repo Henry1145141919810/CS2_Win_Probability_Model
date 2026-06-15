@@ -32,13 +32,15 @@ sys.path.insert(0, str(ROOT / "src"))
 from features.economy import ECONOMY_COLS  # noqa: E402
 from features.mapcontrol import MAPCONTROL_COLS  # noqa: E402
 from features.positional import TACTICAL_COLS  # noqa: E402
+from features.bomb import BOMB_COLS  # noqa: E402
 
+TACTICAL = TACTICAL_COLS + BOMB_COLS
 DATA = ROOT / "data" / "training_dataset.parquet"
 FEATURE_SETS = {
-    "A": ECONOMY_COLS,                                    # economy only (baseline)
-    "B": ECONOMY_COLS + MAPCONTROL_COLS,                  # + map control
-    "D": ECONOMY_COLS + TACTICAL_COLS,                    # + tactical readiness
-    "E": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL_COLS,  # all available (Pillar 3 pending)
+    "A": ECONOMY_COLS,                              # economy only (baseline)
+    "B": ECONOMY_COLS + MAPCONTROL_COLS,            # + map control
+    "D": ECONOMY_COLS + TACTICAL,                   # + tactical readiness (incl. bomb/rotation)
+    "E": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL,  # all available (Pillar 3 pending)
 }
 WINDOWS = [5, 10, 15, 20, 25]
 
