@@ -25,7 +25,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 from data.validate_parquet import clean_rounds  # noqa: E402
 from features.economy import economy_features  # noqa: E402
-from features.mapcontrol import control_features, control_trend, control_volatility  # noqa: E402
+from features.mapcontrol import (control_features, control_trend,  # noqa: E402
+                                 control_volatility, contest_control)
 from features.positional import tactical_features  # noqa: E402
 from features.bomb import plant_info, bomb_features  # noqa: E402
 
@@ -62,10 +63,12 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
             ctrl_series.append(mc["ct_voronoi_control_pct"])
             mc["control_trend"] = control_trend(ctrl_series)
             mc["control_volatility"] = control_volatility(ctrl_series)
+            los = contest_control(alive["X"].to_list(), alive["Y"].to_list(),
+                                  alive["side"].to_list())  # distance-grey (LOS if cached)
             tac = tactical_features(snap)
             bmb = bomb_features(snap, bomb_plants.get(rn), tick)
-            rows.append({"match_id": match_id, "tick": tick, **feats, **mc, **tac, **bmb,
-                         "ct_won": label})
+            rows.append({"match_id": match_id, "tick": tick, **feats, **mc, **los, **tac,
+                         **bmb, "ct_won": label})
         # update running score AFTER the round
         if rr["winner"] == "ct":
             ct_score += 1
@@ -81,6 +84,13 @@ def main():
     args = ap.parse_args()
 
     demos = [Path(f).stem for f in sorted(glob.glob(str(ROUNDS_DIR / "*.parquet")))]
+    # drop manually-excluded demos (e.g. qualifier / non-standard games)
+    exclude_file = ROOT / "configs" / "excluded_offlist.txt"
+    if exclude_file.exists():
+        excl = {ln.strip() for ln in exclude_file.read_text(encoding="utf-8").splitlines() if ln.strip()}
+        before = len(demos)
+        demos = [d for d in demos if d not in excl]
+        print(f"excluded {before - len(demos)} demos via {exclude_file.name}")
     if args.limit:
         demos = demos[: args.limit]
 

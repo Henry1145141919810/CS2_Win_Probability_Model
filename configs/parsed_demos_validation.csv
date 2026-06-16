@@ -1,28 +1,267 @@
 demo,raw_rounds,valid,mode,team_score,clans,winner_team,real_rounds,n_phantom,ct_side_wins,t_side_wins
+3dmax-vs-big-m2-inferno,19,true,regulation,6-13,BIG/3DMAX,3DMAX,19,0,7,12
+3dmax-vs-eternal-fire-m2-inferno,18,true,regulation,13-5,3DMAX/Eternal Fire,3DMAX,18,0,9,9
+3dmax-vs-faze-m2-inferno,18,true,regulation,13-5,FaZe Clan/3DMAX,FaZe Clan,18,0,9,9
+3dmax-vs-flyquest-m2-inferno,20,true,regulation,13-7,3DMAX/FlyQuest,3DMAX,20,0,9,11
+3dmax-vs-fnatic-inferno,19,true,regulation,6-13,3DMAX/Fnatic,Fnatic,19,0,8,11
+3dmax-vs-g2-m1-inferno,16,true,regulation,13-3,G2 Esports/3DMAX,G2 Esports,16,0,9,7
+3dmax-vs-g2-m2-inferno,19,true,regulation,13-6,G2 Esports/3DMAX,G2 Esports,19,0,13,6
+3dmax-vs-legacy-inferno,20,true,regulation,13-7,Legacy/3DMAX,Legacy,20,0,11,9
+3dmax-vs-legacy-m1-inferno,36,true,overtime,17-19,LEGACY/3DMAX,3DMAX,36,0,13,23
+3dmax-vs-mibr-m1-inferno,35,true,overtime,16-19,MIBR/3DMAX,3DMAX,35,0,15,20
+3dmax-vs-mibr-m2-inferno,24,true,regulation,13-11,3DMAX/MIBR,3DMAX,24,0,11,13
+3dmax-vs-natus-vincere-inferno,30,true,overtime,14-16,3DMAX/Natus Vincere,Natus Vincere,30,0,13,17
+3dmax-vs-pain-m1-inferno,22,true,regulation,13-9,paiN Gaming/3DMAX,paiN Gaming,22,0,7,15
+3dmax-vs-sinners-inferno,18,true,regulation,13-5,SINNERS Esports/3DMAX,SINNERS Esports,18,0,11,7
+3dmax-vs-tyloo-m1-inferno,42,true,overtime,20-22,TYLOO/3DMAX,3DMAX,42,0,17,25
+3dmax-vs-virtus-pro-m2-inferno,20,true,regulation,13-6,3DMAX/Virtus.pro,3DMAX,19,1,13,6
+9z-vs-g2-m1-inferno,24,true,regulation,11-13,9z Globant/G2 Esports,G2 Esports,24,0,13,11
 apeks-vs-furia-m1-inferno,21,false,no-clinch,--,FURIA/Apeks,,21,0,5,16
+astralis-vs-9z-m2-inferno,18,true,regulation,13-5,Astralis/9z Globant,Astralis,18,0,5,13
+astralis-vs-b8-m2-inferno,28,true,overtime,12-16,B8 Esports/Astralis,Astralis,28,0,13,15
+astralis-vs-big-m2-inferno,21,true,regulation,13-8,Astralis/BIG,Astralis,21,0,9,12
+astralis-vs-faze-m2-inferno,21,true,regulation,8-13,FaZe Clan/Astralis,Astralis,21,0,7,14
+astralis-vs-faze-m3-inferno,20,true,regulation,13-7,FaZe Clan/Astralis,FaZe Clan,20,0,9,11
+astralis-vs-mibr-m2-inferno,29,true,overtime,16-13,MIBR/Astralis,MIBR,29,0,15,14
+astralis-vs-ninjas-in-pyjamas-m2-inferno,18,true,regulation,13-5,Astralis/NIP,Astralis,18,0,7,11
+astralis-vs-pain-m1-inferno,21,true,regulation,7-13,paiN Gaming/Astralis,Astralis,20,1,11,9
+astralis-vs-pain-m3-inferno,24,true,regulation,13-11,Astralis/paiN Gaming,Astralis,24,0,11,13
+astralis-vs-virtus-pro-m1-inferno,21,true,regulation,13-8,VirtusPro/Astralis,VirtusPro,21,0,12,9
+astralis-vs-vitality-m1-inferno,23,true,regulation,10-13,Vitality/Astralis,Astralis,23,0,6,17
+aurora-vs-g2-inferno,17,true,regulation,4-13,Aurora/G2 Esports,G2 Esports,17,0,9,8
+aurora-vs-mouz-m2-inferno,24,true,regulation,11-13,MOUZ/Aurora,Aurora,24,0,13,11
+aurora-vs-sinners-inferno,30,true,overtime,14-16,Aurora Gaming/SINNERS Esports,SINNERS Esports,30,0,13,17
+b8-vs-flyquest-m3-inferno,35,true,overtime,19-16,FlyQuest/B8 Esports,FlyQuest,35,0,14,21
 big-vs-apeks-m1-inferno,19,true,regulation,6-13,Apeks/BIG,BIG,19,0,7,12
+big-vs-faze-m1-inferno,17,true,regulation,4-13,FaZe Clan/G2 Esports,G2 Esports,17,0,8,9
+big-vs-flyquest-m1-inferno,15,true,regulation,1-13,BIG/FlyQuest,FlyQuest,14,1,11,3
+big-vs-imperial-fe-m1-inferno,17,true,regulation,4-13,Imperial Valkyries/BIG,BIG,17,0,12,5
+big-vs-pain-m3-inferno-p1,1,false,no-clinch,--,BIG/paiN Gaming,,1,0,1,0
+big-vs-pain-m3-inferno-p2,11,false,no-clinch,--,paiN Gaming/BIG,,11,0,4,7
+big-vs-pain-m3-inferno-p3,12,false,no-clinch,--,paiN Gaming/BIG,,12,0,6,6
+blast-premier-spring-final-2024-faze-vs-vitality__faze-vs-vitality-m1-inferno,17,true,regulation,4-13,Vitality/FaZe Clan,FaZe Clan,17,0,9,8
+blast-premier-spring-final-2024-saw-vs-astralis__saw-vs-astralis-m2-inferno,16,true,regulation,3-13,SAW/Astralis,Astralis,16,0,7,9
+blast-premier-world-final-2024-g2-vs-liquid__g2-vs-liquid-m2-inferno,19,true,regulation,6-13,Liquid/G2 Esports,G2 Esports,19,0,13,6
+blasttv-austin-major-2025-furia-vs-pain__furia-vs-pain-m3-inferno,28,true,overtime,12-16,FURIA/paiN Gaming,paiN Gaming,28,0,17,11
 cloud9-vs-vitality-m1-inferno,21,true,regulation,8-13,Cloud9/Vitality,Vitality,21,0,8,13
-complexity-vs-vitality-m1-inferno,35,true,overtime,19-16,Vitality/Complexity Gaming,Vitality,35,0,21,14
+complexity-vs-alternate-attax-m1-inferno-p1,1,false,no-clinch,--,ALTERNATE aTTaX/Complexity,,1,0,1,0
+complexity-vs-alternate-attax-m1-inferno-p2,19,false,no-clinch,--,ALTERNATE aTTaX/Complexity,,19,0,6,13
+complexity-vs-imperial-m1-inferno,17,true,regulation,4-13,Imperial Esports/Complexity Gaming,Complexity Gaming,17,0,10,7
+complexity-vs-liquid-m1-inferno,21,true,regulation,13-8,Team Liquid/Complexity,Team Liquid,21,0,7,14
+complexity-vs-saw-m2-inferno,17,true,regulation,4-13,Complexity/SAW,SAW,17,0,9,8
+complexity-vs-tyloo-m2-inferno,19,true,regulation,6-13,Complexity/TYLOO,TYLOO,19,0,9,10
+complexity-vs-virtus-pro-m2-inferno,29,true,overtime,13-16,Complexity/Virtus.pro,Virtus.pro,29,0,21,8
+complexity-vs-vitality-m1-inferno,35,true,overtime,16-19,Complexity Gaming/Vitality,Vitality,35,0,21,14
 ecstatic-vs-furia-m2-inferno,30,true,overtime,14-16,ECSTATIC/FURIA,FURIA,30,0,17,13
-ecstatic-vs-g2-m1-inferno,20,true,regulation,13-7,G2 Esports/ECSTATIC,G2 Esports,20,0,9,11
-ecstatic-vs-imperial-m2-inferno,23,true,regulation,10-13,ECSTATIC/Imperial Esports,Imperial Esports,23,0,10,13
+ecstatic-vs-g2-m1-inferno,20,true,regulation,7-13,ECSTATIC/G2 Esports,G2 Esports,20,0,9,11
+ecstatic-vs-imperial-m2-inferno,23,true,regulation,13-10,Imperial Esports/ECSTATIC,Imperial Esports,23,0,10,13
+esl-pro-league-season-21-eternal-fire-vs-3dmax__eternal-fire-vs-3dmax-m1-inferno,23,true,regulation,10-13,Eternal Fire/3DMAX,3DMAX,23,0,15,8
+esl-pro-league-season-21-falcons-vs-eternal-fire__falcons-vs-eternal-fire-m1-inferno,21,true,regulation,8-13,Team Falcons/Eternal Fire,Eternal Fire,21,0,17,4
+esl-pro-league-season-21-saw-vs-gamerlegion__saw-vs-gamerlegion-m2-inferno,22,true,regulation,13-9,GamerLegion/SAW,GamerLegion,22,0,13,9
+eternal-fire-vs-big-m2-inferno,22,true,regulation,9-13,BIG/Eternal Fire,Eternal Fire,22,0,7,15
 eternal-fire-vs-faze-m1-inferno,29,true,regulation,13-11,FaZe Clan/Eternal Fire,FaZe Clan,24,5,14,10
-eternal-fire-vs-gamerlegion-m2-inferno,15,true,regulation,2-13,GamerLegion/Eternal Fire,Eternal Fire,15,0,5,10
+eternal-fire-vs-gamerlegion-m2-inferno,15,true,regulation,13-2,Eternal Fire/GamerLegion,Eternal Fire,15,0,5,10
+eternal-fire-vs-mibr-m2-inferno,21,true,regulation,8-13,MIBR/Eternal Fire,Eternal Fire,21,0,5,16
 eternal-fire-vs-natus-vincere-m2-inferno,22,true,regulation,9-13,Eternal Fire/Natus Vincere,Natus Vincere,22,0,9,13
+eternal-fire-vs-pain-m2-inferno,20,true,regulation,7-13,paiN Gaming/Eternal Fire,Eternal Fire,20,0,9,11
 eternal-fire-vs-rebels-m1-inferno,16,false,no-clinch,--,Rebels Gaming/Eternal Fire,,16,0,7,9
 eternal-fire-vs-virtus-pro-m3-inferno,20,true,regulation,13-7,Eternal Fire/Virtus.Pro,Eternal Fire,20,0,9,11
-faze-vs-g2-m1-inferno,22,true,regulation,9-13,G2 Esports/FaZe Clan,FaZe Clan,22,0,11,11
-faze-vs-natus-vincere-m3-inferno,16,true,regulation,13-3,Natus Vincere/FaZe Clan,Natus Vincere,16,0,9,7
-g2-vs-furia-inferno,16,true,regulation,13-3,G2 Esports/FURIA,G2 Esports,16,0,9,7
-gamerlegion-vs-virtuspro-m2-inferno,17,false,no-clinch,--,GamerLegion/Virtus.Pro,,17,0,3,14
-legacy-vs-apeks-m2-inferno,20,true,regulation,13-7,Legacy/Apeks,Legacy,20,0,15,5
+ex-guild-eagles-vs-sinners-m1-inferno,36,true,overtime,17-19,SINNERS Esports/Bad News Eagles,Bad News Eagles,36,0,11,25
+falcons-vs-3dmax-m1-inferno,24,true,regulation,13-11,3DMAX/Team Falcons,3DMAX,24,0,13,11
+falcons-vs-flyquest-m1-inferno,22,true,regulation,13-9,Team Falcons/FlyQuest,Team Falcons,22,0,13,9
+falcons-vs-gamerlegion-m3-inferno,21,true,regulation,8-13,GamerLegion/Team Falcons,Team Falcons,21,0,10,11
+falcons-vs-liquid-m1-inferno,30,true,overtime,16-14,Team Falcons/Team Liquid,Team Falcons,30,0,15,15
+falcons-vs-mibr-m3-inferno,42,true,overtime,22-20,MIBR/Falcons,MIBR,42,0,15,27
+faze-vs-3dmax-m2-inferno,22,true,regulation,9-13,FaZe Clan/3DMAX,3DMAX,22,0,13,9
+faze-vs-big-m1-inferno,20,true,regulation,7-13,BIG/FaZe Clan,FaZe Clan,20,0,11,9
+faze-vs-cloud9-m2-inferno,20,true,regulation,13-7,Cloud9/FaZe Clan,Cloud9,20,0,11,9
+faze-vs-eternal-fire-m3-inferno,23,true,regulation,10-13,Eternal Fire/FaZe Clan,FaZe Clan,23,0,11,12
+faze-vs-furia-m1-inferno,19,true,regulation,6-13,FaZe Clan/FURIA,FURIA,19,0,7,12
+faze-vs-g2-m1-inferno,22,true,regulation,13-9,FaZe Clan/G2 Esports,FaZe Clan,22,0,11,11
+faze-vs-liquid-m1-inferno,19,true,regulation,6-13,Liquid/FaZe Clan,FaZe Clan,19,0,9,10
+faze-vs-liquid-m2-inferno-p1,14,false,no-clinch,--,Team Liquid/FaZe Clan,,14,0,7,7
+faze-vs-liquid-m2-inferno-p2,9,false,no-clinch,--,FaZe Clan/Team Liquid,,9,0,3,6
+faze-vs-natus-vincere-m2-inferno,23,true,regulation,10-13,FaZe Clan/Natus Vincere,Natus Vincere,23,0,11,12
+faze-vs-nemiga-inferno,21,true,regulation,13-8,FaZe Clan/Nemiga Gaming,FaZe Clan,21,0,7,14
+faze-vs-ninjas-in-pyjamas-m1-inferno,28,true,overtime,16-12,FaZe Clan/Ninjas in Pyjamas,FaZe Clan,28,0,21,7
+faze-vs-ninjas-in-pyjamas-m2-inferno,24,true,regulation,13-11,NIP/FaZe Clan,NIP,24,0,11,13
+faze-vs-saw-m2-inferno,18,true,regulation,5-13,SAW/FaZe Clan,FaZe Clan,18,0,9,9
+faze-vs-virtus-pro-m2-inferno-p1,26,false,no-clinch,--,Virtus.pro/FaZe Clan,,26,0,16,10
+faze-vs-virtus-pro-m2-inferno-p2,3,false,no-clinch,--,Virtus.pro/FaZe Clan,,3,0,3,0
+flyquest-vs-3dmax-inferno,20,true,regulation,13-7,3DMAX/FlyQuest,3DMAX,20,0,3,17
+flyquest-vs-astralis-m3-inferno-p1,6,false,no-clinch,--,Astralis/FlyQuest,,6,0,4,2
+flyquest-vs-astralis-m3-inferno-p2,18,false,no-clinch,--,Astralis/FlyQuest,,18,0,9,9
+flyquest-vs-big-m2-inferno-p1,4,false,no-clinch,--,FlyQuest/BIG,,4,0,1,3
+flyquest-vs-big-m2-inferno-p2,19,false,no-clinch,--,FlyQuest/BIG,,19,0,9,10
+flyquest-vs-furia-m1-inferno,20,true,regulation,13-7,FURIA/FlyQuest,FURIA,20,0,7,13
+flyquest-vs-nemiga-m2-inferno,29,true,overtime,16-13,FlyQuest/Nemiga Gaming,FlyQuest,29,0,17,12
+flyquest-vs-pain-m2-inferno,19,true,regulation,6-13,Flyquest/paiN Gaming,paiN Gaming,19,0,8,11
+flyquest-vs-virtus-pro-m1-inferno-p1,6,false,no-clinch,--,Virtus.Pro/FlyQuest,,6,0,0,6
+flyquest-vs-virtus-pro-m1-inferno-p2,24,true,regulation,13-7,FlyQuest/Virtus.Pro,FlyQuest,20,4,11,9
+fnatic-vs-passion-ua-m2-inferno,20,true,regulation,7-13,Fnatic/Passion UA,Passion UA,20,0,17,3
+furia-vs-astralis-m1-inferno-p1,3,false,no-clinch,--,FURIA/Astralis,,3,0,2,1
+furia-vs-astralis-m1-inferno-p2,20,false,no-clinch,--,Astralis/FURIA,,20,0,6,14
+furia-vs-astralis-m1-inferno,16,true,regulation,13-3,FURIA/Astralis,FURIA,16,0,7,9
+furia-vs-g2-m1-inferno,19,true,regulation,6-13,G2 Esports/FURIA,FURIA,19,0,8,11
+furia-vs-imperial-m3-inferno,13,true,regulation,13-0,FURIA/Imperial Sportsbet,FURIA,13,0,1,12
+furia-vs-liquid-inferno,22,true,regulation,13-9,Team Liquid/FURIA,Team Liquid,22,0,9,13
+furia-vs-mibr-m3-inferno,14,true,regulation,13-1,FURIA/MIBR,FURIA,14,0,3,11
+furia-vs-natus-vincere-m2-inferno,29,true,overtime,16-13,FURIA/Natus Vincere,FURIA,29,0,20,9
+g2-vs-falcons-m2-inferno,17,true,regulation,4-13,G2 Esports/Team Falcons,Team Falcons,17,0,8,9
+g2-vs-faze-m2-inferno-p1,11,false,no-clinch,--,G2 Esports/FaZe Clan,,11,0,7,4
+g2-vs-faze-m2-inferno-p2,12,false,no-clinch,--,FaZe Clan/G2 Esports,,12,0,10,2
+g2-vs-faze-m2-inferno,19,true,regulation,6-13,G2 Esports/FaZe Clan,FaZe Clan,19,0,10,9
+g2-vs-furia-inferno,16,true,regulation,3-13,FURIA/G2 Esports,G2 Esports,16,0,9,7
+g2-vs-furia-m2-inferno,21,true,regulation,13-8,G2 Esports/FURIA,G2 Esports,21,0,7,14
+g2-vs-gamerlegion-m1-inferno,24,true,regulation,11-13,GamerLegion/G2 Esports,G2 Esports,24,0,9,15
+g2-vs-liquid-m3-inferno,22,true,regulation,13-9,Team Liquid/G2 Esports,Team Liquid,22,0,13,9
+g2-vs-mouz-m1-inferno,21,true,regulation,13-8,G2 Esports/MOUZ,G2 Esports,21,0,11,10
+g2-vs-natus-vincere-m2-inferno,23,true,regulation,10-13,Natus Vincere/G2 Esports,G2 Esports,23,0,9,14
+g2-vs-natus-vincere-m4-inferno,20,true,regulation,13-7,G2 Esports/Natus Vincere,G2 Esports,20,0,11,9
+g2-vs-ninjas-in-pyjamas-m2-inferno,24,true,regulation,11-13,NIP/G2 Esports,G2 Esports,24,0,9,15
+g2-vs-pain-m2-inferno,21,true,regulation,8-13,paiN Gaming/G2 Esports,G2 Esports,21,0,7,14
+g2-vs-saw-m2-inferno,23,true,regulation,13-10,SAW/G2 Esports,SAW,23,0,8,15
+g2-vs-the-mongolz-inferno,23,true,regulation,10-13,G2 Esports/The MongolZ,The MongolZ,23,0,9,14
+g2-vs-the-mongolz-m1-inferno,17,true,regulation,4-13,G2 Esports/The MongolZ,The MongolZ,17,0,7,10
+g2-vs-virtus-pro-m1-inferno,22,true,regulation,13-9,Virtus.pro/G2 Esports,Virtus.pro,22,0,11,11
+g2-vs-vitality-m2-inferno,20,true,regulation,13-7,Vitality/G2 Esports,Vitality,20,0,7,13
+gamerlegion-vs-3dmax-m2-inferno-p1,4,false,no-clinch,--,3DMAX/GamerLegion,,4,0,2,2
+gamerlegion-vs-3dmax-m2-inferno-p2,20,false,no-clinch,--,3DMAX/GamerLegion,,20,0,7,13
+gamerlegion-vs-complexity-m1-inferno,16,true,regulation,3-13,Complexity/GamerLegion,GamerLegion,16,0,9,7
+gamerlegion-vs-faze-m3-inferno,18,true,regulation,13-5,FaZe Clan/GamerLegion,FaZe Clan,18,0,9,9
+gamerlegion-vs-pain-m2-inferno,29,true,overtime,13-16,paiN Gaming/GamerLegion,GamerLegion,29,0,13,16
+gamerlegion-vs-passion-ua-m1-inferno,19,true,regulation,13-6,GamerLegion/Passion UA,GamerLegion,19,0,12,7
+gamerlegion-vs-tyloo-m2-inferno,42,true,overtime,22-20,GamerLegion/TYLOO,GamerLegion,42,0,17,25
+gamerlegion-vs-virtuspro-m2-inferno,17,false,no-clinch,--,Virtus.Pro/GamerLegion,,17,0,3,14
+iem-chengdu-2024-g2-vs-lynn-vision__g2-vs-lynn-vision-m2-inferno,24,true,regulation,13-11,G2 Esports/Lynn Vision Gaming,G2 Esports,24,0,13,11
+iem-chengdu-2024-liquid-vs-mouz__liquid-vs-mouz-m1-inferno,24,true,regulation,11-13,Team Liquid/MOUZ,MOUZ,24,0,15,9
+iem-cologne-2024-faze-vs-vitality__faze-vs-vitality-m1-inferno,21,true,regulation,13-8,FaZe Clan/Team Vitality,FaZe Clan,21,0,7,14
+iem-cologne-2025-g2-vs-vitality__g2-vs-vitality-m1-inferno,18,true,regulation,5-13,G2 Esports/Team Vitality,Team Vitality,18,0,7,11
+iem-dallas-2024-g2-vs-liquid__g2-vs-liquid-m2-inferno,21,true,regulation,8-13,Team Liquid/G2 Esports,G2 Esports,21,0,17,4
+iem-dallas-2024-g2-vs-vitality__g2-vs-vitality-m1-inferno,35,true,overtime,19-16,G2 Esports/Team Vitality,G2 Esports,35,0,13,22
+iem-dallas-2025-g2-vs-lynn-vision__g2-vs-lynn-vision-m2-inferno,22,true,regulation,9-13,Lynn Vision Gaming/G2 Esports,G2 Esports,22,0,11,11
+iem-dallas-2025-liquid-vs-mouz__liquid-vs-mouz-m1-inferno,21,true,regulation,8-13,Team Liquid/MOUZ,MOUZ,21,0,14,7
+iem-katowice-2025-eternal-fire-vs-3dmax__eternal-fire-vs-3dmax-m1-inferno,17,true,regulation,4-13,Eternal Fire/3DMAX,3DMAX,17,0,7,10
+iem-katowice-2025-falcons-vs-eternal-fire__falcons-vs-eternal-fire-m1-inferno,20,true,regulation,13-7,Eternal Fire/Team Falcons,Eternal Fire,20,0,9,11
+iem-katowice-2025-play-in-saw-vs-gamerlegion__saw-vs-gamerlegion-m2-inferno,22,true,regulation,13-9,GamerLegion/SAW,GamerLegion,22,0,19,3
+iem-katowice-2025-play-in-wildcard-vs-big__wildcard-vs-big-m2-inferno,29,true,overtime,13-16,BIG/Wildcard,Wildcard,29,0,13,16
+imperial-vs-pain-m3-inferno-p1,2,false,no-clinch,--,paiN Gaming/Imperial Sportsbet,,2,0,2,0
+imperial-vs-pain-m3-inferno-p2,18,false,no-clinch,--,Imperial Sportsbet/paiN Gaming,,18,0,9,9
+legacy-vs-apeks-m2-inferno,20,true,regulation,7-13,Apeks/Legacy,Legacy,20,0,15,5
+legacy-vs-lynn-vision-m2-inferno,16,true,regulation,3-13,Lynn Vision/Legacy,Legacy,16,0,13,3
+legacy-vs-mouz-m2-inferno,24,true,regulation,11-13,Legacy/MOUZ,MOUZ,24,0,11,13
+liquid-vs-3dmax-m1-inferno,24,true,regulation,13-11,Team Liquid/3DMAX,Team Liquid,24,0,13,11
+liquid-vs-aurora-m1-inferno,20,true,regulation,13-7,Aurora/Team Liquid,Aurora,20,0,13,7
+liquid-vs-eternal-fire-m1-inferno,24,true,regulation,11-13,Eternal Fire/Team Liquid,Team Liquid,24,0,7,17
+liquid-vs-faze-m1-inferno,22,true,regulation,9-13,Team Liquid/FaZe Clan,FaZe Clan,22,0,9,13
+liquid-vs-faze-m2-inferno,23,true,regulation,13-10,Team Liquid/FaZe Clan,Team Liquid,23,0,7,16
+liquid-vs-flyquest-m1-inferno,18,true,regulation,13-5,Flyquest/Team Liquid,Flyquest,18,0,13,5
+liquid-vs-gamerlegion-inferno,23,true,regulation,10-13,GamerLegion/Team Liquid,Team Liquid,23,0,10,13
+liquid-vs-natus-vincere-m3-inferno,23,true,regulation,13-10,Liquid/Natus Vincere,Liquid,23,0,19,4
+liquid-vs-the-mongolz-inferno,22,true,regulation,9-13,Team Liquid/The MongolZ,The MongolZ,22,0,13,9
+liquid-vs-tyloo-m3-inferno,30,true,overtime,14-16,TYLOO/Team Liquid,Team Liquid,30,0,19,11
+liquid-vs-wildcard-inferno,23,true,regulation,13-10,Team Liquid/Wildcard,Team Liquid,23,0,12,11
+liquid-vs-wildcard-m1-inferno,28,true,overtime,12-16,Wildcard/Team Liquid,Team Liquid,28,0,19,9
 m80-vs-rooster-m1-inferno,15,false,no-clinch,--,M80/Rooster,,15,0,10,5
+mibr-vs-flyquest-m2-inferno,18,true,regulation,13-5,MIBR/Flyquest,MIBR,18,0,9,9
+mibr-vs-liquid-m1-inferno,18,true,regulation,13-5,Team Liquid/MIBR,Team Liquid,18,0,11,7
+mouz-vs-3dmax-m1-inferno,23,true,regulation,13-9,MOUZ/3DMAX,MOUZ,22,1,5,17
+mouz-vs-astralis-m1-inferno,31,true,overtime,16-14,MOUZ/Astralis,MOUZ,30,1,13,17
+mouz-vs-falcons-m2-inferno,19,true,regulation,6-13,Team Falcons/MOUZ,MOUZ,19,0,11,8
+mouz-vs-faze-inferno,23,true,regulation,13-10,FaZe Clan/MOUZ,FaZe Clan,23,0,9,14
+mouz-vs-faze-m1-inferno,29,true,overtime,16-13,MOUZ/FaZe Clan,MOUZ,29,0,17,12
+mouz-vs-faze-m2-inferno,15,true,regulation,13-2,FaZe Clan/MOUZ,FaZe Clan,15,0,10,5
+mouz-vs-furia-m2-inferno,29,true,overtime,13-16,MOUZ/FURIA,FURIA,29,0,11,18
+mouz-vs-furia-m3-inferno,24,true,regulation,13-11,MOUZ/FURIA,MOUZ,24,0,13,11
 mouz-vs-g2-m1-inferno,22,true,regulation,9-13,MOUZ/G2 Esports,G2 Esports,22,0,9,13
+mouz-vs-gamerlegion-m1-inferno,22,true,regulation,13-9,GamerLegion/MOUZ,GamerLegion,22,0,13,9
+mouz-vs-liquid-m1-inferno-p1,19,false,no-clinch,--,MOUZ/Team Liquid,,19,0,15,4
+mouz-vs-the-mongolz-m1-inferno,24,true,regulation,13-11,MOUZ/The MongolZ,MOUZ,24,0,15,9
+mouz-vs-virtus-pro-m2-inferno,29,true,overtime,16-13,Virtus.pro/MOUZ,Virtus.pro,29,0,13,16
+mouz-vs-vitality-m2-inferno,17,true,regulation,13-4,MOUZ/Vitality,MOUZ,17,0,14,3
+mouz-vs-vitality-m3-inferno,21,true,regulation,13-8,Team Vitality/MOUZ,Team Vitality,21,0,11,10
+natus-vincere-vs-faze-m1-inferno-p1,23,false,no-clinch,--,FaZe Clan/Natus Vincere,,22,0,16,6
+natus-vincere-vs-faze-m1-inferno-p2,2,false,no-clinch,--,FaZe Clan/Natus Vincere,,2,0,2,0
+natus-vincere-vs-faze-m1-inferno,19,true,regulation,13-6,Natus Vincere/FaZe Clan,Natus Vincere,19,0,10,9
+natus-vincere-vs-g2-m1-inferno,22,true,regulation,9-13,G2 Esports/Natus Vincere,Natus Vincere,22,0,11,11
+natus-vincere-vs-g2-m3-inferno,35,true,overtime,19-16,Natus Vincere/G2 Esports,Natus Vincere,35,0,15,20
+natus-vincere-vs-liquid-m3-inferno,24,true,regulation,13-11,Liquid/Natus Vincere,Liquid,24,0,9,15
+natus-vincere-vs-mibr-inferno,24,true,regulation,13-11,MIBR/Natus Vincere,MIBR,24,0,7,17
+natus-vincere-vs-mouz-m1-inferno,30,true,overtime,16-14,Natus Vincere/MOUZ,Natus Vincere,30,0,23,7
+natus-vincere-vs-saw-m1-inferno,16,true,regulation,13-3,Natus Vincere/SAW,Natus Vincere,16,0,11,5
+natus-vincere-vs-saw-m3-inferno,19,true,regulation,6-13,SAW/Natus Vincere,Natus Vincere,19,0,8,11
+natus-vincere-vs-tyloo-m1-inferno,23,true,regulation,10-13,Natus Vincere/TYLOO,TYLOO,23,0,7,16
+natus-vincere-vs-vitality-m1-inferno,24,true,regulation,13-11,Team Vitality/Natus Vincere,Team Vitality,24,0,11,13
+ninjas-in-pyjamas-vs-natus-vincere-m2-inferno,16,true,regulation,13-3,Natus Vincere/Ninjas in Pyjamas,Natus Vincere,16,0,5,11
+north-america-vs-iem-veterans-p1-inferno-cs2,2,false,no-clinch,--,IEM Veterans/North America,,2,0,0,2
+north-america-vs-iem-veterans-p3-inferno-cs16,14,false,no-clinch,--,IEM Veterans/North America,,14,0,6,8
+nrg-vs-aurora-m1-inferno,17,true,regulation,13-4,Aurora/NRG,Aurora,17,0,10,7
+pain-vs-astralis-m1-inferno,20,true,regulation,13-7,Astralis/paiN Gaming,Astralis,20,0,7,13
+pain-vs-gamerlegion-m1-inferno-p1,12,false,no-clinch,--,GamerLegion/paiN Gaming,,12,0,3,9
+pain-vs-gamerlegion-m1-inferno-p2,4,false,no-clinch,--,GamerLegion/paiN Gaming,,4,0,4,0
+pain-vs-liquid-m2-inferno,24,true,regulation,11-13,paiN Gaming/Team Liquid,Team Liquid,24,0,7,17
+pain-vs-mouz-m1-inferno,25,true,regulation,13-11,MOUZ/paiN Gaming,MOUZ,24,1,13,11
+pain-vs-the-mongolz-m1-inferno,30,true,overtime,16-13,The MongolZ/paiN Gaming,The MongolZ,29,1,10,19
 pain-vs-themongolz-m3-inferno,41,true,overtime,19-22,The MongolZ/paiN Gaming,paiN Gaming,41,0,23,18
+pain-vs-virtus-pro-m1-inferno,23,true,regulation,9-13,Virtus.pro/paiN Gaming,paiN Gaming,22,1,15,7
+parivision-vs-3dmax-m2-inferno,21,true,regulation,8-13,PARIVISION/3DMAX,3DMAX,21,0,8,13
+passion-ua-vs-imperial-m1-inferno,21,true,regulation,8-13,Imperial Esports/Passion UA,Passion UA,21,0,9,12
+passion-ua-vs-m80-m2-inferno,18,true,regulation,5-13,M80/Passion UA,Passion UA,18,0,9,9
+perfect-world-shanghai-major-2024-furia-vs-pain__furia-vs-pain-m3-inferno,24,true,regulation,11-13,paiN Gaming/FURIA,FURIA,24,0,11,13
+perfect-world-shanghai-major-2024-opening-stage-wildcard-vs-virtuspro__wildcard-vs-virtus-pro-m2-inferno,20,true,regulation,7-13,Virtus.Pro/Wildcard,Wildcard,20,0,7,13
+pgl-cluj-napoca-2025-saw-vs-astralis__saw-vs-astralis-m2-inferno,19,true,regulation,6-13,SAW/Astralis,Astralis,19,0,9,10
+pgl-cluj-napoca-2025-wildcard-vs-big__wildcard-vs-big-m2-inferno,24,true,regulation,13-11,Wildcard/BIG,Wildcard,24,0,11,13
+pgl-cluj-napoca-2025-wildcard-vs-virtuspro__wildcard-vs-virtus-pro-m2-inferno,23,true,regulation,10-13,Wildcard/Virtus.pro,Virtus.pro,23,0,6,17
+pgl-cs2-major-copenhagen-2024-faze-vs-natus-vincere__faze-vs-natus-vincere-m3-inferno,16,true,regulation,3-13,FaZe Clan/Natus Vincere,Natus Vincere,16,0,9,7
+pgl-cs2-major-copenhagen-2024-vitality-vs-faze__vitality-vs-faze-m3-inferno,21,true,regulation,13-8,FaZe Clan/Vitality,FaZe Clan,21,0,11,10
+rare-atom-vs-fnatic-m2-inferno,23,true,regulation,13-10,Rare Atom/Fnatic,Rare Atom,23,0,13,10
+rare-atom-vs-mibr-m1-inferno,22,true,regulation,13-9,MIBR/Rare Atom,MIBR,22,0,7,15
 rooster-vs-virtus-pro-inferno,16,false,no-clinch,--,Virtus.Pro/Rooster,,16,0,9,7
+saw-vs-big-m3-inferno,24,true,regulation,13-11,SAW/BIG,SAW,24,0,9,15
+saw-vs-faze-m1-inferno,19,true,regulation,13-6,SAW/FaZe Clan,SAW,19,0,10,9
+saw-vs-flyquest-m1-inferno,31,true,overtime,14-16,FlyQuest/SAW,SAW,30,1,19,11
+sinners-vs-3dmax-m1-inferno-p1,13,false,no-clinch,--,SINNERS Esports/3DMAX,,12,0,5,7
+sinners-vs-3dmax-m1-inferno-p2,9,false,no-clinch,--,SINNERS Esports/3DMAX,,9,0,1,8
+starladder-budapest-major-2025-faze-vs-natus-vincere__faze-vs-natus-vincere-m3-inferno,21,true,regulation,13-8,FaZe Clan/Natus Vincere,FaZe Clan,21,0,14,7
+starladder-budapest-major-2025-vitality-vs-faze__vitality-vs-faze-m3-inferno,22,true,regulation,9-13,FaZe Clan/Team Vitality,Team Vitality,22,0,13,9
+the-mongolz-vs-astralis-m2-inferno,28,true,overtime,16-12,Astralis/The MongolZ,Astralis,28,0,15,13
+the-mongolz-vs-furia-inferno,24,true,regulation,11-13,The MongolZ/FURIA,FURIA,24,0,13,11
+the-mongolz-vs-gamerlegion-m1-inferno-p1,3,false,no-clinch,--,GamerLegion/The MongolZ,,3,0,3,0
+the-mongolz-vs-gamerlegion-m1-inferno-p2,19,false,no-clinch,--,The MongolZ/GamerLegion,,19,0,8,11
+the-mongolz-vs-natus-vincere-m1-inferno-p1,2,false,no-clinch,--,The MongolZ/Natus Vincere,,2,0,1,1
+the-mongolz-vs-natus-vincere-m1-inferno-p2,39,false,no-clinch,--,Natus Vincere/The MongolZ,,39,0,23,16
+the-mongolz-vs-vitality-m2-inferno,21,true,regulation,8-13,The MongolZ/Team Vitality,Team Vitality,21,0,11,10
+the-mongolz-vs-wildcard-m1-inferno,36,true,overtime,16-19,Wildcard/The MongolZ,The MongolZ,35,1,12,23
 themongolz-vs-amkal-m3-inferno,23,true,regulation,10-13,AMKAL ESPORTS/The MongolZ,The MongolZ,23,0,10,13
+tyloo-vs-virtuspro-m1-inferno,20,true,regulation,7-13,TYLOO/Virtus.pro,Virtus.pro,20,0,7,13
+virtus-pro-vs-b8-inferno,16,true,regulation,13-3,Virtus.Pro/B8,Virtus.Pro,16,0,9,7
+virtus-pro-vs-big-m1-inferno,18,true,regulation,13-5,BIG/Virtus.pro,BIG,18,0,9,9
+virtus-pro-vs-cloud9-m3-inferno,22,true,regulation,13-9,VirtusPro/Cloud9,VirtusPro,22,0,11,11
 virtus-pro-vs-g2-m2-inferno,24,true,regulation,11-13,Virtus.Pro/G2 Esports,G2 Esports,24,0,15,9
 virtus-pro-vs-imperial-inferno,19,true,regulation,6-13,Virtus.Pro/Imperial Esports,Imperial Esports,19,0,11,8
-virtuspro-vs-pain-inferno,22,true,regulation,13-9,Virtus.Pro/paiN Gaming,Virtus.Pro,22,0,11,11
-vitality-vs-eternal-fire-inferno,23,true,regulation,13-10,Eternal Fire/Vitality,Eternal Fire,23,0,11,12
-vitality-vs-faze-m3-inferno,21,true,regulation,8-13,Vitality/FaZe Clan,FaZe Clan,21,0,11,10
+virtus-pro-vs-og-inferno,15,true,regulation,2-13,OG/Virtus.Pro,Virtus.Pro,15,0,10,5
+virtus-pro-vs-pain-m2-inferno,19,true,regulation,13-6,Virtus.Pro/paiN Gaming,Virtus.Pro,19,0,11,8
+virtus-pro-vs-saw-m2-inferno,16,true,regulation,3-13,SAW/Virtus.pro,Virtus.pro,16,0,9,7
+virtus-pro-vs-vitality-m2-inferno,18,true,regulation,13-5,Team Vitality/Virtus.pro,Team Vitality,18,0,5,13
+virtuspro-vs-pain-inferno,22,true,regulation,9-13,paiN Gaming/Virtus.Pro,Virtus.Pro,22,0,11,11
+vitality-vs-3dmax-m1-inferno,35,true,overtime,19-16,Team Vitality/3DMAX,Team Vitality,35,0,18,17
+vitality-vs-astralis-m1-inferno,13,true,regulation,13-0,Vitality/Astralis,Vitality,13,0,12,1
+vitality-vs-b8-inferno,15,true,regulation,2-13,B8 Esports/Team Vitality,Team Vitality,15,0,5,10
+vitality-vs-eternal-fire-inferno,23,true,regulation,10-13,Vitality/Eternal Fire,Eternal Fire,23,0,11,12
+vitality-vs-falcons-m3-inferno,24,true,regulation,13-11,Team Vitality/Team Falcons,Team Vitality,24,0,11,13
+vitality-vs-furia-m1-inferno-p1,9,false,no-clinch,--,FURIA/Team Vitality,,9,0,6,3
+vitality-vs-furia-m1-inferno-p2,7,false,no-clinch,--,Team Vitality/FURIA,,7,0,3,4
+vitality-vs-g2-m1-inferno,17,true,regulation,13-4,Vitality/G2 Esports,Vitality,17,0,8,9
+vitality-vs-legacy-inferno,16,true,regulation,3-13,Vitality/Legacy,Legacy,16,0,7,9
+vitality-vs-legacy-m1-inferno-p1,3,false,no-clinch,--,Team Vitality/LEGACY,,3,0,3,0
+vitality-vs-legacy-m1-inferno-p2,15,false,no-clinch,--,Team Vitality/LEGACY,,15,0,4,11
+vitality-vs-mibr-m2-inferno,16,true,regulation,3-13,MIBR/Team Vitality,Team Vitality,16,0,7,9
+vitality-vs-mouz-m1-inferno,19,true,regulation,13-6,Team Vitality/MOUZ,Team Vitality,19,0,12,7
+vitality-vs-natus-vincere-m4-inferno,22,true,regulation,13-9,Team Vitality/Natus Vincere,Team Vitality,22,0,5,17
+vitality-vs-og-m2-inferno,20,true,regulation,13-7,Vitality/OG,Vitality,20,0,7,13
+vitality-vs-the-mongolz-m1-inferno,23,true,regulation,13-10,Team Vitality/The MongolZ,Team Vitality,23,0,14,9
+vitality-vs-the-mongolz-m3-inferno,19,true,regulation,6-13,The MongolZ/Vitality,Vitality,19,0,12,7
+vitality-vs-virtuspro-m1-inferno,19,true,regulation,5-13,VirtusPro/Vitality,Vitality,18,1,9,9
+wildcard-vs-furia-m1-inferno,17,true,regulation,13-4,Wildcard/FURIA,Wildcard,17,0,3,14
+wildcard-vs-passion-ua-m1-inferno,19,true,regulation,6-13,Passion UA/Wildcard,Wildcard,19,0,3,16
+wildcard-vs-virtus-pro-inferno,14,true,regulation,13-1,Virtus.Pro/Wildcard Gaming,Virtus.Pro,14,0,11,3

@@ -30,17 +30,20 @@ from sklearn.preprocessing import StandardScaler
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 from features.economy import ECONOMY_COLS  # noqa: E402
-from features.mapcontrol import MAPCONTROL_COLS  # noqa: E402
+from features.mapcontrol import MAPCONTROL_COLS, MAPCONTROL_LOS_COLS  # noqa: E402
 from features.positional import TACTICAL_COLS  # noqa: E402
 from features.bomb import BOMB_COLS  # noqa: E402
 
 TACTICAL = TACTICAL_COLS + BOMB_COLS
 DATA = ROOT / "data" / "training_dataset.parquet"
 FEATURE_SETS = {
-    "A": ECONOMY_COLS,                              # economy only (baseline)
-    "B": ECONOMY_COLS + MAPCONTROL_COLS,            # + map control
-    "D": ECONOMY_COLS + TACTICAL,                   # + tactical readiness (incl. bomb/rotation)
-    "E": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL,  # all available (Pillar 3 pending)
+    "A": ECONOMY_COLS,                                       # economy only (baseline)
+    "B": ECONOMY_COLS + MAPCONTROL_COLS,                     # + Voronoi control
+    "G": ECONOMY_COLS + MAPCONTROL_LOS_COLS,                 # + grey/LOS control (new)
+    "BG": ECONOMY_COLS + MAPCONTROL_COLS + MAPCONTROL_LOS_COLS,  # both control models
+    "D": ECONOMY_COLS + TACTICAL,                            # + tactical readiness
+    "E": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL,          # Voronoi + tactical
+    "EG": ECONOMY_COLS + MAPCONTROL_COLS + MAPCONTROL_LOS_COLS + TACTICAL,  # full + grey
 }
 WINDOWS = [5, 10, 15, 20, 25]
 
