@@ -53,7 +53,17 @@ AUC vs time. The second at which the full model diverges from Model A is the
 - Implemented: `train_pipeline.py --bootstrap B` (metric-level match block bootstrap on
   fixed OOF predictions; the full-retrain variant is the heavier cloud job).
 
-## Current status (June 2026, 208 demos / 449,521 snapshots)
+## Current status (June 2026, 220 demos / 476,595 snapshots)
+- Tier-1-filtered (dropped an ESL qualifier + a women's-team game); 1 demo off-list.
+- Map control A/B (XGBoost): A 0.8318; B Voronoi 0.8366; G distance-grey 0.8357;
+  BG both 0.8376; E Voronoi+tactical 0.8407; **EG full+grey 0.8416** (best, +0.0098 vs A,
+  95% CI +0.0074..+0.0119; all CIs exclude 0).
+- Finding: distance-grey alone ≈ Voronoi (slightly below) but COMPLEMENTARY — keep both.
+  The grey model's facing(FOV)+LOS components are not yet added (need yaw re-parse + the
+  4.4GB LOS matrix); current +0.001 from grey is a floor.
+- Memory note: awpy LOS BVH = 4.4GB; build guarded/deferred. Distance-grey is memory-light.
+
+## (Earlier) 208 demos / 449,521 snapshots
 - Pillars 1, 2, 4 implemented; Pillar 3 (firepower) pending.
 - AUC (5-fold GroupKFold): logreg A 0.8479 → E 0.8511; XGBoost A 0.8319 → E 0.8401.
 - DeLong: every set (B/D/E) significant vs A (p<1e-3, both models).
