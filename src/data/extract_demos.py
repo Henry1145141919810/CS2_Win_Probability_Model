@@ -13,6 +13,7 @@ Usage:
 """
 from __future__ import annotations
 import argparse
+import re
 import shutil
 import subprocess
 import sys
@@ -55,14 +56,34 @@ def list_archive(sevenzip: str, archive: Path) -> list[str]:
     return names
 
 
+def series_id(archive_name: str) -> str:
+    """Unique per-series id from the archive name (event+matchup, hash stripped) so
+    extracted demos never collide across events. e.g.
+    'iem-cologne-2024-faze-vs-vitality-bo3-HASH.rar' -> 'iem-cologne-2024-faze-vs-vitality'."""
+    base = archive_name[:-4] if archive_name.lower().endswith(".rar") else archive_name
+    return re.split(r"-(?:bo\d|inferno|m\d)(?=-|$)", base, maxsplit=1)[0]
+
+
 def extract_members(sevenzip: str, archive: Path, members: list[str], dest: Path):
-    """Extract specific members flat into dest (-o, e = flat extract)."""
+    """Extract members and rename each to '<series_id>__<demname>' so identical
+    matchups in different events don't overwrite each other."""
     dest.mkdir(parents=True, exist_ok=True)
-    cmd = [sevenzip, "e", str(archive), f"-o{dest}", "-y", *members]
-    r = subprocess.run(cmd, capture_output=True, text=True)
-    if r.returncode != 0:
-        print(f"    [warn] 7z exit {r.returncode}: {r.stderr.strip()[:200]}", file=sys.stderr)
-    return r.returncode == 0
+    sid = series_id(archive.name)
+    ok = True
+    for m in members:
+        target = dest / f"{sid}__{Path(m).name}"
+        if target.exists():
+            continue
+        r = subprocess.run([sevenzip, "e", str(archive), f"-o{dest}", "-y", m],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            print(f"    [warn] 7z exit {r.returncode}: {r.stderr.strip()[:160]}", file=sys.stderr)
+            ok = False
+            continue
+        extracted = dest / Path(m).name
+        if extracted.exists():
+            extracted.replace(target)
+    return ok
 
 
 def main():
@@ -94,8 +115,9 @@ def main():
             print("    (no inferno map by filename; use --all-maps to force, "
                   "or the .dem map names may differ)")
             continue
-        # skip ones already extracted
-        want = [d for d in want if not (args.out / Path(d).name).exists()]
+        # skip ones already extracted (under the collision-safe series_id name)
+        sid = series_id(arc.name)
+        want = [d for d in want if not (args.out / f"{sid}__{Path(d).name}").exists()]
         if want and extract_members(sevenzip, arc, want, args.out):
             total_dem += len(want)
             print(f"    extracted {len(want)} -> {args.out}")

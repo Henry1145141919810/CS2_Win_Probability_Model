@@ -139,6 +139,62 @@ MAPCONTROL_COLS = [
 ]
 
 
+@lru_cache(maxsize=4)
+def _area_tree(map_name: str = "de_inferno"):
+    xy, _, _ = nav_grid(map_name)
+    return cKDTree(xy)
+
+
+def contest_control(px, py, teams, map_name: str = "de_inferno",
+                    max_range: float = 1800.0):
+    """4-state map control: a team 'controls' an area only if a living player can
+    actually contest it = within `max_range` AND has line-of-sight (cached LOS matrix).
+
+    Returns area-weighted fractions: ct / t / contested (both) / grey (neither).
+    Fixes the pure-Voronoi flaw where far, wall-blocked players still 'own' territory
+    (e.g. banana going CT just because the nearest player is a distant CT).
+    """
+    from features import visibility
+    xy, sizes, _ = nav_grid(map_name)
+    vis = visibility.load_if_cached()  # None if not built (memory-heavy) -> distance-only
+    tree = _area_tree(map_name)
+    teams = _norm_side(teams)
+    px = np.asarray(px, float)
+    py = np.asarray(py, float)
+    if px.size == 0:
+        return {"ct_los_control": np.nan, "t_los_control": np.nan,
+                "contested_pct": np.nan, "grey_pct": np.nan, "ct_los_deficit": np.nan}
+    player_areas = tree.query(np.column_stack([px, py]))[1]
+    n = len(xy)
+    ct_can = np.zeros(n, bool)
+    t_can = np.zeros(n, bool)
+    for k in range(px.size):
+        d = np.hypot(xy[:, 0] - px[k], xy[:, 1] - py[k])
+        reach = d <= max_range
+        if vis is not None:           # gate by line-of-sight when available
+            reach &= vis[player_areas[k]]
+        if teams[k] == "CT":
+            ct_can |= reach
+        else:
+            t_can |= reach
+    w = sizes
+    tot = w.sum()
+    ct = float(w[ct_can & ~t_can].sum() / tot)
+    t = float(w[t_can & ~ct_can].sum() / tot)
+    return {
+        "ct_los_control": ct,
+        "t_los_control": t,
+        "contested_pct": float(w[ct_can & t_can].sum() / tot),
+        "grey_pct": float(w[~ct_can & ~t_can].sum() / tot),
+        "ct_los_deficit": ct - t,
+    }
+
+
+MAPCONTROL_LOS_COLS = [
+    "ct_los_control", "t_los_control", "contested_pct", "grey_pct", "ct_los_deficit",
+]
+
+
 def control_trend(series, window: int = 10) -> float:
     """Linear slope of CT control over the last `window` samples (per-sample units).
     Positive => CT gaining territory. NaN if insufficient data."""
