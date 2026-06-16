@@ -20,6 +20,7 @@ import polars as pl
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "demos" / "raw"
 CSV = ROOT / "configs" / "inferno_matches_liquipedia.csv"
+REMAINING = ROOT / "configs" / "remaining_to_download.csv"
 
 # Filler tokens dropped from an event name; the rest (organizer, city, year, season#,
 # spring/fall/world) must ALL appear in the filename for an event to match.
@@ -117,8 +118,19 @@ def main():
             print("   ", r)
 
     if args.write:
-        pl.DataFrame(rows).write_csv(CSV)
+        out = pl.DataFrame(rows)
+        out.write_csv(CSV)
         print(f"\nUpdated {CSV}")
+        # remaining-to-download file (undownloaded rows, download-relevant columns)
+        keep = ["event", "stage", "series_date", "team_a", "team_b",
+                "inferno_score_a", "inferno_score_b", "hltv_match_url", "liquipedia_page"]
+        keep = [c for c in keep if c in out.columns]
+        remaining = (out.filter(pl.col("downloaded") != "Y")
+                     .select(keep)
+                     .sort(["event", "stage", "series_date"]))
+        rem_path = REMAINING
+        remaining.write_csv(rem_path)
+        print(f"Wrote {remaining.height} remaining maps -> {rem_path}")
     else:
         print("\n(report only; pass --write to update the CSV)")
 
