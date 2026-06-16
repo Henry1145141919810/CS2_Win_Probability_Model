@@ -1,229 +1,223 @@
-event,stage,series_date,team_a,team_b,inferno_score_a,inferno_score_b,hltv_match_url
-BLAST Premier Spring Final 2024,Groups,2024/1/22,Vitality,og,13,7,https://www.hltv.org/matches/2368862/-
-BLAST Premier Spring Final 2024,Groups,2024/1/25,Virtus.pro,Cloud9,13,9,https://www.hltv.org/matches/2368882/-
-BLAST Premier Spring Final 2024,Groups,2024/1/26,GamerLegion,FaZe,5,13,https://www.hltv.org/matches/2368872/-
-BLAST Premier Spring Final 2024,Groups,2024/1/27,Astralis,Vitality,13,10,https://www.hltv.org/matches/2368867/-
-IEM Katowice 2024,Main/Playoffs,2024/1/31,rebels gaming,Eternal Fire,4,13,https://www.hltv.org/matches/2369473/-
-IEM Katowice 2024,Main/Playoffs,2024/1/31,rooster,Virtus.pro,4,13,https://www.hltv.org/matches/2369407/-
-BLAST Premier World Final 2024,Main/Playoffs,2024/10/30,FaZe,MOUZ,12,12,https://www.hltv.org/matches/2376873/-
-BLAST Premier World Final 2024,Main/Playoffs,2024/10/30,G2,tl,13,6,https://www.hltv.org/matches/2376876/-
-BLAST Premier World Final 2024,Main/Playoffs,2024/10/31,Natus Vincere,FaZe,13,6,https://www.hltv.org/matches/2376874/-
-BLAST Premier World Final 2024,Main/Playoffs,2024/11/2,G2,Vitality,7,13,https://www.hltv.org/matches/2376883/-
-Perfect World Shanghai Major 2024,Opening Stage,2024/11/30,tl,wildcard,13,10,https://www.hltv.org/matches/2377675/-
-Perfect World Shanghai Major 2024,Opening Stage,2024/12/1,Complexity,Imperial,13,4,https://www.hltv.org/matches/2377686/-
-Perfect World Shanghai Major 2024,Opening Stage,2024/12/1,tl,flyquest,5,13,https://www.hltv.org/matches/2377684/-
-Perfect World Shanghai Major 2024,Opening Stage,2024/12/2,wildcard,Virtus.pro,13,7,https://www.hltv.org/matches/2377692/-
-Perfect World Shanghai Major 2024,Opening Stage,2024/12/2,gl,passion ua,13,6,https://www.hltv.org/matches/2377691/-
-Perfect World Shanghai Major 2024,Opening Stage,2024/12/2,mibr,rare atom,13,9,https://www.hltv.org/matches/2377687/-
-Perfect World Shanghai Major 2024,Opening Stage,2024/12/2,flyquest,paiN,6,13,https://www.hltv.org/matches/2377689/-
-Perfect World Shanghai Major 2024,Opening Stage,2024/12/3,flyquest,mibr,5,13,https://www.hltv.org/matches/2377694/-
-Perfect World Shanghai Major 2024,Opening Stage,2024/12/3,passion ua,wildcard,6,13,https://www.hltv.org/matches/2377695/-
-Perfect World Shanghai Major 2024,Elimination Stage,2024/12/5,G2,The MongolZ,10,13,https://www.hltv.org/matches/2377696/-
-Perfect World Shanghai Major 2024,Elimination Stage,2024/12/5,Natus Vincere,mibr,11,13,https://www.hltv.org/matches/2377708/-
-Perfect World Shanghai Major 2024,Elimination Stage,2024/12/5,tl,gl,13,10,https://www.hltv.org/matches/2377704/-
-Perfect World Shanghai Major 2024,Elimination Stage,2024/12/6,FURIA,tl,9,13,https://www.hltv.org/matches/2377713/-
-Perfect World Shanghai Major 2024,Elimination Stage,2024/12/6,MOUZ,FaZe,10,13,https://www.hltv.org/matches/2377715/-
-Perfect World Shanghai Major 2024,Elimination Stage,2024/12/7,G2,FaZe,13,4,https://www.hltv.org/matches/2377721/-
-Perfect World Shanghai Major 2024,Elimination Stage,2024/12/7,FURIA,paiN,13,11,https://www.hltv.org/matches/2377725/-
-Perfect World Shanghai Major 2024,Elimination Stage,2024/12/8,FURIA,FaZe,13,6,https://www.hltv.org/matches/2377728/-
-IEM Katowice 2024,Main/Playoffs,2024/2/1,GamerLegion,Virtus.pro,5,13,https://www.hltv.org/matches/2369476/-
-IEM Katowice 2024,Main/Playoffs,2024/2/1,m80,rooster,13,3,https://www.hltv.org/matches/2369480/-
-IEM Katowice 2024,Main/Playoffs,2024/2/1,FURIA,apeks,9,13,https://www.hltv.org/matches/2369479/-
-IEM Katowice 2024,Main/Playoffs,2024/2/2,BIG,apeks,13,7,https://www.hltv.org/matches/2369484/-
-IEM Katowice 2024,Main/Playoffs,2024/2/4,FaZe,Eternal Fire,12,12,https://www.hltv.org/matches/2369487/-
-IEM Katowice 2024,Main/Playoffs,2024/2/9,FaZe,G2,13,9,https://www.hltv.org/matches/2369503/-
-PGL Major Copenhagen 2024,Opening Stage,2024/3/18,The MongolZ,amkal esports,13,10,https://www.hltv.org/matches/2370616/-
-PGL Major Copenhagen 2024,Opening Stage,2024/3/19,legacy,apeks,13,7,https://www.hltv.org/matches/2370622/-
-PGL Major Copenhagen 2024,Opening Stage,2024/3/19,ECSTATIC,Imperial,10,13,https://www.hltv.org/matches/2370623/-
-PGL Major Copenhagen 2024,Opening Stage,2024/3/19,Eternal Fire,GamerLegion,13,2,https://www.hltv.org/matches/2370619/-
-PGL Major Copenhagen 2024,Elimination Stage,2024/3/21,Vitality,Eternal Fire,10,13,https://www.hltv.org/matches/2370630/-
-PGL Major Copenhagen 2024,Elimination Stage,2024/3/21,G2,FURIA,13,3,https://www.hltv.org/matches/2370635/-
-PGL Major Copenhagen 2024,Elimination Stage,2024/3/21,Virtus.pro,Imperial,6,13,https://www.hltv.org/matches/2370631/-
-PGL Major Copenhagen 2024,Elimination Stage,2024/3/21,Virtus.pro,paiN,13,9,https://www.hltv.org/matches/2370639/-
-PGL Major Copenhagen 2024,Elimination Stage,2024/3/22,paiN,The MongolZ,12,12,https://www.hltv.org/matches/2370649/-
-PGL Major Copenhagen 2024,Elimination Stage,2024/3/22,ECSTATIC,FURIA,12,12,https://www.hltv.org/matches/2370651/-
-PGL Major Copenhagen 2024,Elimination Stage,2024/3/23,Complexity,Vitality,12,12,https://www.hltv.org/matches/2370654/-
-PGL Major Copenhagen 2024,Elimination Stage,2024/3/23,ECSTATIC,G2,7,13,https://www.hltv.org/matches/2370655/-
-PGL Major Copenhagen 2024,Elimination Stage,2024/3/24,Virtus.pro,G2,11,13,https://www.hltv.org/matches/2370659/-
-PGL Major Copenhagen 2024,Main/Playoffs,2024/3/28,Vitality,Cloud9,13,8,https://www.hltv.org/matches/2370721/-
-PGL Major Copenhagen 2024,Main/Playoffs,2024/3/29,G2,MOUZ,13,9,https://www.hltv.org/matches/2370724/-
-PGL Major Copenhagen 2024,Main/Playoffs,2024/3/30,FaZe,Vitality,13,8,https://www.hltv.org/matches/2370725/-
-PGL Major Copenhagen 2024,Main/Playoffs,2024/3/31,FaZe,Natus Vincere,3,13,https://www.hltv.org/matches/2370727/-
-IEM Chengdu 2024,Main/Playoffs,2024/4/10,tl,MOUZ,11,13,https://www.hltv.org/matches/2370918/-
-IEM Chengdu 2024,Main/Playoffs,2024/4/10,flyquest,nemiga,12,12,https://www.hltv.org/matches/2370923/-
-IEM Chengdu 2024,Main/Playoffs,2024/4/13,Astralis,FaZe,7,13,https://www.hltv.org/matches/2370930/-
-IEM Chengdu 2024,Main/Playoffs,2024/4/8,FaZe,nemiga,13,8,https://www.hltv.org/matches/2370909/-
-IEM Chengdu 2024,Main/Playoffs,2024/4/8,G2,tl,9,13,https://www.hltv.org/matches/2370911/-
-IEM Chengdu 2024,Main/Playoffs,2024/4/8,Virtus.pro,wildcard,13,1,https://www.hltv.org/matches/2370908/-
-IEM Chengdu 2024,Main/Playoffs,2024/4/9,G2,lvg,13,11,https://www.hltv.org/matches/2370916/-
-IEM Chengdu 2024,Main/Playoffs,2024/4/9,flyquest,Virtus.pro,12,12,https://www.hltv.org/matches/2370921/-
-IEM Dallas 2024,Main/Playoffs,2024/5/28,G2,MOUZ,13,8,https://www.hltv.org/matches/2372338/-
-IEM Dallas 2024,Main/Playoffs,2024/5/28,FaZe,Virtus.pro,12,12,https://www.hltv.org/matches/2372334/-
-IEM Dallas 2024,Main/Playoffs,2024/5/29,Virtus.pro,BIG,5,13,https://www.hltv.org/matches/2372341/-
-IEM Dallas 2024,Main/Playoffs,2024/5/29,G2,tl,13,8,https://www.hltv.org/matches/2372342/-
-IEM Dallas 2024,Main/Playoffs,2024/6/1,9z,G2,11,13,https://www.hltv.org/matches/2372348/-
-ESL Pro League Season 20,Main/Playoffs,2024/6/11,ex-guild eagles,sinners,12,12,https://www.hltv.org/matches/2373118/-
-BLAST Premier Spring Final 2024,Main/Playoffs,2024/6/12,FaZe,saw,13,5,https://www.hltv.org/matches/2372734/-
-BLAST Premier Spring Final 2024,Main/Playoffs,2024/6/12,Vitality,Virtus.pro,13,5,https://www.hltv.org/matches/2372738/-
-BLAST Premier Spring Final 2024,Main/Playoffs,2024/6/13,saw,Astralis,3,13,https://www.hltv.org/matches/2372737/-
-BLAST Premier Spring Final 2024,Main/Playoffs,2024/6/13,Vitality,G2,13,4,https://www.hltv.org/matches/2372740/-
-BLAST Premier Spring Final 2024,Main/Playoffs,2024/6/14,Virtus.pro,Astralis,13,8,https://www.hltv.org/matches/2372743/-
-BLAST Premier Spring Final 2024,Main/Playoffs,2024/6/14,FaZe,Vitality,13,4,https://www.hltv.org/matches/2372742/-
-IEM Dallas 2024,Main/Playoffs,2024/6/2,G2,Vitality,12,12,https://www.hltv.org/matches/2372350/-
-ESL Pro League Season 20,Main/Playoffs,2024/6/9,Aurora,sinners,12,12,https://www.hltv.org/matches/2373093/-
-BLAST Premier Fall Final 2024,Groups,2024/7/31,FaZe,Cloud9,7,13,https://www.hltv.org/matches/2373775/-
-IEM Cologne 2024,Main/Playoffs,2024/8/10,9z,Astralis,5,13,https://www.hltv.org/matches/2374301/-
-IEM Cologne 2024,Main/Playoffs,2024/8/10,G2,saw,10,13,https://www.hltv.org/matches/2374299/-
-IEM Cologne 2024,Main/Playoffs,2024/8/11,FURIA,Vitality,3,13,https://www.hltv.org/matches/2374305/-
-IEM Cologne 2024,Main/Playoffs,2024/8/12,FaZe,Vitality,13,8,https://www.hltv.org/matches/2374315/-
-IEM Cologne 2024,Main/Playoffs,2024/8/13,FaZe,tl,13,9,https://www.hltv.org/matches/2374321/-
-IEM Cologne 2024,Main/Playoffs,2024/8/13,Natus Vincere,saw,13,6,https://www.hltv.org/matches/2374312/-
-IEM Cologne 2024,Main/Playoffs,2024/8/16,saw,FaZe,13,6,https://www.hltv.org/matches/2374323/-
-IEM Cologne 2024,Main/Playoffs,2024/8/17,Natus Vincere,MOUZ,12,12,https://www.hltv.org/matches/2374324/-
-IEM Cologne 2024,Main/Playoffs,2024/8/18,Natus Vincere,Vitality,9,13,https://www.hltv.org/matches/2374326/-
-BLAST Premier Fall Final 2024,Groups,2024/8/2,FaZe,Ninjas in Pyjamas,11,13,https://www.hltv.org/matches/2373789/-
-BLAST Premier Fall Final 2024,Groups,2024/8/4,Ninjas in Pyjamas,Astralis,5,13,https://www.hltv.org/matches/2373795/-
-IEM Cologne 2024,Main/Playoffs,2024/8/7,paiN,tl,11,13,https://www.hltv.org/matches/2373999/-
-IEM Cologne 2024,Main/Playoffs,2024/8/7,flyquest,BIG,10,13,https://www.hltv.org/matches/2374000/-
-IEM Cologne 2024,Main/Playoffs,2024/8/7,FURIA,Imperial,13,0,https://www.hltv.org/matches/2373998/-
-IEM Cologne 2024,Main/Playoffs,2024/8/7,Complexity,attax,13,7,https://www.hltv.org/matches/2373994/-
-IEM Cologne 2024,Main/Playoffs,2024/8/8,BIG,saw,11,13,https://www.hltv.org/matches/2374266/-
-IEM Cologne 2024,Main/Playoffs,2024/8/9,Imperial,paiN,7,13,https://www.hltv.org/matches/2374269/-
-BLAST Premier Fall Final 2024,Main/Playoffs,2024/9/25,Vitality,Astralis,13,0,https://www.hltv.org/matches/2375767/-
-BLAST Premier Fall Final 2024,Main/Playoffs,2024/9/25,G2,FaZe,6,13,https://www.hltv.org/matches/2375766/-
-BLAST Premier Fall Final 2024,Main/Playoffs,2024/9/27,tl,FaZe,6,13,https://www.hltv.org/matches/2375774/-
-BLAST Premier Fall Final 2024,Main/Playoffs,2024/9/28,Natus Vincere,FaZe,10,13,https://www.hltv.org/matches/2375776/-
-BLAST Premier Fall Final 2024,Main/Playoffs,2024/9/29,Natus Vincere,G2,7,13,https://www.hltv.org/matches/2375777/-
-IEM Katowice 2025,Main/Playoffs,2025/1/29,3DMAX,flyquest,13,7,https://www.hltv.org/matches/2378417/-
-IEM Katowice 2025,Main/Playoffs,2025/1/29,saw,gl,9,13,https://www.hltv.org/matches/2378420/-
-IEM Katowice 2025,Main/Playoffs,2025/1/29,wildcard,BIG,12,12,https://www.hltv.org/matches/2378421/-
-IEM Katowice 2025,Main/Playoffs,2025/1/30,paiN,gl,3,13,https://www.hltv.org/matches/2378692/-
-IEM Katowice 2025,Main/Playoffs,2025/1/30,3DMAX,mibr,12,12,https://www.hltv.org/matches/2378691/-
-IEM Katowice 2025,Main/Playoffs,2025/1/30,flyquest,Astralis,11,13,https://www.hltv.org/matches/2378687/-
-IEM Katowice 2025,Main/Playoffs,2025/1/30,Virtus.pro,saw,13,3,https://www.hltv.org/matches/2378688/-
-IEM Katowice 2025,Main/Playoffs,2025/1/31,wildcard,FURIA,13,4,https://www.hltv.org/matches/2378693/-
-IEM Katowice 2025,Main/Playoffs,2025/1/31,tl,complexity,13,8,https://www.hltv.org/matches/2378686/-
-IEM Katowice 2025,Main/Playoffs,2025/1/31,wildcard,tl,12,12,https://www.hltv.org/matches/2378694/-
-IEM Katowice 2025,Main/Playoffs,2025/1/31,paiN,Astralis,7,13,https://www.hltv.org/matches/2378695/-
-StarLadder Budapest Major 2025,Stage 2,2025/11/30,tl,mibr,13,5,https://www.hltv.org/matches/2388079/-
-StarLadder Budapest Major 2025,Stage 2,2025/11/30,FaZe,Ninjas in Pyjamas,12,12,https://www.hltv.org/matches/2388078/-
-StarLadder Budapest Major 2025,Stage 2,2025/12/1,tyloo,tl,12,12,https://www.hltv.org/matches/2388087/-
-StarLadder Budapest Major 2025,Playoffs,2025/12/12,MOUZ,FaZe,2,13,https://www.hltv.org/matches/2388126/-
-StarLadder Budapest Major 2025,Playoffs,2025/12/12,Natus Vincere,FURIA,12,12,https://www.hltv.org/matches/2388127/-
-StarLadder Budapest Major 2025,Playoffs,2025/12/13,FaZe,Natus Vincere,13,8,https://www.hltv.org/matches/2388129/-
-StarLadder Budapest Major 2025,Playoffs,2025/12/14,Vitality,FaZe,13,9,https://www.hltv.org/matches/2388130/-
-StarLadder Budapest Major 2025,Stage 2,2025/12/2,passion ua,m80,13,5,https://www.hltv.org/matches/2388088/-
-StarLadder Budapest Major 2025,Stage 3,2025/12/4,The MongolZ,tl,13,9,https://www.hltv.org/matches/2388104/-
-StarLadder Budapest Major 2025,Stage 3,2025/12/5,parivision,3DMAX,8,13,https://www.hltv.org/matches/2388114/-
-StarLadder Budapest Major 2025,Stage 3,2025/12/5,b8,Vitality,2,13,https://www.hltv.org/matches/2388108/-
-StarLadder Budapest Major 2025,Stage 3,2025/12/5,FURIA,G2,13,6,https://www.hltv.org/matches/2388113/-
-StarLadder Budapest Major 2025,Stage 3,2025/12/6,Natus Vincere,Vitality,11,13,https://www.hltv.org/matches/2388115/-
-StarLadder Budapest Major 2025,Stage 3,2025/12/6,MOUZ,Falcons,13,6,https://www.hltv.org/matches/2388117/-
-StarLadder Budapest Major 2025,Stage 3,2025/12/6,Imperial,passion ua,8,13,https://www.hltv.org/matches/2388118/-
-StarLadder Budapest Major 2025,Stage 3,2025/12/6,FaZe,3DMAX,13,5,https://www.hltv.org/matches/2388120/-
-StarLadder Budapest Major 2025,Stage 3,2025/12/7,G2,Falcons,4,13,https://www.hltv.org/matches/2388123/-
-IEM Katowice 2025,Main/Playoffs,2025/2/1,Vitality,3DMAX,12,12,https://www.hltv.org/matches/2378782/-
-IEM Katowice 2025,Main/Playoffs,2025/2/1,G2,Virtus.pro,9,13,https://www.hltv.org/matches/2378780/-
-IEM Katowice 2025,Main/Playoffs,2025/2/1,MOUZ,gl,9,13,https://www.hltv.org/matches/2378786/-
-IEM Katowice 2025,Main/Playoffs,2025/2/1,Falcons,ef,7,13,https://www.hltv.org/matches/2378781/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/14,Falcons,flyquest,13,9,https://www.hltv.org/matches/2379329/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/14,paiN,Astralis,7,13,https://www.hltv.org/matches/2379332/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/14,3DMAX,Virtus.pro,13,6,https://www.hltv.org/matches/2379327/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,saw,Astralis,6,13,https://www.hltv.org/matches/2379341/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,Complexity,Virtus.pro,12,12,https://www.hltv.org/matches/2379337/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,BIG,flyquest,1,13,https://www.hltv.org/matches/2379335/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,FaZe,ef,13,10,https://www.hltv.org/matches/2379338/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,The MongolZ,wildcard,12,12,https://www.hltv.org/matches/2379336/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,MOUZ,3DMAX,13,9,https://www.hltv.org/matches/2379334/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,ef,BIG,13,9,https://www.hltv.org/matches/2379342/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,paiN,The MongolZ,12,12,https://www.hltv.org/matches/2379348/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,3DMAX,mibr,13,11,https://www.hltv.org/matches/2379343/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,wildcard,Virtus.pro,10,13,https://www.hltv.org/matches/2379345/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,saw,flyquest,12,12,https://www.hltv.org/matches/2379349/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,Complexity,saw,4,13,https://www.hltv.org/matches/2379355/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,3DMAX,ef,13,5,https://www.hltv.org/matches/2379352/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,paiN,Virtus.pro,13,9,https://www.hltv.org/matches/2379354/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,wildcard,BIG,13,11,https://www.hltv.org/matches/2379351/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,Astralis,mibr,12,12,https://www.hltv.org/matches/2379353/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/18,MOUZ,Virtus.pro,12,12,https://www.hltv.org/matches/2379357/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/18,Astralis,BIG,13,8,https://www.hltv.org/matches/2379356/-
-IEM Katowice 2025,Main/Playoffs,2025/2/2,3DMAX,BIG,13,6,https://www.hltv.org/matches/2378900/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/21,Astralis,The MongolZ,12,12,https://www.hltv.org/matches/2379360/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/21,paiN,MOUZ,11,13,https://www.hltv.org/matches/2379359/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/22,MOUZ,Astralis,12,12,https://www.hltv.org/matches/2379363/-
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/23,FaZe,Astralis,8,13,https://www.hltv.org/matches/2379365/-
-IEM Katowice 2025,Main/Playoffs,2025/2/3,Astralis,FURIA,13,10,https://www.hltv.org/matches/2378901/-
-IEM Katowice 2025,Main/Playoffs,2025/2/3,FaZe,G2,10,13,https://www.hltv.org/matches/2378905/-
-IEM Katowice 2025,Main/Playoffs,2025/2/3,ef,3DMAX,4,13,https://www.hltv.org/matches/2378906/-
-IEM Katowice 2025,Main/Playoffs,2025/2/4,Virtus.pro,Vitality,5,13,https://www.hltv.org/matches/2378910/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/10,ef,paiN,13,7,https://www.hltv.org/matches/2380066/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/10,saw,gl,9,13,https://www.hltv.org/matches/2380064/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/11,Team Liquid,3DMAX,13,11,https://www.hltv.org/matches/2380069/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/11,Falcons,ef,8,13,https://www.hltv.org/matches/2380070/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/11,G2,GamerLegion,13,11,https://www.hltv.org/matches/2380071/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,The MongolZ,gl,13,9,https://www.hltv.org/matches/2380044/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,Falcons,Team Liquid,12,12,https://www.hltv.org/matches/2380046/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,Vitality,mibr,13,3,https://www.hltv.org/matches/2380040/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,G2,paiN,13,8,https://www.hltv.org/matches/2380043/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,MOUZ,FURIA,12,12,https://www.hltv.org/matches/2380042/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,Natus Vincere,saw,13,3,https://www.hltv.org/matches/2380041/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,ef,3DMAX,10,13,https://www.hltv.org/matches/2380045/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/8,Natus Vincere,tyloo,10,13,https://www.hltv.org/matches/2380047/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/8,gl,paiN,12,12,https://www.hltv.org/matches/2380050/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/8,ef,mibr,13,8,https://www.hltv.org/matches/2380048/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/9,FURIA,mibr,13,1,https://www.hltv.org/matches/2380061/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/9,Vitality,MOUZ,13,6,https://www.hltv.org/matches/2380059/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/9,Falcons,3DMAX,11,13,https://www.hltv.org/matches/2380056/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/9,gl,tyloo,12,12,https://www.hltv.org/matches/2380055/-
-ESL Pro League Season 21,Main/Playoffs,2025/3/9,tl,ef,13,11,https://www.hltv.org/matches/2380062/-
-IEM Dallas 2025,Main/Playoffs,2025/5/19,lvg,G2,9,13,https://www.hltv.org/matches/2382378/-
-IEM Dallas 2025,Main/Playoffs,2025/5/19,Vitality,legacy,13,5,https://www.hltv.org/matches/2382375/-
-IEM Dallas 2025,Main/Playoffs,2025/5/19,tl,FaZe,13,10,https://www.hltv.org/matches/2382380/-
-IEM Dallas 2025,Main/Playoffs,2025/5/20,Aurora,nrg,13,4,https://www.hltv.org/matches/2382686/-
-IEM Dallas 2025,Main/Playoffs,2025/5/20,MOUZ,tl,13,8,https://www.hltv.org/matches/2382683/-
-IEM Dallas 2025,Main/Playoffs,2025/5/20,legacy,3DMAX,12,12,https://www.hltv.org/matches/2382677/-
-IEM Dallas 2025,Main/Playoffs,2025/5/20,The MongolZ,G2,13,4,https://www.hltv.org/matches/2382676/-
-IEM Dallas 2025,Main/Playoffs,2025/5/21,G2,3DMAX,13,3,https://www.hltv.org/matches/2382679/-
-IEM Dallas 2025,Main/Playoffs,2025/5/21,Vitality,The MongolZ,13,10,https://www.hltv.org/matches/2382681/-
-IEM Dallas 2025,Main/Playoffs,2025/5/21,tl,Aurora,7,13,https://www.hltv.org/matches/2382688/-
-IEM Dallas 2025,Main/Playoffs,2025/5/23,Falcons,gl,13,8,https://www.hltv.org/matches/2382692/-
-IEM Dallas 2025,Main/Playoffs,2025/5/24,MOUZ,The MongolZ,13,11,https://www.hltv.org/matches/2382693/-
-IEM Dallas 2025,Main/Playoffs,2025/5/24,Vitality,Falcons,13,11,https://www.hltv.org/matches/2382694/-
-IEM Dallas 2025,Main/Playoffs,2025/5/25,Vitality,MOUZ,13,8,https://www.hltv.org/matches/2382695/-
-BLAST Austin Major 2025,Stage 3,2025/6/12,Vitality,legacy,3,13,https://www.hltv.org/matches/2382432/-
-BLAST Austin Major 2025,Stage 3,2025/6/12,The MongolZ,FURIA,11,13,https://www.hltv.org/matches/2382436/-
-BLAST Austin Major 2025,Stage 3,2025/6/12,Natus Vincere,3DMAX,12,12,https://www.hltv.org/matches/2382591/-
-BLAST Austin Major 2025,Stage 3,2025/6/13,Aurora,G2,4,13,https://www.hltv.org/matches/2382598/-
-BLAST Austin Major 2025,Stage 3,2025/6/14,Natus Vincere,G2,12,12,https://www.hltv.org/matches/2382609/-
-BLAST Austin Major 2025,Stage 3,2025/6/14,legacy,lvg,13,3,https://www.hltv.org/matches/2382604/-
-BLAST Austin Major 2025,Stage 3,2025/6/14,3DMAX,paiN,9,13,https://www.hltv.org/matches/2382605/-
-BLAST Austin Major 2025,Stage 3,2025/6/14,Aurora,MOUZ,13,11,https://www.hltv.org/matches/2382607/-
-BLAST Austin Major 2025,Stage 3,2025/6/15,legacy,MOUZ,11,13,https://www.hltv.org/matches/2382610/-
-BLAST Austin Major 2025,Stage 3,2025/6/15,Virtus.pro,paiN,13,6,https://www.hltv.org/matches/2382612/-
-BLAST Austin Major 2025,Playoffs,2025/6/19,paiN,FURIA,12,12,https://www.hltv.org/matches/2382613/-
-BLAST Austin Major 2025,Playoffs,2025/6/21,MOUZ,Vitality,13,4,https://www.hltv.org/matches/2382618/-
-BLAST Austin Major 2025,Playoffs,2025/6/22,Vitality,The MongolZ,13,6,https://www.hltv.org/matches/2382619/-
-BLAST Austin Major 2025,Stage 2,2025/6/7,Virtus.pro,og,13,2,https://www.hltv.org/matches/2382429/-
-BLAST Austin Major 2025,Stage 2,2025/6/7,Virtus.pro,b8,13,3,https://www.hltv.org/matches/2382441/-
-BLAST Austin Major 2025,Stage 2,2025/6/7,3DMAX,legacy,7,13,https://www.hltv.org/matches/2382443/-
-BLAST Austin Major 2025,Stage 2,2025/6/9,FaZe,3DMAX,9,13,https://www.hltv.org/matches/2382583/-
-BLAST Austin Major 2025,Stage 2,2025/6/9,Falcons,mibr,12,12,https://www.hltv.org/matches/2382582/-
-IEM Cologne 2025,Main/Playoffs,2025/7/23,Astralis,b8,12,12,https://www.hltv.org/matches/2383755/-
-IEM Cologne 2025,Main/Playoffs,2025/7/23,FaZe,BIG,13,7,https://www.hltv.org/matches/2383749/-
-IEM Cologne 2025,Main/Playoffs,2025/7/23,gl,Complexity,13,3,https://www.hltv.org/matches/2383753/-
-IEM Cologne 2025,Main/Playoffs,2025/7/23,tyloo,Virtus.pro,7,13,https://www.hltv.org/matches/2383754/-
-IEM Cologne 2025,Main/Playoffs,2025/7/24,Complexity,tyloo,6,13,https://www.hltv.org/matches/2383781/-
-IEM Cologne 2025,Main/Playoffs,2025/7/24,FaZe,Team Liquid,10,13,https://www.hltv.org/matches/2383775/-
-IEM Cologne 2025,Main/Playoffs,2025/7/25,BIG,paiN,11,13,https://www.hltv.org/matches/2383779/-
-IEM Cologne 2025,Main/Playoffs,2025/7/25,3DMAX,tyloo,12,12,https://www.hltv.org/matches/2383785/-
-IEM Cologne 2025,Main/Playoffs,2025/7/25,Astralis,paiN,13,11,https://www.hltv.org/matches/2383783/-
-IEM Cologne 2025,Main/Playoffs,2025/7/27,Vitality,G2,13,5,https://www.hltv.org/matches/2383824/-
-IEM Cologne 2025,Main/Playoffs,2025/7/27,MOUZ,tl,13,7,https://www.hltv.org/matches/2383761/-
-IEM Cologne 2025,Main/Playoffs,2025/7/27,gl,3DMAX,11,13,https://www.hltv.org/matches/2383827/-
-IEM Cologne 2025,Main/Playoffs,2025/7/27,Astralis,FURIA,3,13,https://www.hltv.org/matches/2383826/-
-IEM Cologne 2025,Main/Playoffs,2025/7/28,G2,3DMAX,13,6,https://www.hltv.org/matches/2383829/-
-IEM Cologne 2025,Main/Playoffs,2025/7/29,FaZe,Natus Vincere,10,13,https://www.hltv.org/matches/2383839/-
-IEM Cologne 2025,Main/Playoffs,2025/7/29,Natus Vincere,Ninjas in Pyjamas,13,3,https://www.hltv.org/matches/2383837/-
-IEM Cologne 2025,Main/Playoffs,2025/7/29,Vitality,The MongolZ,13,8,https://www.hltv.org/matches/2383830/-
-IEM Cologne 2025,Main/Playoffs,2025/8/1,The MongolZ,Natus Vincere,12,12,https://www.hltv.org/matches/2383841/-
-IEM Cologne 2025,Main/Playoffs,2025/8/1,MOUZ,FURIA,13,11,https://www.hltv.org/matches/2383840/-
+demo_id,event,stage,series_date,team_a,team_b,team_score,winner_team,real_rounds,hltv_match_url
+3dmax-vs-fnatic-inferno,(off-list),"","",3DMAX,Fnatic,6-13,Fnatic,19,""
+3dmax-vs-sinners-inferno,(off-list),"","",SINNERS Esports,3DMAX,13-5,SINNERS Esports,18,""
+b8-vs-flyquest-m3-inferno,(off-list),"","",FlyQuest,B8 Esports,19-16,FlyQuest,35,""
+big-vs-imperial-fe-m1-inferno,(off-list),"","",Imperial Valkyries,BIG,4-13,BIG,17,""
+eternal-fire-vs-natus-vincere-m2-inferno,(off-list),"","",Eternal Fire,Natus Vincere,9-13,Natus Vincere,22,""
+eternal-fire-vs-virtus-pro-m3-inferno,(off-list),"","",Eternal Fire,Virtus.Pro,13-7,Eternal Fire,20,""
+flyquest-vs-3dmax-inferno,(off-list),"","",3DMAX,FlyQuest,13-7,3DMAX,20,""
+flyquest-vs-furia-m1-inferno,(off-list),"","",FURIA,FlyQuest,13-7,FURIA,20,""
+flyquest-vs-virtus-pro-m1-inferno-p2,(off-list),"","",FlyQuest,Virtus.Pro,13-7,FlyQuest,20,""
+fnatic-vs-passion-ua-m2-inferno,(off-list),"","",Fnatic,Passion UA,7-13,Passion UA,20,""
+g2-vs-furia-m2-inferno,(off-list),"","",G2 Esports,FURIA,13-8,G2 Esports,21,""
+g2-vs-natus-vincere-m2-inferno,(off-list),"","",Natus Vincere,G2 Esports,10-13,G2 Esports,23,""
+g2-vs-ninjas-in-pyjamas-m2-inferno,(off-list),"","",NIP,G2 Esports,11-13,G2 Esports,24,""
+liquid-vs-natus-vincere-m3-inferno,(off-list),"","",Liquid,Natus Vincere,13-10,Liquid,23,""
+natus-vincere-vs-g2-m1-inferno,(off-list),"","",G2 Esports,Natus Vincere,9-13,Natus Vincere,22,""
+natus-vincere-vs-liquid-m3-inferno,(off-list),"","",Liquid,Natus Vincere,13-11,Liquid,24,""
+rare-atom-vs-fnatic-m2-inferno,(off-list),"","",Rare Atom,Fnatic,13-10,Rare Atom,23,""
+vitality-vs-og-m2-inferno,BLAST Premier Spring Final 2024,Groups,2024/1/22,Vitality,og,13-7,Vitality,20,https://www.hltv.org/matches/2368862/-
+virtus-pro-vs-cloud9-m3-inferno,BLAST Premier Spring Final 2024,Groups,2024/1/25,Virtus.pro,Cloud9,13-9,VirtusPro,22,https://www.hltv.org/matches/2368882/-
+gamerlegion-vs-faze-m3-inferno,BLAST Premier Spring Final 2024,Groups,2024/1/26,GamerLegion,FaZe,13-5,FaZe Clan,18,https://www.hltv.org/matches/2368872/-
+astralis-vs-vitality-m1-inferno,BLAST Premier Spring Final 2024,Groups,2024/1/27,Astralis,Vitality,10-13,Astralis,23,https://www.hltv.org/matches/2368867/-
+blast-premier-world-final-2024-g2-vs-liquid__g2-vs-liquid-m2-inferno,BLAST Premier World Final 2024,Main/Playoffs,2024/10/30,G2,tl,6-13,G2 Esports,19,https://www.hltv.org/matches/2376876/-
+mouz-vs-faze-m1-inferno,BLAST Premier World Final 2024,Main/Playoffs,2024/10/30,FaZe,MOUZ,16-13,MOUZ,29,https://www.hltv.org/matches/2376873/-
+natus-vincere-vs-faze-m1-inferno,BLAST Premier World Final 2024,Main/Playoffs,2024/10/31,Natus Vincere,FaZe,13-6,Natus Vincere,19,https://www.hltv.org/matches/2376874/-
+g2-vs-vitality-m2-inferno,BLAST Premier World Final 2024,Main/Playoffs,2024/11/2,G2,Vitality,13-7,Vitality,20,https://www.hltv.org/matches/2376883/-
+liquid-vs-wildcard-inferno,Perfect World Shanghai Major 2024,Opening Stage,2024/11/30,tl,wildcard,13-10,Team Liquid,23,https://www.hltv.org/matches/2377675/-
+complexity-vs-imperial-m1-inferno,Perfect World Shanghai Major 2024,Opening Stage,2024/12/1,Complexity,Imperial,4-13,Complexity Gaming,17,https://www.hltv.org/matches/2377686/-
+liquid-vs-flyquest-m1-inferno,Perfect World Shanghai Major 2024,Opening Stage,2024/12/1,tl,flyquest,13-5,Flyquest,18,https://www.hltv.org/matches/2377684/-
+flyquest-vs-pain-m2-inferno,Perfect World Shanghai Major 2024,Opening Stage,2024/12/2,flyquest,paiN,6-13,paiN Gaming,19,https://www.hltv.org/matches/2377689/-
+gamerlegion-vs-passion-ua-m1-inferno,Perfect World Shanghai Major 2024,Opening Stage,2024/12/2,gl,passion ua,13-6,GamerLegion,19,https://www.hltv.org/matches/2377691/-
+perfect-world-shanghai-major-2024-opening-stage-wildcard-vs-virtuspro__wildcard-vs-virtus-pro-m2-inferno,Perfect World Shanghai Major 2024,Opening Stage,2024/12/2,wildcard,Virtus.pro,7-13,Wildcard,20,https://www.hltv.org/matches/2377692/-
+rare-atom-vs-mibr-m1-inferno,Perfect World Shanghai Major 2024,Opening Stage,2024/12/2,mibr,rare atom,13-9,MIBR,22,https://www.hltv.org/matches/2377687/-
+mibr-vs-flyquest-m2-inferno,Perfect World Shanghai Major 2024,Opening Stage,2024/12/3,flyquest,mibr,13-5,MIBR,18,https://www.hltv.org/matches/2377694/-
+wildcard-vs-passion-ua-m1-inferno,Perfect World Shanghai Major 2024,Opening Stage,2024/12/3,passion ua,wildcard,6-13,Wildcard,19,https://www.hltv.org/matches/2377695/-
+g2-vs-the-mongolz-inferno,Perfect World Shanghai Major 2024,Elimination Stage,2024/12/5,G2,The MongolZ,10-13,The MongolZ,23,https://www.hltv.org/matches/2377696/-
+liquid-vs-gamerlegion-inferno,Perfect World Shanghai Major 2024,Elimination Stage,2024/12/5,tl,gl,10-13,Team Liquid,23,https://www.hltv.org/matches/2377704/-
+natus-vincere-vs-mibr-inferno,Perfect World Shanghai Major 2024,Elimination Stage,2024/12/5,Natus Vincere,mibr,13-11,MIBR,24,https://www.hltv.org/matches/2377708/-
+furia-vs-liquid-inferno,Perfect World Shanghai Major 2024,Elimination Stage,2024/12/6,FURIA,tl,13-9,Team Liquid,22,https://www.hltv.org/matches/2377713/-
+mouz-vs-faze-inferno,Perfect World Shanghai Major 2024,Elimination Stage,2024/12/6,MOUZ,FaZe,13-10,FaZe Clan,23,https://www.hltv.org/matches/2377715/-
+big-vs-faze-m1-inferno,Perfect World Shanghai Major 2024,Elimination Stage,2024/12/7,G2,FaZe,4-13,G2 Esports,17,https://www.hltv.org/matches/2377721/-
+perfect-world-shanghai-major-2024-furia-vs-pain__furia-vs-pain-m3-inferno,Perfect World Shanghai Major 2024,Elimination Stage,2024/12/7,FURIA,paiN,11-13,FURIA,24,https://www.hltv.org/matches/2377725/-
+faze-vs-furia-m1-inferno,Perfect World Shanghai Major 2024,Elimination Stage,2024/12/8,FURIA,FaZe,6-13,FURIA,19,https://www.hltv.org/matches/2377728/-
+big-vs-apeks-m1-inferno,IEM Katowice 2024,Main/Playoffs,2024/2/2,BIG,apeks,6-13,BIG,19,https://www.hltv.org/matches/2369484/-
+eternal-fire-vs-faze-m1-inferno,IEM Katowice 2024,Main/Playoffs,2024/2/4,FaZe,Eternal Fire,13-11,FaZe Clan,24,https://www.hltv.org/matches/2369487/-
+faze-vs-g2-m1-inferno,IEM Katowice 2024,Main/Playoffs,2024/2/9,FaZe,G2,13-9,FaZe Clan,22,https://www.hltv.org/matches/2369503/-
+themongolz-vs-amkal-m3-inferno,PGL Major Copenhagen 2024,Opening Stage,2024/3/18,The MongolZ,amkal esports,10-13,The MongolZ,23,https://www.hltv.org/matches/2370616/-
+ecstatic-vs-imperial-m2-inferno,PGL Major Copenhagen 2024,Opening Stage,2024/3/19,ECSTATIC,Imperial,13-10,Imperial Esports,23,https://www.hltv.org/matches/2370623/-
+eternal-fire-vs-gamerlegion-m2-inferno,PGL Major Copenhagen 2024,Opening Stage,2024/3/19,Eternal Fire,GamerLegion,13-2,Eternal Fire,15,https://www.hltv.org/matches/2370619/-
+legacy-vs-apeks-m2-inferno,PGL Major Copenhagen 2024,Opening Stage,2024/3/19,legacy,apeks,7-13,Legacy,20,https://www.hltv.org/matches/2370622/-
+g2-vs-furia-inferno,PGL Major Copenhagen 2024,Elimination Stage,2024/3/21,G2,FURIA,3-13,G2 Esports,16,https://www.hltv.org/matches/2370635/-
+virtus-pro-vs-imperial-inferno,PGL Major Copenhagen 2024,Elimination Stage,2024/3/21,Virtus.pro,Imperial,6-13,Imperial Esports,19,https://www.hltv.org/matches/2370631/-
+virtuspro-vs-pain-inferno,PGL Major Copenhagen 2024,Elimination Stage,2024/3/21,Virtus.pro,paiN,9-13,Virtus.Pro,22,https://www.hltv.org/matches/2370639/-
+vitality-vs-eternal-fire-inferno,PGL Major Copenhagen 2024,Elimination Stage,2024/3/21,Vitality,Eternal Fire,10-13,Eternal Fire,23,https://www.hltv.org/matches/2370630/-
+ecstatic-vs-furia-m2-inferno,PGL Major Copenhagen 2024,Elimination Stage,2024/3/22,ECSTATIC,FURIA,14-16,FURIA,30,https://www.hltv.org/matches/2370651/-
+pain-vs-themongolz-m3-inferno,PGL Major Copenhagen 2024,Elimination Stage,2024/3/22,paiN,The MongolZ,19-22,paiN Gaming,41,https://www.hltv.org/matches/2370649/-
+complexity-vs-vitality-m1-inferno,PGL Major Copenhagen 2024,Elimination Stage,2024/3/23,Complexity,Vitality,16-19,Vitality,35,https://www.hltv.org/matches/2370654/-
+ecstatic-vs-g2-m1-inferno,PGL Major Copenhagen 2024,Elimination Stage,2024/3/23,ECSTATIC,G2,7-13,G2 Esports,20,https://www.hltv.org/matches/2370655/-
+virtus-pro-vs-g2-m2-inferno,PGL Major Copenhagen 2024,Elimination Stage,2024/3/24,Virtus.pro,G2,11-13,G2 Esports,24,https://www.hltv.org/matches/2370659/-
+cloud9-vs-vitality-m1-inferno,PGL Major Copenhagen 2024,Main/Playoffs,2024/3/28,Vitality,Cloud9,8-13,Vitality,21,https://www.hltv.org/matches/2370721/-
+mouz-vs-g2-m1-inferno,PGL Major Copenhagen 2024,Main/Playoffs,2024/3/29,G2,MOUZ,9-13,G2 Esports,22,https://www.hltv.org/matches/2370724/-
+pgl-cs2-major-copenhagen-2024-vitality-vs-faze__vitality-vs-faze-m3-inferno,PGL Major Copenhagen 2024,Main/Playoffs,2024/3/30,FaZe,Vitality,13-8,FaZe Clan,21,https://www.hltv.org/matches/2370725/-
+pgl-cs2-major-copenhagen-2024-faze-vs-natus-vincere__faze-vs-natus-vincere-m3-inferno,PGL Major Copenhagen 2024,Main/Playoffs,2024/3/31,FaZe,Natus Vincere,3-13,Natus Vincere,16,https://www.hltv.org/matches/2370727/-
+flyquest-vs-nemiga-m2-inferno,IEM Chengdu 2024,Main/Playoffs,2024/4/10,flyquest,nemiga,16-13,FlyQuest,29,https://www.hltv.org/matches/2370923/-
+iem-chengdu-2024-liquid-vs-mouz__liquid-vs-mouz-m1-inferno,IEM Chengdu 2024,Main/Playoffs,2024/4/10,tl,MOUZ,11-13,MOUZ,24,https://www.hltv.org/matches/2370918/-
+astralis-vs-faze-m3-inferno,IEM Chengdu 2024,Main/Playoffs,2024/4/13,Astralis,FaZe,13-7,FaZe Clan,20,https://www.hltv.org/matches/2370930/-
+faze-vs-nemiga-inferno,IEM Chengdu 2024,Main/Playoffs,2024/4/8,FaZe,nemiga,13-8,FaZe Clan,21,https://www.hltv.org/matches/2370909/-
+g2-vs-liquid-m3-inferno,IEM Chengdu 2024,Main/Playoffs,2024/4/8,G2,tl,13-9,Team Liquid,22,https://www.hltv.org/matches/2370911/-
+wildcard-vs-virtus-pro-inferno,IEM Chengdu 2024,Main/Playoffs,2024/4/8,Virtus.pro,wildcard,13-1,Virtus.Pro,14,https://www.hltv.org/matches/2370908/-
+iem-chengdu-2024-g2-vs-lynn-vision__g2-vs-lynn-vision-m2-inferno,IEM Chengdu 2024,Main/Playoffs,2024/4/9,G2,lvg,13-11,G2 Esports,24,https://www.hltv.org/matches/2370916/-
+g2-vs-mouz-m1-inferno,IEM Dallas 2024,Main/Playoffs,2024/5/28,G2,MOUZ,13-8,G2 Esports,21,https://www.hltv.org/matches/2372338/-
+iem-dallas-2024-g2-vs-liquid__g2-vs-liquid-m2-inferno,IEM Dallas 2024,Main/Playoffs,2024/5/29,G2,tl,8-13,G2 Esports,21,https://www.hltv.org/matches/2372342/-
+virtus-pro-vs-big-m1-inferno,IEM Dallas 2024,Main/Playoffs,2024/5/29,Virtus.pro,BIG,13-5,BIG,18,https://www.hltv.org/matches/2372341/-
+9z-vs-g2-m1-inferno,IEM Dallas 2024,Main/Playoffs,2024/6/1,9z,G2,11-13,G2 Esports,24,https://www.hltv.org/matches/2372348/-
+ex-guild-eagles-vs-sinners-m1-inferno,ESL Pro League Season 20,Main/Playoffs,2024/6/11,ex-guild eagles,sinners,17-19,Bad News Eagles,36,https://www.hltv.org/matches/2373118/-
+faze-vs-saw-m2-inferno,BLAST Premier Spring Final 2024,Main/Playoffs,2024/6/12,FaZe,saw,5-13,FaZe Clan,18,https://www.hltv.org/matches/2372734/-
+vitality-vs-virtuspro-m1-inferno,BLAST Premier Spring Final 2024,Main/Playoffs,2024/6/12,Vitality,Virtus.pro,5-13,Vitality,18,https://www.hltv.org/matches/2372738/-
+blast-premier-spring-final-2024-saw-vs-astralis__saw-vs-astralis-m2-inferno,BLAST Premier Spring Final 2024,Main/Playoffs,2024/6/13,saw,Astralis,3-13,Astralis,16,https://www.hltv.org/matches/2372737/-
+vitality-vs-g2-m1-inferno,BLAST Premier Spring Final 2024,Main/Playoffs,2024/6/13,Vitality,G2,13-4,Vitality,17,https://www.hltv.org/matches/2372740/-
+astralis-vs-virtus-pro-m1-inferno,BLAST Premier Spring Final 2024,Main/Playoffs,2024/6/14,Virtus.pro,Astralis,13-8,VirtusPro,21,https://www.hltv.org/matches/2372743/-
+blast-premier-spring-final-2024-faze-vs-vitality__faze-vs-vitality-m1-inferno,BLAST Premier Spring Final 2024,Main/Playoffs,2024/6/14,FaZe,Vitality,4-13,FaZe Clan,17,https://www.hltv.org/matches/2372742/-
+iem-dallas-2024-g2-vs-vitality__g2-vs-vitality-m1-inferno,IEM Dallas 2024,Main/Playoffs,2024/6/2,G2,Vitality,19-16,G2 Esports,35,https://www.hltv.org/matches/2372350/-
+aurora-vs-sinners-inferno,ESL Pro League Season 20,Main/Playoffs,2024/6/9,Aurora,sinners,14-16,SINNERS Esports,30,https://www.hltv.org/matches/2373093/-
+faze-vs-cloud9-m2-inferno,BLAST Premier Fall Final 2024,Groups,2024/7/31,FaZe,Cloud9,13-7,Cloud9,20,https://www.hltv.org/matches/2373775/-
+astralis-vs-9z-m2-inferno,IEM Cologne 2024,Main/Playoffs,2024/8/10,9z,Astralis,13-5,Astralis,18,https://www.hltv.org/matches/2374301/-
+g2-vs-saw-m2-inferno,IEM Cologne 2024,Main/Playoffs,2024/8/10,G2,saw,13-10,SAW,23,https://www.hltv.org/matches/2374299/-
+iem-cologne-2024-faze-vs-vitality__faze-vs-vitality-m1-inferno,IEM Cologne 2024,Main/Playoffs,2024/8/12,FaZe,Vitality,13-8,FaZe Clan,21,https://www.hltv.org/matches/2374315/-
+liquid-vs-faze-m1-inferno,IEM Cologne 2024,Main/Playoffs,2024/8/13,FaZe,tl,9-13,FaZe Clan,22,https://www.hltv.org/matches/2374321/-
+natus-vincere-vs-saw-m3-inferno,IEM Cologne 2024,Main/Playoffs,2024/8/13,Natus Vincere,saw,6-13,Natus Vincere,19,https://www.hltv.org/matches/2374312/-
+saw-vs-faze-m1-inferno,IEM Cologne 2024,Main/Playoffs,2024/8/16,saw,FaZe,13-6,SAW,19,https://www.hltv.org/matches/2374323/-
+natus-vincere-vs-mouz-m1-inferno,IEM Cologne 2024,Main/Playoffs,2024/8/17,Natus Vincere,MOUZ,16-14,Natus Vincere,30,https://www.hltv.org/matches/2374324/-
+vitality-vs-natus-vincere-m4-inferno,IEM Cologne 2024,Main/Playoffs,2024/8/18,Natus Vincere,Vitality,13-9,Team Vitality,22,https://www.hltv.org/matches/2374326/-
+faze-vs-ninjas-in-pyjamas-m2-inferno,BLAST Premier Fall Final 2024,Groups,2024/8/2,FaZe,Ninjas in Pyjamas,13-11,NIP,24,https://www.hltv.org/matches/2373789/-
+astralis-vs-ninjas-in-pyjamas-m2-inferno,BLAST Premier Fall Final 2024,Groups,2024/8/4,Ninjas in Pyjamas,Astralis,13-5,Astralis,18,https://www.hltv.org/matches/2373795/-
+furia-vs-imperial-m3-inferno,IEM Cologne 2024,Main/Playoffs,2024/8/7,FURIA,Imperial,13-0,FURIA,13,https://www.hltv.org/matches/2373998/-
+pain-vs-liquid-m2-inferno,IEM Cologne 2024,Main/Playoffs,2024/8/7,paiN,tl,11-13,Team Liquid,24,https://www.hltv.org/matches/2373999/-
+saw-vs-big-m3-inferno,IEM Cologne 2024,Main/Playoffs,2024/8/8,BIG,saw,13-11,SAW,24,https://www.hltv.org/matches/2374266/-
+g2-vs-faze-m2-inferno,BLAST Premier Fall Final 2024,Main/Playoffs,2024/9/25,G2,FaZe,6-13,FaZe Clan,19,https://www.hltv.org/matches/2375766/-
+vitality-vs-astralis-m1-inferno,BLAST Premier Fall Final 2024,Main/Playoffs,2024/9/25,Vitality,Astralis,13-0,Vitality,13,https://www.hltv.org/matches/2375767/-
+faze-vs-liquid-m1-inferno,BLAST Premier Fall Final 2024,Main/Playoffs,2024/9/27,tl,FaZe,6-13,FaZe Clan,19,https://www.hltv.org/matches/2375774/-
+g2-vs-natus-vincere-m4-inferno,BLAST Premier Fall Final 2024,Main/Playoffs,2024/9/29,Natus Vincere,G2,13-7,G2 Esports,20,https://www.hltv.org/matches/2375777/-
+3dmax-vs-flyquest-m2-inferno,IEM Katowice 2025,Main/Playoffs,2025/1/29,3DMAX,flyquest,13-7,3DMAX,20,https://www.hltv.org/matches/2378417/-
+iem-katowice-2025-play-in-saw-vs-gamerlegion__saw-vs-gamerlegion-m2-inferno,IEM Katowice 2025,Main/Playoffs,2025/1/29,saw,gl,13-9,GamerLegion,22,https://www.hltv.org/matches/2378420/-
+iem-katowice-2025-play-in-wildcard-vs-big__wildcard-vs-big-m2-inferno,IEM Katowice 2025,Main/Playoffs,2025/1/29,wildcard,BIG,13-16,Wildcard,29,https://www.hltv.org/matches/2378421/-
+3dmax-vs-mibr-m1-inferno,IEM Katowice 2025,Main/Playoffs,2025/1/30,3DMAX,mibr,16-19,3DMAX,35,https://www.hltv.org/matches/2378691/-
+virtus-pro-vs-saw-m2-inferno,IEM Katowice 2025,Main/Playoffs,2025/1/30,Virtus.pro,saw,3-13,Virtus.pro,16,https://www.hltv.org/matches/2378688/-
+complexity-vs-liquid-m1-inferno,IEM Katowice 2025,Main/Playoffs,2025/1/31,tl,complexity,13-8,Team Liquid,21,https://www.hltv.org/matches/2378686/-
+liquid-vs-wildcard-m1-inferno,IEM Katowice 2025,Main/Playoffs,2025/1/31,wildcard,tl,12-16,Team Liquid,28,https://www.hltv.org/matches/2378694/-
+pain-vs-astralis-m1-inferno,IEM Katowice 2025,Main/Playoffs,2025/1/31,paiN,Astralis,13-7,Astralis,20,https://www.hltv.org/matches/2378695/-
+wildcard-vs-furia-m1-inferno,IEM Katowice 2025,Main/Playoffs,2025/1/31,wildcard,FURIA,13-4,Wildcard,17,https://www.hltv.org/matches/2378693/-
+faze-vs-ninjas-in-pyjamas-m1-inferno,StarLadder Budapest Major 2025,Stage 2,2025/11/30,FaZe,Ninjas in Pyjamas,16-12,FaZe Clan,28,https://www.hltv.org/matches/2388078/-
+mibr-vs-liquid-m1-inferno,StarLadder Budapest Major 2025,Stage 2,2025/11/30,tl,mibr,13-5,Team Liquid,18,https://www.hltv.org/matches/2388079/-
+liquid-vs-tyloo-m3-inferno,StarLadder Budapest Major 2025,Stage 2,2025/12/1,tyloo,tl,14-16,Team Liquid,30,https://www.hltv.org/matches/2388087/-
+furia-vs-natus-vincere-m2-inferno,StarLadder Budapest Major 2025,Playoffs,2025/12/12,Natus Vincere,FURIA,16-13,FURIA,29,https://www.hltv.org/matches/2388127/-
+mouz-vs-faze-m2-inferno,StarLadder Budapest Major 2025,Playoffs,2025/12/12,MOUZ,FaZe,13-2,FaZe Clan,15,https://www.hltv.org/matches/2388126/-
+starladder-budapest-major-2025-faze-vs-natus-vincere__faze-vs-natus-vincere-m3-inferno,StarLadder Budapest Major 2025,Playoffs,2025/12/13,FaZe,Natus Vincere,13-8,FaZe Clan,21,https://www.hltv.org/matches/2388129/-
+starladder-budapest-major-2025-vitality-vs-faze__vitality-vs-faze-m3-inferno,StarLadder Budapest Major 2025,Playoffs,2025/12/14,Vitality,FaZe,9-13,Team Vitality,22,https://www.hltv.org/matches/2388130/-
+passion-ua-vs-m80-m2-inferno,StarLadder Budapest Major 2025,Stage 2,2025/12/2,passion ua,m80,5-13,Passion UA,18,https://www.hltv.org/matches/2388088/-
+liquid-vs-the-mongolz-inferno,StarLadder Budapest Major 2025,Stage 3,2025/12/4,The MongolZ,tl,9-13,The MongolZ,22,https://www.hltv.org/matches/2388104/-
+furia-vs-g2-m1-inferno,StarLadder Budapest Major 2025,Stage 3,2025/12/5,FURIA,G2,6-13,FURIA,19,https://www.hltv.org/matches/2388113/-
+parivision-vs-3dmax-m2-inferno,StarLadder Budapest Major 2025,Stage 3,2025/12/5,parivision,3DMAX,8-13,3DMAX,21,https://www.hltv.org/matches/2388114/-
+vitality-vs-b8-inferno,StarLadder Budapest Major 2025,Stage 3,2025/12/5,b8,Vitality,2-13,Team Vitality,15,https://www.hltv.org/matches/2388108/-
+3dmax-vs-faze-m2-inferno,StarLadder Budapest Major 2025,Stage 3,2025/12/6,FaZe,3DMAX,13-5,FaZe Clan,18,https://www.hltv.org/matches/2388120/-
+mouz-vs-falcons-m2-inferno,StarLadder Budapest Major 2025,Stage 3,2025/12/6,MOUZ,Falcons,6-13,MOUZ,19,https://www.hltv.org/matches/2388117/-
+natus-vincere-vs-vitality-m1-inferno,StarLadder Budapest Major 2025,Stage 3,2025/12/6,Natus Vincere,Vitality,13-11,Team Vitality,24,https://www.hltv.org/matches/2388115/-
+passion-ua-vs-imperial-m1-inferno,StarLadder Budapest Major 2025,Stage 3,2025/12/6,Imperial,passion ua,8-13,Passion UA,21,https://www.hltv.org/matches/2388118/-
+g2-vs-falcons-m2-inferno,StarLadder Budapest Major 2025,Stage 3,2025/12/7,G2,Falcons,4-13,Team Falcons,17,https://www.hltv.org/matches/2388123/-
+g2-vs-virtus-pro-m1-inferno,IEM Katowice 2025,Main/Playoffs,2025/2/1,G2,Virtus.pro,13-9,Virtus.pro,22,https://www.hltv.org/matches/2378780/-
+iem-katowice-2025-falcons-vs-eternal-fire__falcons-vs-eternal-fire-m1-inferno,IEM Katowice 2025,Main/Playoffs,2025/2/1,Falcons,ef,13-7,Eternal Fire,20,https://www.hltv.org/matches/2378781/-
+mouz-vs-gamerlegion-m1-inferno,IEM Katowice 2025,Main/Playoffs,2025/2/1,MOUZ,gl,13-9,GamerLegion,22,https://www.hltv.org/matches/2378786/-
+vitality-vs-3dmax-m1-inferno,IEM Katowice 2025,Main/Playoffs,2025/2/1,Vitality,3DMAX,19-16,Team Vitality,35,https://www.hltv.org/matches/2378782/-
+3dmax-vs-virtus-pro-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/14,3DMAX,Virtus.pro,13-6,3DMAX,19,https://www.hltv.org/matches/2379327/-
+astralis-vs-pain-m1-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/14,paiN,Astralis,7-13,Astralis,20,https://www.hltv.org/matches/2379332/-
+falcons-vs-flyquest-m1-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/14,Falcons,flyquest,13-9,Team Falcons,22,https://www.hltv.org/matches/2379329/-
+big-vs-flyquest-m1-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,BIG,flyquest,1-13,FlyQuest,14,https://www.hltv.org/matches/2379335/-
+complexity-vs-virtus-pro-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,Complexity,Virtus.pro,13-16,Virtus.pro,29,https://www.hltv.org/matches/2379337/-
+faze-vs-eternal-fire-m3-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,FaZe,ef,10-13,FaZe Clan,23,https://www.hltv.org/matches/2379338/-
+mouz-vs-3dmax-m1-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,MOUZ,3DMAX,13-9,MOUZ,22,https://www.hltv.org/matches/2379334/-
+pgl-cluj-napoca-2025-saw-vs-astralis__saw-vs-astralis-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,saw,Astralis,6-13,Astralis,19,https://www.hltv.org/matches/2379341/-
+the-mongolz-vs-wildcard-m1-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,The MongolZ,wildcard,16-19,The MongolZ,35,https://www.hltv.org/matches/2379336/-
+3dmax-vs-mibr-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,3DMAX,mibr,13-11,3DMAX,24,https://www.hltv.org/matches/2379343/-
+eternal-fire-vs-big-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,ef,BIG,9-13,Eternal Fire,22,https://www.hltv.org/matches/2379342/-
+pain-vs-the-mongolz-m1-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,paiN,The MongolZ,16-13,The MongolZ,29,https://www.hltv.org/matches/2379348/-
+pgl-cluj-napoca-2025-wildcard-vs-virtuspro__wildcard-vs-virtus-pro-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,wildcard,Virtus.pro,10-13,Virtus.pro,23,https://www.hltv.org/matches/2379345/-
+saw-vs-flyquest-m1-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,saw,flyquest,14-16,SAW,30,https://www.hltv.org/matches/2379349/-
+3dmax-vs-eternal-fire-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,3DMAX,ef,13-5,3DMAX,18,https://www.hltv.org/matches/2379352/-
+astralis-vs-mibr-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,Astralis,mibr,16-13,MIBR,29,https://www.hltv.org/matches/2379353/-
+complexity-vs-saw-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,Complexity,saw,4-13,SAW,17,https://www.hltv.org/matches/2379355/-
+pain-vs-virtus-pro-m1-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,paiN,Virtus.pro,9-13,paiN Gaming,22,https://www.hltv.org/matches/2379354/-
+pgl-cluj-napoca-2025-wildcard-vs-big__wildcard-vs-big-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,wildcard,BIG,13-11,Wildcard,24,https://www.hltv.org/matches/2379351/-
+astralis-vs-big-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/18,Astralis,BIG,13-8,Astralis,21,https://www.hltv.org/matches/2379356/-
+mouz-vs-virtus-pro-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/18,MOUZ,Virtus.pro,16-13,Virtus.pro,29,https://www.hltv.org/matches/2379357/-
+3dmax-vs-big-m2-inferno,IEM Katowice 2025,Main/Playoffs,2025/2/2,3DMAX,BIG,6-13,3DMAX,19,https://www.hltv.org/matches/2378900/-
+pain-vs-mouz-m1-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/21,paiN,MOUZ,13-11,MOUZ,24,https://www.hltv.org/matches/2379359/-
+the-mongolz-vs-astralis-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/21,Astralis,The MongolZ,16-12,Astralis,28,https://www.hltv.org/matches/2379360/-
+mouz-vs-astralis-m1-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/22,MOUZ,Astralis,16-14,MOUZ,30,https://www.hltv.org/matches/2379363/-
+astralis-vs-faze-m2-inferno,PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/23,FaZe,Astralis,8-13,Astralis,21,https://www.hltv.org/matches/2379365/-
+iem-katowice-2025-eternal-fire-vs-3dmax__eternal-fire-vs-3dmax-m1-inferno,IEM Katowice 2025,Main/Playoffs,2025/2/3,ef,3DMAX,4-13,3DMAX,17,https://www.hltv.org/matches/2378906/-
+virtus-pro-vs-vitality-m2-inferno,IEM Katowice 2025,Main/Playoffs,2025/2/4,Virtus.pro,Vitality,13-5,Team Vitality,18,https://www.hltv.org/matches/2378910/-
+esl-pro-league-season-21-saw-vs-gamerlegion__saw-vs-gamerlegion-m2-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/10,saw,gl,13-9,GamerLegion,22,https://www.hltv.org/matches/2380064/-
+eternal-fire-vs-pain-m2-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/10,ef,paiN,7-13,Eternal Fire,20,https://www.hltv.org/matches/2380066/-
+esl-pro-league-season-21-falcons-vs-eternal-fire__falcons-vs-eternal-fire-m1-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/11,Falcons,ef,8-13,Eternal Fire,21,https://www.hltv.org/matches/2380070/-
+g2-vs-gamerlegion-m1-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/11,G2,GamerLegion,11-13,G2 Esports,24,https://www.hltv.org/matches/2380071/-
+liquid-vs-3dmax-m1-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/11,Team Liquid,3DMAX,13-11,Team Liquid,24,https://www.hltv.org/matches/2380069/-
+esl-pro-league-season-21-eternal-fire-vs-3dmax__eternal-fire-vs-3dmax-m1-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/7,ef,3DMAX,10-13,3DMAX,23,https://www.hltv.org/matches/2380045/-
+falcons-vs-liquid-m1-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/7,Falcons,Team Liquid,16-14,Team Falcons,30,https://www.hltv.org/matches/2380046/-
+g2-vs-pain-m2-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/7,G2,paiN,8-13,G2 Esports,21,https://www.hltv.org/matches/2380043/-
+mouz-vs-furia-m2-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/7,MOUZ,FURIA,13-16,FURIA,29,https://www.hltv.org/matches/2380042/-
+natus-vincere-vs-saw-m1-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/7,Natus Vincere,saw,13-3,Natus Vincere,16,https://www.hltv.org/matches/2380041/-
+vitality-vs-mibr-m2-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/7,Vitality,mibr,3-13,Team Vitality,16,https://www.hltv.org/matches/2380040/-
+eternal-fire-vs-mibr-m2-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/8,ef,mibr,8-13,Eternal Fire,21,https://www.hltv.org/matches/2380048/-
+gamerlegion-vs-pain-m2-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/8,gl,paiN,13-16,GamerLegion,29,https://www.hltv.org/matches/2380050/-
+natus-vincere-vs-tyloo-m1-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/8,Natus Vincere,tyloo,10-13,TYLOO,23,https://www.hltv.org/matches/2380047/-
+falcons-vs-3dmax-m1-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/9,Falcons,3DMAX,13-11,3DMAX,24,https://www.hltv.org/matches/2380056/-
+furia-vs-mibr-m3-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/9,FURIA,mibr,13-1,FURIA,14,https://www.hltv.org/matches/2380061/-
+gamerlegion-vs-tyloo-m2-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/9,gl,tyloo,22-20,GamerLegion,42,https://www.hltv.org/matches/2380055/-
+liquid-vs-eternal-fire-m1-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/9,tl,ef,11-13,Team Liquid,24,https://www.hltv.org/matches/2380062/-
+vitality-vs-mouz-m1-inferno,ESL Pro League Season 21,Main/Playoffs,2025/3/9,Vitality,MOUZ,13-6,Team Vitality,19,https://www.hltv.org/matches/2380059/-
+iem-dallas-2025-g2-vs-lynn-vision__g2-vs-lynn-vision-m2-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/19,lvg,G2,9-13,G2 Esports,22,https://www.hltv.org/matches/2382378/-
+liquid-vs-faze-m2-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/19,tl,FaZe,13-10,Team Liquid,23,https://www.hltv.org/matches/2382380/-
+3dmax-vs-legacy-m1-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/20,legacy,3DMAX,17-19,3DMAX,36,https://www.hltv.org/matches/2382677/-
+g2-vs-the-mongolz-m1-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/20,The MongolZ,G2,4-13,The MongolZ,17,https://www.hltv.org/matches/2382676/-
+iem-dallas-2025-liquid-vs-mouz__liquid-vs-mouz-m1-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/20,MOUZ,tl,8-13,MOUZ,21,https://www.hltv.org/matches/2382683/-
+nrg-vs-aurora-m1-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/20,Aurora,nrg,13-4,Aurora,17,https://www.hltv.org/matches/2382686/-
+3dmax-vs-g2-m1-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/21,G2,3DMAX,13-3,G2 Esports,16,https://www.hltv.org/matches/2382679/-
+liquid-vs-aurora-m1-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/21,tl,Aurora,13-7,Aurora,20,https://www.hltv.org/matches/2382688/-
+vitality-vs-the-mongolz-m1-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/21,Vitality,The MongolZ,13-10,Team Vitality,23,https://www.hltv.org/matches/2382681/-
+falcons-vs-gamerlegion-m3-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/23,Falcons,gl,8-13,Team Falcons,21,https://www.hltv.org/matches/2382692/-
+mouz-vs-the-mongolz-m1-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/24,MOUZ,The MongolZ,13-11,MOUZ,24,https://www.hltv.org/matches/2382693/-
+vitality-vs-falcons-m3-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/24,Vitality,Falcons,13-11,Team Vitality,24,https://www.hltv.org/matches/2382694/-
+mouz-vs-vitality-m3-inferno,IEM Dallas 2025,Main/Playoffs,2025/5/25,Vitality,MOUZ,13-8,Team Vitality,21,https://www.hltv.org/matches/2382695/-
+3dmax-vs-natus-vincere-inferno,BLAST Austin Major 2025,Stage 3,2025/6/12,Natus Vincere,3DMAX,14-16,Natus Vincere,30,https://www.hltv.org/matches/2382591/-
+the-mongolz-vs-furia-inferno,BLAST Austin Major 2025,Stage 3,2025/6/12,The MongolZ,FURIA,11-13,FURIA,24,https://www.hltv.org/matches/2382436/-
+vitality-vs-legacy-inferno,BLAST Austin Major 2025,Stage 3,2025/6/12,Vitality,legacy,3-13,Legacy,16,https://www.hltv.org/matches/2382432/-
+aurora-vs-g2-inferno,BLAST Austin Major 2025,Stage 3,2025/6/13,Aurora,G2,4-13,G2 Esports,17,https://www.hltv.org/matches/2382598/-
+3dmax-vs-pain-m1-inferno,BLAST Austin Major 2025,Stage 3,2025/6/14,3DMAX,paiN,13-9,paiN Gaming,22,https://www.hltv.org/matches/2382605/-
+aurora-vs-mouz-m2-inferno,BLAST Austin Major 2025,Stage 3,2025/6/14,Aurora,MOUZ,11-13,Aurora,24,https://www.hltv.org/matches/2382607/-
+legacy-vs-lynn-vision-m2-inferno,BLAST Austin Major 2025,Stage 3,2025/6/14,legacy,lvg,3-13,Legacy,16,https://www.hltv.org/matches/2382604/-
+natus-vincere-vs-g2-m3-inferno,BLAST Austin Major 2025,Stage 3,2025/6/14,Natus Vincere,G2,19-16,Natus Vincere,35,https://www.hltv.org/matches/2382609/-
+legacy-vs-mouz-m2-inferno,BLAST Austin Major 2025,Stage 3,2025/6/15,legacy,MOUZ,11-13,MOUZ,24,https://www.hltv.org/matches/2382610/-
+virtus-pro-vs-pain-m2-inferno,BLAST Austin Major 2025,Stage 3,2025/6/15,Virtus.pro,paiN,13-6,Virtus.Pro,19,https://www.hltv.org/matches/2382612/-
+blasttv-austin-major-2025-furia-vs-pain__furia-vs-pain-m3-inferno,BLAST Austin Major 2025,Playoffs,2025/6/19,paiN,FURIA,12-16,paiN Gaming,28,https://www.hltv.org/matches/2382613/-
+mouz-vs-vitality-m2-inferno,BLAST Austin Major 2025,Playoffs,2025/6/21,MOUZ,Vitality,13-4,MOUZ,17,https://www.hltv.org/matches/2382618/-
+vitality-vs-the-mongolz-m3-inferno,BLAST Austin Major 2025,Playoffs,2025/6/22,Vitality,The MongolZ,6-13,Vitality,19,https://www.hltv.org/matches/2382619/-
+3dmax-vs-legacy-inferno,BLAST Austin Major 2025,Stage 2,2025/6/7,3DMAX,legacy,13-7,Legacy,20,https://www.hltv.org/matches/2382443/-
+virtus-pro-vs-b8-inferno,BLAST Austin Major 2025,Stage 2,2025/6/7,Virtus.pro,b8,13-3,Virtus.Pro,16,https://www.hltv.org/matches/2382441/-
+virtus-pro-vs-og-inferno,BLAST Austin Major 2025,Stage 2,2025/6/7,Virtus.pro,og,2-13,Virtus.Pro,15,https://www.hltv.org/matches/2382429/-
+falcons-vs-mibr-m3-inferno,BLAST Austin Major 2025,Stage 2,2025/6/9,Falcons,mibr,22-20,MIBR,42,https://www.hltv.org/matches/2382582/-
+faze-vs-3dmax-m2-inferno,BLAST Austin Major 2025,Stage 2,2025/6/9,FaZe,3DMAX,9-13,3DMAX,22,https://www.hltv.org/matches/2382583/-
+astralis-vs-b8-m2-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/23,Astralis,b8,12-16,Astralis,28,https://www.hltv.org/matches/2383755/-
+faze-vs-big-m1-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/23,FaZe,BIG,7-13,FaZe Clan,20,https://www.hltv.org/matches/2383749/-
+gamerlegion-vs-complexity-m1-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/23,gl,Complexity,3-13,GamerLegion,16,https://www.hltv.org/matches/2383753/-
+tyloo-vs-virtuspro-m1-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/23,tyloo,Virtus.pro,7-13,Virtus.pro,20,https://www.hltv.org/matches/2383754/-
+complexity-vs-tyloo-m2-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/24,Complexity,tyloo,6-13,TYLOO,19,https://www.hltv.org/matches/2383781/-
+3dmax-vs-tyloo-m1-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/25,3DMAX,tyloo,20-22,3DMAX,42,https://www.hltv.org/matches/2383785/-
+astralis-vs-pain-m3-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/25,Astralis,paiN,13-11,Astralis,24,https://www.hltv.org/matches/2383783/-
+furia-vs-astralis-m1-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/27,Astralis,FURIA,13-3,FURIA,16,https://www.hltv.org/matches/2383826/-
+iem-cologne-2025-g2-vs-vitality__g2-vs-vitality-m1-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/27,Vitality,G2,5-13,Team Vitality,18,https://www.hltv.org/matches/2383824/-
+3dmax-vs-g2-m2-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/28,G2,3DMAX,13-6,G2 Esports,19,https://www.hltv.org/matches/2383829/-
+faze-vs-natus-vincere-m2-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/29,FaZe,Natus Vincere,10-13,Natus Vincere,23,https://www.hltv.org/matches/2383839/-
+ninjas-in-pyjamas-vs-natus-vincere-m2-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/29,Natus Vincere,Ninjas in Pyjamas,13-3,Natus Vincere,16,https://www.hltv.org/matches/2383837/-
+the-mongolz-vs-vitality-m2-inferno,IEM Cologne 2025,Main/Playoffs,2025/7/29,Vitality,The MongolZ,8-13,Team Vitality,21,https://www.hltv.org/matches/2383830/-
+mouz-vs-furia-m3-inferno,IEM Cologne 2025,Main/Playoffs,2025/8/1,MOUZ,FURIA,13-11,MOUZ,24,https://www.hltv.org/matches/2383840/-
