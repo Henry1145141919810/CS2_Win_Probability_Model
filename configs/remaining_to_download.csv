@@ -1,35 +1,17 @@
 event,stage,series_date,team_a,team_b,inferno_score_a,inferno_score_b,hltv_match_url,liquipedia_page
-BLAST Austin Major 2025,Playoffs,2025/6/19,paiN,FURIA,12,12,https://www.hltv.org/matches/2382613/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Playoffs
-BLAST Austin Major 2025,Playoffs,2025/6/21,MOUZ,Vitality,13,4,https://www.hltv.org/matches/2382618/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Playoffs
-BLAST Austin Major 2025,Playoffs,2025/6/22,Vitality,The MongolZ,13,6,https://www.hltv.org/matches/2382619/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Playoffs
 BLAST Austin Major 2025,Stage 1,2025/6/3,b8,Imperial,13,11,https://www.hltv.org/matches/2382298/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
-BLAST Austin Major 2025,Stage 1,2025/6/3,wildcard,metizport,13,1,https://www.hltv.org/matches/2382302/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
-BLAST Austin Major 2025,Stage 1,2025/6/3,b8,og,13,9,https://www.hltv.org/matches/2382345/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
 BLAST Austin Major 2025,Stage 1,2025/6/3,Complexity,fluxo,13,9,https://www.hltv.org/matches/2382349/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
-BLAST Austin Major 2025,Stage 1,2025/6/4,b8,wildcard,13,2,https://www.hltv.org/matches/2382357/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
+BLAST Austin Major 2025,Stage 1,2025/6/3,b8,og,13,9,https://www.hltv.org/matches/2382345/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
+BLAST Austin Major 2025,Stage 1,2025/6/3,wildcard,metizport,13,1,https://www.hltv.org/matches/2382302/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
 BLAST Austin Major 2025,Stage 1,2025/6/4,nrg,Complexity,13,9,https://www.hltv.org/matches/2382354/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
-BLAST Austin Major 2025,Stage 1,2025/6/5,Complexity,tyloo,11,13,https://www.hltv.org/matches/2382361/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
+BLAST Austin Major 2025,Stage 1,2025/6/4,b8,wildcard,13,2,https://www.hltv.org/matches/2382357/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
 BLAST Austin Major 2025,Stage 1,2025/6/5,lvg,chinggis warriors,13,9,https://www.hltv.org/matches/2382364/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
-BLAST Austin Major 2025,Stage 1,2025/6/5,flyquest,nemiga,11,13,https://www.hltv.org/matches/2382366/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
+BLAST Austin Major 2025,Stage 1,2025/6/5,Complexity,tyloo,11,13,https://www.hltv.org/matches/2382361/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
 BLAST Austin Major 2025,Stage 1,2025/6/5,Imperial,legacy,2,13,https://www.hltv.org/matches/2382362/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
-BLAST Austin Major 2025,Stage 1,2025/6/6,wildcard,legacy,10,13,https://www.hltv.org/matches/2382368/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
+BLAST Austin Major 2025,Stage 1,2025/6/5,flyquest,nemiga,11,13,https://www.hltv.org/matches/2382366/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
 BLAST Austin Major 2025,Stage 1,2025/6/6,fq,tyloo,13,10,https://www.hltv.org/matches/2382369/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
+BLAST Austin Major 2025,Stage 1,2025/6/6,wildcard,legacy,10,13,https://www.hltv.org/matches/2382368/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
 BLAST Austin Major 2025,Stage 1,2025/6/6,nrg,lvg,8,13,https://www.hltv.org/matches/2382367/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_1
-BLAST Austin Major 2025,Stage 2,2025/6/7,3DMAX,legacy,7,13,https://www.hltv.org/matches/2382443/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_2
-BLAST Austin Major 2025,Stage 2,2025/6/7,Virtus.pro,b8,13,3,https://www.hltv.org/matches/2382441/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_2
-BLAST Austin Major 2025,Stage 2,2025/6/7,Virtus.pro,og,13,2,https://www.hltv.org/matches/2382429/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_2
-BLAST Austin Major 2025,Stage 2,2025/6/9,Falcons,mibr,12,12,https://www.hltv.org/matches/2382582/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_2
-BLAST Austin Major 2025,Stage 2,2025/6/9,FaZe,3DMAX,9,13,https://www.hltv.org/matches/2382583/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_2
-BLAST Austin Major 2025,Stage 3,2025/6/12,The MongolZ,FURIA,11,13,https://www.hltv.org/matches/2382436/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_3
-BLAST Austin Major 2025,Stage 3,2025/6/12,Vitality,legacy,3,13,https://www.hltv.org/matches/2382432/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_3
-BLAST Austin Major 2025,Stage 3,2025/6/12,Natus Vincere,3DMAX,12,12,https://www.hltv.org/matches/2382591/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_3
-BLAST Austin Major 2025,Stage 3,2025/6/13,Aurora,G2,4,13,https://www.hltv.org/matches/2382598/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_3
-BLAST Austin Major 2025,Stage 3,2025/6/14,Aurora,MOUZ,13,11,https://www.hltv.org/matches/2382607/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_3
-BLAST Austin Major 2025,Stage 3,2025/6/14,3DMAX,paiN,9,13,https://www.hltv.org/matches/2382605/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_3
-BLAST Austin Major 2025,Stage 3,2025/6/14,Natus Vincere,G2,12,12,https://www.hltv.org/matches/2382609/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_3
-BLAST Austin Major 2025,Stage 3,2025/6/14,legacy,lvg,13,3,https://www.hltv.org/matches/2382604/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_3
-BLAST Austin Major 2025,Stage 3,2025/6/15,Virtus.pro,paiN,13,6,https://www.hltv.org/matches/2382612/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_3
-BLAST Austin Major 2025,Stage 3,2025/6/15,legacy,MOUZ,11,13,https://www.hltv.org/matches/2382610/-,https://liquipedia.net/counterstrike/BLAST/Major/2025/Austin/Stage_3
 BLAST Premier Fall Final 2024,Groups,2024/7/31,G2,Ninjas in Pyjamas,13,11,https://www.hltv.org/matches/2373776/-,https://liquipedia.net/counterstrike/BLAST/Premier/2024/Fall/Groups
 BLAST Premier Fall Final 2024,Groups,2024/8/1,Natus Vincere,Team Liquid,11,13,https://www.hltv.org/matches/2373784/-,https://liquipedia.net/counterstrike/BLAST/Premier/2024/Fall/Groups
 BLAST Premier Fall Final 2024,Groups,2024/8/3,G2,Ninjas in Pyjamas,13,8,https://www.hltv.org/matches/2373793/-,https://liquipedia.net/counterstrike/BLAST/Premier/2024/Fall/Groups
@@ -41,127 +23,22 @@ ESL Pro League Season 19,Main/Playoffs,2024/1/23,paiN,w7m,13,9,https://www.hltv.
 ESL Pro League Season 19,Main/Playoffs,2024/1/23,bestia,Imperial,12,12,https://www.hltv.org/matches/2369444/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_19/South_America
 ESL Pro League Season 20,Main/Playoffs,2024/6/11,sinners,3DMAX,8,13,https://www.hltv.org/matches/2373120/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_20/Europe
 ESL Pro League Season 20,Main/Playoffs,2024/6/9,3DMAX,sinners,5,13,https://www.hltv.org/matches/2373100/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_20/Europe
-ESL Pro League Season 21,Main/Playoffs,2025/3/10,saw,gl,9,13,https://www.hltv.org/matches/2380064/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/10,ef,paiN,13,7,https://www.hltv.org/matches/2380066/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/11,Team Liquid,3DMAX,13,11,https://www.hltv.org/matches/2380069/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/11,Falcons,ef,8,13,https://www.hltv.org/matches/2380070/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/11,G2,GamerLegion,13,11,https://www.hltv.org/matches/2380071/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,The MongolZ,gl,13,9,https://www.hltv.org/matches/2380044/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,Vitality,mibr,13,3,https://www.hltv.org/matches/2380040/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,Natus Vincere,saw,13,3,https://www.hltv.org/matches/2380041/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,MOUZ,FURIA,12,12,https://www.hltv.org/matches/2380042/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,G2,paiN,13,8,https://www.hltv.org/matches/2380043/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,Falcons,Team Liquid,12,12,https://www.hltv.org/matches/2380046/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/7,ef,3DMAX,10,13,https://www.hltv.org/matches/2380045/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/8,Natus Vincere,tyloo,10,13,https://www.hltv.org/matches/2380047/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/8,ef,mibr,13,8,https://www.hltv.org/matches/2380048/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/8,gl,paiN,12,12,https://www.hltv.org/matches/2380050/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/9,Vitality,MOUZ,13,6,https://www.hltv.org/matches/2380059/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/9,Falcons,3DMAX,11,13,https://www.hltv.org/matches/2380056/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/9,tl,ef,13,11,https://www.hltv.org/matches/2380062/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/9,gl,tyloo,12,12,https://www.hltv.org/matches/2380055/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 21,Main/Playoffs,2025/3/9,FURIA,mibr,13,1,https://www.hltv.org/matches/2380061/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21/Stage_2
-ESL Pro League Season 22,Main/Playoffs,2025/7/8,z10,mana esports,13,5,,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_22/Europe/Open
-ESL Pro League Season 22,Main/Playoffs,2025/7/8,esc,cardigans gaming,13,8,,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_22/Europe/Open
 ESL Pro League Season 22,Main/Playoffs,2025/7/8,aab,tpudcatb tpu,13,5,,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_22/Europe/Open
-ESL Pro League Season 22,Main/Playoffs,2025/7/8,z10,infinite.ro,13,3,,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_22/Europe/Open
 ESL Pro League Season 22,Main/Playoffs,2025/7/8,team naturalg1337,nuclear tigeres,2,13,,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_22/Europe/Open
+ESL Pro League Season 22,Main/Playoffs,2025/7/8,z10,infinite.ro,13,3,,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_22/Europe/Open
+ESL Pro League Season 22,Main/Playoffs,2025/7/8,esc,cardigans gaming,13,8,,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_22/Europe/Open
+ESL Pro League Season 22,Main/Playoffs,2025/7/8,z10,mana esports,13,5,,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_22/Europe/Open
 ESL Pro League Season 22,Main/Playoffs,2025/7/9,nuclear tigeres,1win,11,13,https://www.hltv.org/matches/2383652/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_22/Europe/Open
 ESL Pro League Season 22,Main/Playoffs,2025/7/9,z10,nuclear tigeres,11,13,https://www.hltv.org/matches/2383646/-,https://liquipedia.net/counterstrike/ESL/Pro_League/Season_22/Europe/Open
-IEM Cologne 2024,Main/Playoffs,2024/8/7,flyquest,BIG,10,13,https://www.hltv.org/matches/2374000/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2024/Cologne
-IEM Cologne 2024,Main/Playoffs,2024/8/7,paiN,tl,11,13,https://www.hltv.org/matches/2373999/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2024/Cologne
-IEM Cologne 2024,Main/Playoffs,2024/8/8,BIG,saw,11,13,https://www.hltv.org/matches/2374266/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2024/Cologne
-IEM Cologne 2024,Main/Playoffs,2024/8/9,Imperial,paiN,7,13,https://www.hltv.org/matches/2374269/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2024/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/23,FaZe,BIG,13,7,https://www.hltv.org/matches/2383749/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/23,gl,Complexity,13,3,https://www.hltv.org/matches/2383753/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/23,tyloo,Virtus.pro,7,13,https://www.hltv.org/matches/2383754/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/23,Astralis,b8,12,12,https://www.hltv.org/matches/2383755/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
 IEM Cologne 2025,Main/Playoffs,2025/7/23,fq,FURIA,7,13,https://www.hltv.org/matches/2383756/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/24,FaZe,Team Liquid,10,13,https://www.hltv.org/matches/2383775/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/24,Complexity,tyloo,6,13,https://www.hltv.org/matches/2383781/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
 IEM Cologne 2025,Main/Playoffs,2025/7/24,b8,fq,12,12,https://www.hltv.org/matches/2383782/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/25,Astralis,paiN,13,11,https://www.hltv.org/matches/2383783/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/25,3DMAX,tyloo,12,12,https://www.hltv.org/matches/2383785/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/25,BIG,paiN,11,13,https://www.hltv.org/matches/2383779/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
 IEM Cologne 2025,Main/Playoffs,2025/7/26,FURIA,G2,8,13,https://www.hltv.org/matches/2383758/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/27,MOUZ,tl,13,7,https://www.hltv.org/matches/2383761/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/27,Vitality,G2,13,5,https://www.hltv.org/matches/2383824/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/27,gl,3DMAX,11,13,https://www.hltv.org/matches/2383827/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/27,Astralis,FURIA,3,13,https://www.hltv.org/matches/2383826/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/28,G2,3DMAX,13,6,https://www.hltv.org/matches/2383829/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/29,Vitality,The MongolZ,13,8,https://www.hltv.org/matches/2383830/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
 IEM Cologne 2025,Main/Playoffs,2025/7/29,FURIA,G2,12,12,https://www.hltv.org/matches/2383831/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/29,Natus Vincere,Ninjas in Pyjamas,13,3,https://www.hltv.org/matches/2383837/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/7/29,FaZe,Natus Vincere,10,13,https://www.hltv.org/matches/2383839/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/8/1,MOUZ,FURIA,13,11,https://www.hltv.org/matches/2383840/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
-IEM Cologne 2025,Main/Playoffs,2025/8/1,The MongolZ,Natus Vincere,12,12,https://www.hltv.org/matches/2383841/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Cologne
 IEM Dallas 2024,Main/Playoffs,2024/6/2,team north america,team iem veterans,12,12,https://www.hltv.org/matches/2372663/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2024/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/19,Vitality,legacy,13,5,https://www.hltv.org/matches/2382375/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/19,lvg,G2,9,13,https://www.hltv.org/matches/2382378/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/19,tl,FaZe,13,10,https://www.hltv.org/matches/2382380/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/20,legacy,3DMAX,12,12,https://www.hltv.org/matches/2382677/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/20,The MongolZ,G2,13,4,https://www.hltv.org/matches/2382676/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/20,Aurora,nrg,13,4,https://www.hltv.org/matches/2382686/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/20,MOUZ,tl,13,8,https://www.hltv.org/matches/2382683/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/21,tl,Aurora,7,13,https://www.hltv.org/matches/2382688/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/21,G2,3DMAX,13,3,https://www.hltv.org/matches/2382679/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/21,Vitality,The MongolZ,13,10,https://www.hltv.org/matches/2382681/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/23,Falcons,gl,13,8,https://www.hltv.org/matches/2382692/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/24,MOUZ,The MongolZ,13,11,https://www.hltv.org/matches/2382693/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/24,Vitality,Falcons,13,11,https://www.hltv.org/matches/2382694/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Dallas 2025,Main/Playoffs,2025/5/25,Vitality,MOUZ,13,8,https://www.hltv.org/matches/2382695/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Dallas
-IEM Katowice 2025,Main/Playoffs,2025/1/29,saw,gl,9,13,https://www.hltv.org/matches/2378420/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/1/29,wildcard,BIG,12,12,https://www.hltv.org/matches/2378421/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/1/30,3DMAX,mibr,12,12,https://www.hltv.org/matches/2378691/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/1/30,paiN,gl,3,13,https://www.hltv.org/matches/2378692/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/1/30,flyquest,Astralis,11,13,https://www.hltv.org/matches/2378687/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/1/30,Virtus.pro,saw,13,3,https://www.hltv.org/matches/2378688/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
 IEM Katowice 2025,Main/Playoffs,2025/1/30,BIG,imperial female,13,4,https://www.hltv.org/matches/2378689/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/1/31,wildcard,FURIA,13,4,https://www.hltv.org/matches/2378693/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/1/31,tl,complexity,13,8,https://www.hltv.org/matches/2378686/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/1/31,wildcard,tl,12,12,https://www.hltv.org/matches/2378694/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/1/31,paiN,Astralis,7,13,https://www.hltv.org/matches/2378695/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/2/1,G2,Virtus.pro,9,13,https://www.hltv.org/matches/2378780/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/2/1,MOUZ,gl,9,13,https://www.hltv.org/matches/2378786/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/2/1,Vitality,3DMAX,12,12,https://www.hltv.org/matches/2378782/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/2/1,Falcons,ef,7,13,https://www.hltv.org/matches/2378781/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/2/2,3DMAX,BIG,13,6,https://www.hltv.org/matches/2378900/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/2/3,ef,3DMAX,4,13,https://www.hltv.org/matches/2378906/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/2/3,FaZe,G2,10,13,https://www.hltv.org/matches/2378905/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/2/3,Astralis,FURIA,13,10,https://www.hltv.org/matches/2378901/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-IEM Katowice 2025,Main/Playoffs,2025/2/4,Virtus.pro,Vitality,5,13,https://www.hltv.org/matches/2378910/-,https://liquipedia.net/counterstrike/Intel_Extreme_Masters/2025/Katowice
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/14,3DMAX,Virtus.pro,13,6,https://www.hltv.org/matches/2379327/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/14,Falcons,flyquest,13,9,https://www.hltv.org/matches/2379329/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/14,paiN,Astralis,7,13,https://www.hltv.org/matches/2379332/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,saw,Astralis,6,13,https://www.hltv.org/matches/2379341/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,MOUZ,3DMAX,13,9,https://www.hltv.org/matches/2379334/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,The MongolZ,wildcard,12,12,https://www.hltv.org/matches/2379336/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,FaZe,ef,13,10,https://www.hltv.org/matches/2379338/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,BIG,flyquest,1,13,https://www.hltv.org/matches/2379335/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/15,Complexity,Virtus.pro,12,12,https://www.hltv.org/matches/2379337/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,wildcard,Virtus.pro,10,13,https://www.hltv.org/matches/2379345/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,saw,flyquest,12,12,https://www.hltv.org/matches/2379349/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,paiN,The MongolZ,12,12,https://www.hltv.org/matches/2379348/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,ef,BIG,13,9,https://www.hltv.org/matches/2379342/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/16,3DMAX,mibr,13,11,https://www.hltv.org/matches/2379343/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,Complexity,saw,4,13,https://www.hltv.org/matches/2379355/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,3DMAX,ef,13,5,https://www.hltv.org/matches/2379352/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,paiN,Virtus.pro,13,9,https://www.hltv.org/matches/2379354/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,wildcard,BIG,13,11,https://www.hltv.org/matches/2379351/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/17,Astralis,mibr,12,12,https://www.hltv.org/matches/2379353/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/18,Astralis,BIG,13,8,https://www.hltv.org/matches/2379356/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/18,MOUZ,Virtus.pro,12,12,https://www.hltv.org/matches/2379357/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/21,paiN,MOUZ,11,13,https://www.hltv.org/matches/2379359/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/21,Astralis,The MongolZ,12,12,https://www.hltv.org/matches/2379360/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/22,MOUZ,Astralis,12,12,https://www.hltv.org/matches/2379363/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
-PGL Cluj-Napoca 2025,Main/Playoffs,2025/2/23,FaZe,Astralis,8,13,https://www.hltv.org/matches/2379365/-,https://liquipedia.net/counterstrike/PGL/2025/Cluj-Napoca
 PGL Major Copenhagen 2024,Elimination Stage,2024/3/23,Eternal Fire,Virtus.pro,13,7,https://www.hltv.org/matches/2370652/-,https://liquipedia.net/counterstrike/PGL/2024/Copenhagen/Elimination_Stage
 PGL Major Copenhagen 2024,Main/Playoffs,2024/3/29,Eternal Fire,Natus Vincere,9,13,https://www.hltv.org/matches/2370723/-,https://liquipedia.net/counterstrike/PGL/2024/Copenhagen
 Perfect World Shanghai Major 2024,Opening Stage,2024/12/1,rare atom,fnc,13,10,https://www.hltv.org/matches/2377683/-,https://liquipedia.net/counterstrike/Perfect_World/Major/2024/Shanghai/Opening_Stage
-StarLadder Budapest Major 2025,Playoffs,2025/12/12,MOUZ,FaZe,2,13,https://www.hltv.org/matches/2388126/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Playoffs
-StarLadder Budapest Major 2025,Playoffs,2025/12/12,Natus Vincere,FURIA,12,12,https://www.hltv.org/matches/2388127/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Playoffs
-StarLadder Budapest Major 2025,Playoffs,2025/12/13,FaZe,Natus Vincere,13,8,https://www.hltv.org/matches/2388129/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Playoffs
-StarLadder Budapest Major 2025,Playoffs,2025/12/14,Vitality,FaZe,13,9,https://www.hltv.org/matches/2388130/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Playoffs
 StarLadder Budapest Major 2025,Stage 1,2025/11/24,Imperial,fq,6,13,https://www.hltv.org/matches/2388033/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_1
 StarLadder Budapest Major 2025,Stage 1,2025/11/25,fq,fluxo,13,3,https://www.hltv.org/matches/2388045/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_1
 StarLadder Budapest Major 2025,Stage 1,2025/11/25,b8,parivision,13,11,https://www.hltv.org/matches/2388042/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_1
@@ -172,17 +49,4 @@ StarLadder Budapest Major 2025,Stage 1,2025/11/27,fluxo,FaZe,6,13,https://www.hl
 StarLadder Budapest Major 2025,Stage 1,2025/11/27,parivision,legacy,5,13,https://www.hltv.org/matches/2388057/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_1
 StarLadder Budapest Major 2025,Stage 2,2025/11/29,3DMAX,fnc,6,13,https://www.hltv.org/matches/2388059/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_2
 StarLadder Budapest Major 2025,Stage 2,2025/11/29,3DMAX,fq,13,7,https://www.hltv.org/matches/2388067/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_2
-StarLadder Budapest Major 2025,Stage 2,2025/11/30,FaZe,Ninjas in Pyjamas,12,12,https://www.hltv.org/matches/2388078/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_2
-StarLadder Budapest Major 2025,Stage 2,2025/11/30,tl,mibr,13,5,https://www.hltv.org/matches/2388079/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_2
 StarLadder Budapest Major 2025,Stage 2,2025/12/1,fnc,passion ua,7,13,https://www.hltv.org/matches/2388083/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_2
-StarLadder Budapest Major 2025,Stage 2,2025/12/1,tyloo,tl,12,12,https://www.hltv.org/matches/2388087/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_2
-StarLadder Budapest Major 2025,Stage 2,2025/12/2,passion ua,m80,13,5,https://www.hltv.org/matches/2388088/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_2
-StarLadder Budapest Major 2025,Stage 3,2025/12/4,The MongolZ,tl,13,9,https://www.hltv.org/matches/2388104/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_3
-StarLadder Budapest Major 2025,Stage 3,2025/12/5,FURIA,G2,13,6,https://www.hltv.org/matches/2388113/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_3
-StarLadder Budapest Major 2025,Stage 3,2025/12/5,b8,Vitality,2,13,https://www.hltv.org/matches/2388108/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_3
-StarLadder Budapest Major 2025,Stage 3,2025/12/5,parivision,3DMAX,8,13,https://www.hltv.org/matches/2388114/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_3
-StarLadder Budapest Major 2025,Stage 3,2025/12/6,Natus Vincere,Vitality,11,13,https://www.hltv.org/matches/2388115/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_3
-StarLadder Budapest Major 2025,Stage 3,2025/12/6,MOUZ,Falcons,13,6,https://www.hltv.org/matches/2388117/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_3
-StarLadder Budapest Major 2025,Stage 3,2025/12/6,Imperial,passion ua,8,13,https://www.hltv.org/matches/2388118/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_3
-StarLadder Budapest Major 2025,Stage 3,2025/12/6,FaZe,3DMAX,13,5,https://www.hltv.org/matches/2388120/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_3
-StarLadder Budapest Major 2025,Stage 3,2025/12/7,G2,Falcons,4,13,https://www.hltv.org/matches/2388123/-,https://liquipedia.net/counterstrike/StarLadder/2025/Major/Stage_3

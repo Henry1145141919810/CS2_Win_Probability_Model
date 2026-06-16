@@ -70,25 +70,39 @@ def build(workers: int = 1) -> np.ndarray:
             "Close some apps and retry (this build is one-time; result is cached).")
     P = _centroids()
     n = len(P)
-    # row chunks (upper triangle is uneven; simple contiguous chunks are fine)
-    step = max(1, n // (workers * 4))
+    step = max(1, n // max(1, workers * 8))  # finer chunks -> cheaper checkpoints
     chunks = [(i, min(i + step, n)) for i in range(0, n, step)]
-    print(f"building {n}x{n} visibility, {len(chunks)} chunks, {workers} workers...")
+    idx_of = {c[0]: i for i, c in enumerate(chunks)}
+
+    # --- resumable checkpoint (a ~2h serial build must survive interruption) ---
+    pm, pd = CACHE.with_suffix(".partial.npy"), CACHE.with_suffix(".done.npy")
     mat = np.zeros((n, n), dtype=bool)
+    done = np.zeros(len(chunks), dtype=bool)
+    if pm.exists() and pd.exists():
+        mat, done = np.load(pm), np.load(pd)
+        print(f"resuming: {int(done.sum())}/{len(chunks)} chunks already done")
+    todo = [c for i, c in enumerate(chunks) if not done[i]]
+    print(f"building {n}x{n} visibility, {len(todo)}/{len(chunks)} chunks, "
+          f"{workers} worker(s)...")
     t0 = time.time()
+    CACHE.parent.mkdir(parents=True, exist_ok=True)
     with mp.Pool(workers, initializer=_init, initargs=(P,)) as pool:
-        done = 0
-        for i0, block in pool.imap_unordered(_rows, chunks):
+        cnt = 0
+        for i0, block in pool.imap_unordered(_rows, todo):
             mat[i0:i0 + block.shape[0]] = block
-            done += 1
-            if done % 10 == 0:
-                print(f"  {done}/{len(chunks)} chunks ({time.time()-t0:.0f}s)")
+            done[idx_of[i0]] = True
+            cnt += 1
+            if cnt % 20 == 0:
+                np.save(pm, mat)
+                np.save(pd, done)
+                print(f"  {int(done.sum())}/{len(chunks)} chunks "
+                      f"({time.time()-t0:.0f}s, {GB_PER_BVH}GB/worker)")
     mat |= mat.T  # symmetrize
     np.fill_diagonal(mat, True)
-    CACHE.parent.mkdir(parents=True, exist_ok=True)
     np.save(CACHE, mat)
-    print(f"done in {time.time()-t0:.0f}s -> {CACHE} "
-          f"(visible frac {mat.mean():.3f})")
+    pm.unlink(missing_ok=True)
+    pd.unlink(missing_ok=True)
+    print(f"done in {time.time()-t0:.0f}s -> {CACHE} (visible frac {mat.mean():.3f})")
     return mat
 
 

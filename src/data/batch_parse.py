@@ -45,6 +45,8 @@ PLAYER_PROPS = [
     "team_name", "team_clan_name", "X", "Y", "Z", "health", "armor_value",
     "inventory", "current_equip_value", "has_defuser", "has_helmet",
     "last_place_name", "flash_duration",
+    # facing + movement (added for FOV/grey control + influence model)
+    "yaw", "pitch", "velocity_X", "velocity_Y", "velocity_Z",
 ]
 WORLD_PROPS = [
     "game_time", "is_bomb_planted", "which_bomb_zone",
@@ -52,6 +54,28 @@ WORLD_PROPS = [
 ]
 
 TICK_COL_CANDIDATES = ["tick", "tick_id", "game_tick"]
+
+
+MIN_FREE_GB = 7.0  # a single demo can peak ~6.7GB during awpy parse
+
+
+def _wait_for_memory(min_free: float = MIN_FREE_GB, max_wait: int = 120):
+    """Pause before parsing a demo if free RAM is too low (avoids OOM on big demos).
+    Waits up to max_wait seconds for headroom, then proceeds with a warning."""
+    try:
+        import psutil
+    except ImportError:
+        return
+    waited = 0
+    while waited < max_wait:
+        free = psutil.virtual_memory().available / 1e9
+        if free >= min_free:
+            return
+        print(f"    [memory] only {free:.1f}GB free (<{min_free}GB) — waiting "
+              f"for headroom; close WeChat/Weixin to speed this up...", flush=True)
+        time.sleep(15)
+        waited += 15
+    print("    [memory] proceeding despite low RAM (Windows will page to disk).", flush=True)
 
 
 def _table(dem, name):
@@ -140,6 +164,7 @@ def main():
     print(f"Found {len(dems)} demo(s) in {args.raw_dir}")
     counts = {"ok": 0, "skip": 0, "empty": 0, "fail": 0}
     for i, dem_path in enumerate(dems, 1):
+        _wait_for_memory()  # one demo can peak ~6.7GB; don't start if RAM is too low
         t0 = time.time()
         print(f"[{i}/{len(dems)}] {dem_path.name} ...", flush=True)
         try:
