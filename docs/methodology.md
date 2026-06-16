@@ -53,8 +53,12 @@ AUC vs time. The second at which the full model diverges from Model A is the
 - Implemented: `train_pipeline.py --bootstrap B` (metric-level match block bootstrap on
   fixed OOF predictions; the full-retrain variant is the heavier cloud job).
 
-## Current status (June 2026, 22 dev demos)
+## Current status (June 2026, 208 demos / 449,521 snapshots)
 - Pillars 1, 2, 4 implemented; Pillar 3 (firepower) pending.
-- XGBoost: A 0.7745 → B 0.7801 → E 0.7851 (DeLong +0.0105 vs A, p<1e-3).
-- Bootstrap (B=500): E−A diff +0.0105 (95% CI +0.0020 to +0.0191, excludes 0).
-- Preliminary at this sample size; full study uses ~150 train demos + 2026 holdout.
+- AUC (5-fold GroupKFold): logreg A 0.8479 → E 0.8511; XGBoost A 0.8319 → E 0.8401.
+- DeLong: every set (B/D/E) significant vs A (p<1e-3, both models).
+- Bootstrap B=500 (match-level): all CIs exclude 0. XGBoost E−A = +0.0082
+  (95% CI +0.0062 to +0.0102). Effect significant but modest -> motivates richer
+  spatial features (contested/LOS control, facing, post-plant site focus, plant spots).
+- Note: logreg ≥ XGBoost so far (0.851 vs 0.840) — XGBoost tuning pass pending.
+- Full study adds the 2026 holdout, Pillar 3, deep models, and the revision features.
