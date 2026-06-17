@@ -30,18 +30,23 @@ from sklearn.preprocessing import StandardScaler
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 from features.economy import ECONOMY_COLS  # noqa: E402
-from features.mapcontrol import MAPCONTROL_COLS, TERRITORY_COLS  # noqa: E402
+from features.mapcontrol import (MAPCONTROL_COLS, MAPCONTROL_LOS_COLS,  # noqa: E402
+                                 TERRITORY_COLS)
 from features.positional import TACTICAL_COLS  # noqa: E402
 from features.bomb import BOMB_COLS  # noqa: E402
 
 TACTICAL = TACTICAL_COLS + BOMB_COLS
 DATA = ROOT / "data" / "training_dataset.parquet"
+# Three control models kept side-by-side for the comparison narrative:
+#   Voronoi (proximity) | grey (instantaneous LOS/FOV/smoke) | territory (grey + memory/decay)
 FEATURE_SETS = {
-    "A": ECONOMY_COLS,                                       # economy only (baseline)
-    "B": ECONOMY_COLS + MAPCONTROL_COLS,                     # + Voronoi control
-    "Terr": ECONOMY_COLS + TERRITORY_COLS,                   # + territory (memory+decay)
-    "E": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL,          # Voronoi + tactical (best so far)
-    "DT": ECONOMY_COLS + TACTICAL + TERRITORY_COLS,          # tactical + territory (NO Voronoi)
+    "A": ECONOMY_COLS,                                        # economy only (baseline)
+    "B": ECONOMY_COLS + MAPCONTROL_COLS,                      # + Voronoi
+    "G": ECONOMY_COLS + MAPCONTROL_LOS_COLS,                  # + grey (instantaneous)
+    "Terr": ECONOMY_COLS + TERRITORY_COLS,                    # + territory (memory+decay)
+    "E": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL,           # Voronoi + tactical (best so far)
+    "DG": ECONOMY_COLS + TACTICAL + MAPCONTROL_LOS_COLS,      # tactical + grey (no Voronoi)
+    "DT": ECONOMY_COLS + TACTICAL + TERRITORY_COLS,           # tactical + territory (no Voronoi)
     "ET": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + TERRITORY_COLS,  # E + territory
 }
 WINDOWS = [5, 10, 15, 20, 25]

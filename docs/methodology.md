@@ -68,6 +68,17 @@ predictor of round state than instantaneous sightline control, which flickers ti
 smoke/facing infrastructure is reusable (e.g. time-smoothed control, retake analysis).
 Decision: keep Voronoi as the control feature. Best model = E (econ+Voronoi+tactical) 0.8407.
 
+## Territory control (memory+decay) — recovers realistic control to Voronoi parity
+Added a 3rd control model: grey/LOS/FOV/smoke control WITH MEMORY — cleared space stays a
+team's for `decay`=15s without re-checking (FOV only gates re-acquiring; close range always
+held). Stateful per round. XGBoost: instant-grey alone G=0.8341 < Voronoi B=0.8366; but with
+tactical, territory DT=0.8404 ≈ Voronoi+tactical E=0.8407 (>> grey DG=0.8394). Both together
+ET=0.8412 (new best, +0.0095 vs A) but only +0.0005 over E (redundant — both measure stable
+territory). Conclusion: temporal STABILITY is what makes spatial control predictive;
+memory/decay fixes the flickering grey model to match proximity-Voronoi, validating that
+"realistic ≠ predictive unless stabilized." Territory is also the most interpretable for viz.
+All three control models kept in the dataset (74 cols) for the ablation narrative.
+
 ## Current status (June 2026, 220 demos / 476,595 snapshots)
 - Tier-1-filtered (dropped an ESL qualifier + a women's-team game); 1 demo off-list.
 - Map control A/B (XGBoost): A 0.8318; B Voronoi 0.8366; G distance-grey 0.8357;

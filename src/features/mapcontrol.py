@@ -266,24 +266,40 @@ class TerritoryControl:
         self.t_seen = np.full(self.n, -1e18)
 
     def update(self, px, py, teams, yaws=None, smokes=None, tick: int = 0) -> dict:
-        px = np.asarray(px, float)
-        if px.size:
-            ct_can, t_can, _ = _contest_masks(px, py, teams, yaws, smokes,
-                                              self.map_name, self.max_range, self.half_fov)
-            self.ct_seen[ct_can] = tick
-            self.t_seen[t_can] = tick
-        ct_act = (tick - self.ct_seen) <= self.decay
-        t_act = (tick - self.t_seen) <= self.decay
+        """Returns BOTH the instantaneous grey control (MAPCONTROL_LOS_COLS) and the
+        territory-with-memory control (TERRITORY_COLS) from a single mask computation,
+        so we keep both models in the dataset for free."""
         w = self.sizes
         tot = w.sum()
-        ct = float(w[ct_act & ~t_act].sum() / tot)
-        t = float(w[t_act & ~ct_act].sum() / tot)
-        return {
-            "ct_terr_control": ct, "t_terr_control": t,
+        px = np.asarray(px, float)
+        if px.size == 0:
+            nan = float("nan")
+            return {k: nan for k in MAPCONTROL_LOS_COLS + TERRITORY_COLS}
+        ct_can, t_can, _ = _contest_masks(px, py, teams, yaws, smokes,
+                                          self.map_name, self.max_range, self.half_fov)
+        # instantaneous grey (this tick only)
+        ig_ct = float(w[ct_can & ~t_can].sum() / tot)
+        ig_t = float(w[t_can & ~ct_can].sum() / tot)
+        out = {
+            "ct_los_control": ig_ct, "t_los_control": ig_t,
+            "contested_pct": float(w[ct_can & t_can].sum() / tot),
+            "grey_pct": float(w[~ct_can & ~t_can].sum() / tot),
+            "ct_los_deficit": ig_ct - ig_t,
+        }
+        # territory with memory + decay
+        self.ct_seen[ct_can] = tick
+        self.t_seen[t_can] = tick
+        ct_act = (tick - self.ct_seen) <= self.decay
+        t_act = (tick - self.t_seen) <= self.decay
+        tc_ct = float(w[ct_act & ~t_act].sum() / tot)
+        tc_t = float(w[t_act & ~ct_act].sum() / tot)
+        out.update({
+            "ct_terr_control": tc_ct, "t_terr_control": tc_t,
             "terr_contested_pct": float(w[ct_act & t_act].sum() / tot),
             "terr_grey_pct": float(w[~ct_act & ~t_act].sum() / tot),
-            "ct_terr_deficit": ct - t,
-        }
+            "ct_terr_deficit": tc_ct - tc_t,
+        })
+        return out
 
 
 MAPCONTROL_LOS_COLS = [
