@@ -145,34 +145,61 @@ def _area_tree(map_name: str = "de_inferno"):
     return cKDTree(xy)
 
 
-def contest_control(px, py, teams, map_name: str = "de_inferno",
-                    max_range: float = 1800.0):
-    """4-state map control: a team 'controls' an area only if a living player can
-    actually contest it = within `max_range` AND has line-of-sight (cached LOS matrix).
+SMOKE_RADIUS = 144.0   # CS2 smoke ~144u radius
+HALF_FOV = 90.0        # forward hemisphere a player can contest/react to
 
-    Returns area-weighted fractions: ct / t / contested (both) / grey (neither).
-    Fixes the pure-Voronoi flaw where far, wall-blocked players still 'own' territory
-    (e.g. banana going CT just because the nearest player is a distant CT).
+
+def _smoke_blocks(px, py, ax, ay, smokes):
+    """Boolean[N_areas]: is the player->area sightline blocked by any active smoke?
+    smokes: iterable of (sx, sy). Segment-to-point distance, vectorized over areas."""
+    blocked = np.zeros(ax.shape, bool)
+    dx, dy = ax - px, ay - py
+    dd = dx * dx + dy * dy
+    dd[dd == 0] = 1e-9
+    for sx, sy in smokes:
+        t = np.clip(((sx - px) * dx + (sy - py) * dy) / dd, 0.0, 1.0)
+        cx, cy = px + t * dx, py + t * dy
+        blocked |= ((cx - sx) ** 2 + (cy - sy) ** 2) <= SMOKE_RADIUS ** 2
+    return blocked
+
+
+def contest_control(px, py, teams, yaws=None, smokes=None, map_name: str = "de_inferno",
+                    max_range: float = 1800.0, half_fov: float = HALF_FOV):
+    """4-state map control: a team 'controls' an area only if a living player can actually
+    CONTEST it = within `max_range` AND (line-of-sight, if the matrix is built) AND (facing
+    it within `half_fov`, if yaws given) AND not occluded by an active smoke (if smokes given).
+
+    Returns area-weighted fractions: ct / t / contested (both) / grey (neither). Each gate
+    is applied only when its data is available, so this degrades gracefully (distance-only
+    with no matrix/yaw/smokes -> full facing+LOS+smoke when all present).
     """
     from features import visibility
     xy, sizes, _ = nav_grid(map_name)
-    vis = visibility.load_if_cached()  # None if not built (memory-heavy) -> distance-only
+    vis = visibility.load_if_cached()  # None if not built (memory-heavy) -> skip LOS
     tree = _area_tree(map_name)
     teams = _norm_side(teams)
     px = np.asarray(px, float)
     py = np.asarray(py, float)
+    yaws = np.asarray(yaws, float) if yaws is not None else None
+    smokes = list(smokes) if smokes else []
     if px.size == 0:
         return {"ct_los_control": np.nan, "t_los_control": np.nan,
                 "contested_pct": np.nan, "grey_pct": np.nan, "ct_los_deficit": np.nan}
     player_areas = tree.query(np.column_stack([px, py]))[1]
+    ax, ay = xy[:, 0], xy[:, 1]
     n = len(xy)
     ct_can = np.zeros(n, bool)
     t_can = np.zeros(n, bool)
     for k in range(px.size):
-        d = np.hypot(xy[:, 0] - px[k], xy[:, 1] - py[k])
-        reach = d <= max_range
-        if vis is not None:           # gate by line-of-sight when available
+        reach = np.hypot(ax - px[k], ay - py[k]) <= max_range
+        if vis is not None:                              # walls
             reach &= vis[player_areas[k]]
+        if yaws is not None and not np.isnan(yaws[k]):   # facing / FOV
+            ang = np.degrees(np.arctan2(ay - py[k], ax - px[k]))
+            diff = np.abs((ang - yaws[k] + 180) % 360 - 180)
+            reach &= diff <= half_fov
+        if smokes:                                       # smoke occlusion
+            reach &= ~_smoke_blocks(px[k], py[k], ax, ay, smokes)
         if teams[k] == "CT":
             ct_can |= reach
         else:

@@ -33,7 +33,22 @@ from features.bomb import plant_info, bomb_features  # noqa: E402
 ROUNDS_DIR = ROOT / "data" / "parquet" / "rounds"
 TICKS_DIR = ROOT / "data" / "parquet" / "ticks"
 BOMB_DIR = ROOT / "data" / "parquet" / "bomb"
+SMOKES_DIR = ROOT / "data" / "parquet" / "smokes"
 OUT = ROOT / "data" / "training_dataset.parquet"
+SMOKE_DUR_TICKS = 18 * 64  # CS2 smoke ~18s of vision block
+
+
+def _smokes_by_round(match_id):
+    """round_num -> list of (start_tick, end_tick, x, y) for vision-blocking smokes."""
+    f = SMOKES_DIR / f"{match_id}.parquet"
+    out = {}
+    if not f.exists():
+        return out
+    for r in pl.read_parquet(f).iter_rows(named=True):
+        s = r["start_tick"]
+        e = r["end_tick"] if r["end_tick"] is not None else s + SMOKE_DUR_TICKS
+        out.setdefault(r["round_num"], []).append((s, e, r["X"], r["Y"]))
+    return out
 
 
 def assemble_demo(match_id: str) -> pl.DataFrame | None:
@@ -43,6 +58,7 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
     if clean is None:
         return None
     bomb_plants = plant_info(pl.read_parquet(BOMB_DIR / f"{match_id}.parquet"))
+    smokes_by_round = _smokes_by_round(match_id)
 
     rows = []
     ct_score = t_score = 0  # cumulative side wins BEFORE current round
@@ -63,8 +79,12 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
             ctrl_series.append(mc["ct_voronoi_control_pct"])
             mc["control_trend"] = control_trend(ctrl_series)
             mc["control_volatility"] = control_volatility(ctrl_series)
-            los = contest_control(alive["X"].to_list(), alive["Y"].to_list(),
-                                  alive["side"].to_list())  # distance-grey (LOS if cached)
+            active_smokes = [(x, y) for (s, e, x, y) in smokes_by_round.get(rn, [])
+                             if s <= tick < e]
+            los = contest_control(  # distance + FOV(yaw) + LOS(if cached) + smoke occlusion
+                alive["X"].to_list(), alive["Y"].to_list(), alive["side"].to_list(),
+                yaws=alive["yaw"].to_list() if "yaw" in alive.columns else None,
+                smokes=active_smokes)
             tac = tactical_features(snap)
             bmb = bomb_features(snap, bomb_plants.get(rn), tick)
             rows.append({"match_id": match_id, "tick": tick, **feats, **mc, **los, **tac,

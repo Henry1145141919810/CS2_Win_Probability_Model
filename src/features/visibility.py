@@ -70,7 +70,7 @@ def build(workers: int = 1) -> np.ndarray:
             "Close some apps and retry (this build is one-time; result is cached).")
     P = _centroids()
     n = len(P)
-    step = max(1, n // max(1, workers * 8))  # finer chunks -> cheaper checkpoints
+    step = max(1, n // 120)  # ~120 chunks -> frequent checkpoints, fine progress
     chunks = [(i, min(i + step, n)) for i in range(0, n, step)]
     idx_of = {c[0]: i for i, c in enumerate(chunks)}
 
@@ -92,11 +92,13 @@ def build(workers: int = 1) -> np.ndarray:
             mat[i0:i0 + block.shape[0]] = block
             done[idx_of[i0]] = True
             cnt += 1
-            if cnt % 20 == 0:
+            if cnt % 5 == 0:
                 np.save(pm, mat)
                 np.save(pd, done)
+                el = time.time() - t0
+                eta = el / cnt * (len(todo) - cnt)
                 print(f"  {int(done.sum())}/{len(chunks)} chunks "
-                      f"({time.time()-t0:.0f}s, {GB_PER_BVH}GB/worker)")
+                      f"({el:.0f}s, eta {eta/60:.0f}min)", flush=True)
     mat |= mat.T  # symmetrize
     np.fill_diagonal(mat, True)
     np.save(CACHE, mat)

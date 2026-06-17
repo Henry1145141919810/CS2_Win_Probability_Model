@@ -111,3 +111,7 @@ process.md
 *.pem
 *.key
 secrets.*
+
+# share bundles (upload to Drive, never to git)
+*.zip
+cs2_share_bundle.zip

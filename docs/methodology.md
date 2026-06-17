@@ -53,6 +53,21 @@ AUC vs time. The second at which the full model diverges from Model A is the
 - Implemented: `train_pipeline.py --bootstrap B` (metric-level match block bootstrap on
   fixed OOF predictions; the full-retrain variant is the heavier cloud job).
 
+## LOS/FOV/smoke grey control — negative result (June 2026)
+Built a physically-faithful control model: an area is controlled only if a living player
+is in range AND has line-of-sight (precomputed 3060x3060 nav visibility matrix, ray-cast
+vs the map mesh) AND is facing it (FOV from yaw) AND it is not occluded by an active smoke.
+Surface is ~80% "grey" (uncontested) at any instant — realistic for CS.
+
+**Finding: it does NOT improve round-win prediction over simple Voronoi.** XGBoost:
+B (Voronoi) +0.0048 vs A; G (full grey) only +0.0021; the full grey is even weaker than
+distance-only grey (+0.0039). EG (full+grey) 0.8402 ≈ E (Voronoi+tactical) 0.8407 — grey
+adds nothing on top. Interpretation: positional/proximity territory is a more STABLE
+predictor of round state than instantaneous sightline control, which flickers tick-to-tick
+(yaw is twitchy; visible set changes constantly). A publishable negative result; the LOS/
+smoke/facing infrastructure is reusable (e.g. time-smoothed control, retake analysis).
+Decision: keep Voronoi as the control feature. Best model = E (econ+Voronoi+tactical) 0.8407.
+
 ## Current status (June 2026, 220 demos / 476,595 snapshots)
 - Tier-1-filtered (dropped an ESL qualifier + a women's-team game); 1 demo off-list.
 - Map control A/B (XGBoost): A 0.8318; B Voronoi 0.8366; G distance-grey 0.8357;

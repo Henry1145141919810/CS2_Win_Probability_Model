@@ -36,7 +36,9 @@ RAW_DEFAULT = ROOT / "demos" / "extracted"
 OUT_DEFAULT = ROOT / "data" / "parquet"
 FAIL_LOG = ROOT / "failed_demos.txt"
 
-CHANNELS = ["ticks", "kills", "rounds", "bomb", "grenades"]
+# smokes/infernos (tiny: position + start/end tick per nade) enable smoke-aware LOS.
+# grenades (per-tick trajectories, ~446MB, unused) is dropped to keep parsed data lean.
+CHANNELS = ["ticks", "kills", "rounds", "bomb", "smokes", "infernos"]
 
 # Focused player props (subset of awpy DEFAULT_PLAYER_PROPS) — enough for all 4 pillars.
 # team_clan_name is needed to track each TEAM through the halftime side-swap (labels are
