@@ -1,15 +1,15 @@
-"""Visualize the Pillar-2 Voronoi map-control surface over the de_inferno radar.
+"""Visualize de_inferno map control over the radar: Voronoi vs the LOS/FOV/smoke grey model.
 
-Produces paper figures:
-  - snapshots():  control surface at chosen seconds into a round (e.g. t=5/15/25s)
-  - animate():    a per-second GIF of the control surface evolving through a round
+Top row  = Voronoi (each nav area -> nearest living player's team; the kept feature).
+Bottom row = grey model (4-state CT/T/contested/grey; area controlled only if a player is
+             in range AND has line-of-sight AND is facing it AND no smoke blocks it),
+             overlaid with player FACING LINES (yaw) and active SMOKES.
 
-The control surface = each nav-mesh triangle shaded by the team of the nearest ALIVE
-player (the same Voronoi assignment used for the features), overlaid with player dots.
-This makes the abstract "territorial control %" visually concrete for readers.
+Reads the parsed parquet (memory-light; ticks already carry yaw), so no demo re-parse.
 
 Usage:
-  python src/viz/mapcontrol_viz.py demos/extracted/faze-vs-g2-m1-inferno.dem --round 5
+  python src/viz/mapcontrol_viz.py --match faze-vs-g2-m1-inferno --round 5
+  python src/viz/mapcontrol_viz.py --match faze-vs-g2-m1-inferno --round 5 --secs 5,15,25
 """
 from __future__ import annotations
 import argparse
@@ -20,124 +20,111 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.collections import PolyCollection  # noqa: E402
+from matplotlib.patches import Circle  # noqa: E402
 import numpy as np  # noqa: E402
+import polars as pl  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # src/ on path
 from awpy.plot.utils import game_to_pixel  # noqa: E402
-from features.mapcontrol import load_nav, voronoi_owner, voronoi_control  # noqa: E402
+from features.mapcontrol import (load_nav, voronoi_owner, contest_owner,  # noqa: E402
+                                 voronoi_control, contest_control)
 
 ROOT = Path(__file__).resolve().parents[2]
+PARQ = ROOT / "data" / "parquet"
 OUT = ROOT / "outputs" / "figures"
 RADAR = Path.home() / ".awpy" / "maps" / "de_inferno.png"
 TICKRATE = 64
-CT_COLOR = (0.16, 0.44, 0.82)   # blue
-T_COLOR = (0.92, 0.52, 0.12)    # orange
+SMOKE_DUR = 18 * 64
+COLORS = {"CT": (0.16, 0.44, 0.82), "T": (0.92, 0.52, 0.12),
+          "contested": (0.55, 0.27, 0.63), "grey": (0.78, 0.78, 0.78)}
 
-# Precompute nav-area polygon vertices in radar-pixel coords (once; order matches
-# nav_grid / voronoi_owner). Areas have variable corner counts, so keep a list.
 _nav = load_nav()
-_tris_px = [
-    np.array([game_to_pixel("de_inferno", (c.x, c.y, c.z))[:2] for c in a.corners])
-    for a in _nav.areas.values()
-]
+_tris_px = [np.array([game_to_pixel("de_inferno", (c.x, c.y, c.z))[:2] for c in a.corners])
+            for a in _nav.areas.values()]
 
 
-def _alive(ticks, round_num, tick):
-    import polars as pl
-    return ticks.filter(
-        (pl.col("round_num") == round_num) & (pl.col("tick") == tick) & (pl.col("health") > 0)
-    )
+def _pix(x, y):
+    p = game_to_pixel("de_inferno", (x, y, 0.0))
+    return p[0], p[1]
 
 
-def _render(ax, alive, title):
-    """Draw radar + control surface + players onto ax."""
-    px = alive["X"].to_list(); py = alive["Y"].to_list(); side = alive["side"].to_list()
-    owner = voronoi_owner(px, py, side)
-    colors = [CT_COLOR if o == "CT" else T_COLOR for o in owner]
-
-    ax.imshow(plt.imread(RADAR))
-    ax.add_collection(PolyCollection(_tris_px, facecolors=colors, alpha=0.45, edgecolors="none"))
-
-    # player dots in pixel space
-    for x, y, s in zip(px, py, side):
-        ppx, ppy, _ = game_to_pixel("de_inferno", (x, y, 0))
-        c = CT_COLOR if str(s).lower().startswith("c") else T_COLOR
+def _draw_players(ax, px, py, side, yaws=None, facing=False):
+    for i, (x, y, s) in enumerate(zip(px, py, side)):
+        ppx, ppy = _pix(x, y)
+        c = COLORS["CT"] if str(s).lower().startswith("c") else COLORS["T"]
+        if facing and yaws is not None and not np.isnan(yaws[i]):
+            ex, ey = _pix(x + 320 * np.cos(np.radians(yaws[i])),
+                          y + 320 * np.sin(np.radians(yaws[i])))
+            ax.plot([ppx, ex], [ppy, ey], color=c, lw=1.6, zorder=4, alpha=0.9)
         ax.scatter(ppx, ppy, s=70, c=[c], edgecolors="white", linewidths=1.3, zorder=5)
 
-    ctrl = voronoi_control(px, py, side)["ct_voronoi_control_pct"]
-    ax.set_title(f"{title}\nCT control = {ctrl:.0%}", fontsize=11)
+
+def _draw_smokes(ax, smokes):
+    r_px = abs(_pix(144, 0)[0] - _pix(0, 0)[0])
+    for sx, sy in smokes:
+        cx, cy = _pix(sx, sy)
+        ax.add_patch(Circle((cx, cy), r_px, color="white", alpha=0.55, zorder=3,
+                            ec="grey"))
+
+
+def _surface(ax, owner):
+    ax.imshow(plt.imread(RADAR))
+    ax.add_collection(PolyCollection(_tris_px, facecolors=[COLORS[o] for o in owner],
+                                     alpha=0.5, edgecolors="none"))
     ax.axis("off")
-    return ctrl
-
-
-def snapshots(ticks, rounds, round_num, secs=(5, 15, 25), tag=""):
-    import polars as pl
-    rr = rounds.filter(pl.col("round_num") == round_num).row(0, named=True)
-    OUT.mkdir(parents=True, exist_ok=True)
-    fig, axes = plt.subplots(1, len(secs), figsize=(6 * len(secs), 6))
-    if len(secs) == 1:
-        axes = [axes]
-    for ax, sec in zip(axes, secs):
-        tick = rr["freeze_end"] + sec * TICKRATE
-        alive = _alive(ticks, round_num, tick)
-        if len(alive) == 0:
-            ax.set_title(f"t+{sec}s (no data)"); ax.axis("off"); continue
-        _render(ax, alive, f"t+{sec}s into round {round_num}")
-    out = OUT / f"mapcontrol_snapshots_{tag}r{round_num}.png"
-    fig.suptitle(f"de_inferno Voronoi map control — round {round_num} "
-                 f"(winner: {rr['winner'].upper()})", fontsize=13)
-    fig.tight_layout()
-    fig.savefig(out, dpi=110, bbox_inches="tight")
-    plt.close(fig)
-    print(f"saved {out}")
-    return out
-
-
-def animate(ticks, rounds, round_num, tag="", fps=4):
-    """Per-second GIF through the round (freeze_end .. end)."""
-    import polars as pl
-    from PIL import Image
-    rr = rounds.filter(pl.col("round_num") == round_num).row(0, named=True)
-    dur = int((rr["end"] - rr["freeze_end"]) / TICKRATE)
-    OUT.mkdir(parents=True, exist_ok=True)
-    frames = []
-    for sec in range(0, dur + 1):
-        tick = rr["freeze_end"] + sec * TICKRATE
-        alive = _alive(ticks, round_num, tick)
-        if len(alive) < 2:
-            continue
-        fig, ax = plt.subplots(figsize=(7, 7))
-        _render(ax, alive, f"round {round_num}  t+{sec}s")
-        fig.tight_layout()
-        fig.canvas.draw()
-        frames.append(Image.frombytes("RGBA", fig.canvas.get_width_height(),
-                                       fig.canvas.buffer_rgba().tobytes()).convert("RGB"))
-        plt.close(fig)
-    out = OUT / f"mapcontrol_anim_{tag}r{round_num}.gif"
-    frames[0].save(out, save_all=True, append_images=frames[1:],
-                   duration=int(1000 / fps), loop=0)
-    print(f"saved {out}  ({len(frames)} frames)")
-    return out
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("demo", type=Path)
+    ap.add_argument("--match", required=True)
     ap.add_argument("--round", type=int, default=5)
-    ap.add_argument("--gif", action="store_true")
+    ap.add_argument("--secs", default="5,15,25")
     args = ap.parse_args()
+    secs = [int(s) for s in args.secs.split(",")]
 
-    from awpy import Demo
-    try:
-        from data import awpy_patch; awpy_patch.apply()
-    except Exception:
-        pass
-    dem = Demo(args.demo, tickrate=TICKRATE)
-    dem.parse(player_props=["team_name", "X", "Y", "Z", "health", "last_place_name"])
-    tag = args.demo.stem.split("-m")[0][:20] + "_"
-    snapshots(dem.ticks, dem.rounds, args.round, tag=tag)
-    if args.gif:
-        animate(dem.ticks, dem.rounds, args.round, tag=tag)
+    t = pl.read_parquet(PARQ / "ticks" / f"{args.match}.parquet")
+    r = pl.read_parquet(PARQ / "rounds" / f"{args.match}.parquet")
+    sm = pl.read_parquet(PARQ / "smokes" / f"{args.match}.parquet")
+    rr = r.filter(pl.col("round_num") == args.round).row(0, named=True)
+    fe = rr["freeze_end"]
+    rt = t.filter((pl.col("round_num") == args.round) & (pl.col("tick") >= fe))
+    avail = sorted(rt["tick"].unique().to_list())
+
+    fig, axes = plt.subplots(2, len(secs), figsize=(5.2 * len(secs), 10.4))
+    for col, sec in enumerate(secs):
+        tk = min(avail, key=lambda x: abs(x - (fe + sec * TICKRATE)))
+        s = rt.filter((pl.col("tick") == tk) & (pl.col("health") > 0))
+        px, py, side = s["X"].to_list(), s["Y"].to_list(), s["side"].to_list()
+        yaws = s["yaw"].to_list() if "yaw" in s.columns else None
+        smk = [(row["X"], row["Y"]) for row in
+               sm.filter((pl.col("round_num") == args.round) & (pl.col("start_tick") <= tk)).iter_rows(named=True)
+               if (row["end_tick"] or row["start_tick"] + SMOKE_DUR) > tk]
+
+        # top: Voronoi
+        a0 = axes[0, col] if len(secs) > 1 else axes[0]
+        _surface(a0, voronoi_owner(px, py, side))
+        _draw_players(a0, px, py, side)
+        vc = voronoi_control(px, py, side)["ct_voronoi_control_pct"]
+        a0.set_title(f"t+{sec}s — Voronoi\nCT {vc:.0%}", fontsize=10)
+
+        # bottom: grey model + facing + smokes
+        a1 = axes[1, col] if len(secs) > 1 else axes[1]
+        _surface(a1, contest_owner(px, py, side, yaws=yaws, smokes=smk))
+        _draw_smokes(a1, smk)
+        _draw_players(a1, px, py, side, yaws=np.asarray(yaws, float) if yaws else None, facing=True)
+        cc = contest_control(px, py, side, yaws=yaws, smokes=smk)
+        a1.set_title(f"t+{sec}s — grey (LOS+FOV+smoke)\nCT {cc['ct_los_control']:.0%} "
+                     f"grey {cc['grey_pct']:.0%}", fontsize=10)
+
+    fig.suptitle(f"{args.match}  round {args.round} (winner {rr['winner'].upper()}) — "
+                 f"Voronoi vs grey control   [blue=CT orange=T purple=contested grey=neutral; "
+                 f"lines=facing, white=smoke]", fontsize=11)
+    OUT.mkdir(parents=True, exist_ok=True)
+    out = OUT / f"mapcontrol_compare_{args.match}_r{args.round}.png"
+    fig.tight_layout(rect=[0, 0, 1, 0.97])
+    fig.savefig(out, dpi=110, bbox_inches="tight")
+    plt.close(fig)
+    print(f"saved {out}")
 
 
 if __name__ == "__main__":

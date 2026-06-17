@@ -163,16 +163,8 @@ def _smoke_blocks(px, py, ax, ay, smokes):
     return blocked
 
 
-def contest_control(px, py, teams, yaws=None, smokes=None, map_name: str = "de_inferno",
-                    max_range: float = 1800.0, half_fov: float = HALF_FOV):
-    """4-state map control: a team 'controls' an area only if a living player can actually
-    CONTEST it = within `max_range` AND (line-of-sight, if the matrix is built) AND (facing
-    it within `half_fov`, if yaws given) AND not occluded by an active smoke (if smokes given).
-
-    Returns area-weighted fractions: ct / t / contested (both) / grey (neither). Each gate
-    is applied only when its data is available, so this degrades gracefully (distance-only
-    with no matrix/yaw/smokes -> full facing+LOS+smoke when all present).
-    """
+def _contest_masks(px, py, teams, yaws, smokes, map_name, max_range, half_fov):
+    """Per-area boolean masks (ct_can, t_can) + area sizes for the contestability model."""
     from features import visibility
     xy, sizes, _ = nav_grid(map_name)
     vis = visibility.load_if_cached()  # None if not built (memory-heavy) -> skip LOS
@@ -182,9 +174,6 @@ def contest_control(px, py, teams, yaws=None, smokes=None, map_name: str = "de_i
     py = np.asarray(py, float)
     yaws = np.asarray(yaws, float) if yaws is not None else None
     smokes = list(smokes) if smokes else []
-    if px.size == 0:
-        return {"ct_los_control": np.nan, "t_los_control": np.nan,
-                "contested_pct": np.nan, "grey_pct": np.nan, "ct_los_deficit": np.nan}
     player_areas = tree.query(np.column_stack([px, py]))[1]
     ax, ay = xy[:, 0], xy[:, 1]
     n = len(xy)
@@ -196,25 +185,51 @@ def contest_control(px, py, teams, yaws=None, smokes=None, map_name: str = "de_i
             reach &= vis[player_areas[k]]
         if yaws is not None and not np.isnan(yaws[k]):   # facing / FOV
             ang = np.degrees(np.arctan2(ay - py[k], ax - px[k]))
-            diff = np.abs((ang - yaws[k] + 180) % 360 - 180)
-            reach &= diff <= half_fov
+            reach &= np.abs((ang - yaws[k] + 180) % 360 - 180) <= half_fov
         if smokes:                                       # smoke occlusion
             reach &= ~_smoke_blocks(px[k], py[k], ax, ay, smokes)
-        if teams[k] == "CT":
-            ct_can |= reach
-        else:
-            t_can |= reach
-    w = sizes
+        (ct_can if teams[k] == "CT" else t_can)[:] |= reach
+    return ct_can, t_can, sizes
+
+
+def contest_control(px, py, teams, yaws=None, smokes=None, map_name: str = "de_inferno",
+                    max_range: float = 1800.0, half_fov: float = HALF_FOV):
+    """4-state map control: a team 'controls' an area only if a living player can actually
+    CONTEST it = within `max_range` AND (line-of-sight, if the matrix is built) AND (facing
+    it within `half_fov`, if yaws given) AND not occluded by an active smoke (if smokes given).
+
+    Returns area-weighted fractions: ct / t / contested (both) / grey (neither). Each gate
+    is applied only when its data is available (degrades gracefully).
+    """
+    px = np.asarray(px, float)
+    if px.size == 0:
+        return {"ct_los_control": np.nan, "t_los_control": np.nan,
+                "contested_pct": np.nan, "grey_pct": np.nan, "ct_los_deficit": np.nan}
+    ct_can, t_can, w = _contest_masks(px, py, teams, yaws, smokes, map_name, max_range, half_fov)
     tot = w.sum()
     ct = float(w[ct_can & ~t_can].sum() / tot)
     t = float(w[t_can & ~ct_can].sum() / tot)
     return {
-        "ct_los_control": ct,
-        "t_los_control": t,
+        "ct_los_control": ct, "t_los_control": t,
         "contested_pct": float(w[ct_can & t_can].sum() / tot),
         "grey_pct": float(w[~ct_can & ~t_can].sum() / tot),
         "ct_los_deficit": ct - t,
     }
+
+
+def contest_owner(px, py, teams, yaws=None, smokes=None, map_name: str = "de_inferno",
+                  max_range: float = 1800.0, half_fov: float = HALF_FOV):
+    """Per-area 4-state label ('CT'/'T'/'contested'/'grey') for visualization."""
+    xy, _, _ = nav_grid(map_name)
+    px = np.asarray(px, float)
+    if px.size == 0:
+        return np.full(len(xy), "grey", dtype=object)
+    ct_can, t_can, _ = _contest_masks(px, py, teams, yaws, smokes, map_name, max_range, half_fov)
+    out = np.full(len(xy), "grey", dtype=object)
+    out[ct_can & ~t_can] = "CT"
+    out[t_can & ~ct_can] = "T"
+    out[ct_can & t_can] = "contested"
+    return out
 
 
 MAPCONTROL_LOS_COLS = [
