@@ -29,6 +29,8 @@ def main():
         p = ROOT / extra
         if p.exists():
             items.append(p)
+    items += sorted((ROOT / "outputs" / "figures").glob("*.png"))  # current figures
+    items += sorted((ROOT / "outputs" / "figures").glob("*.gif"))
 
     total = sum(p.stat().st_size for p in items) / 1e6
     print(f"bundling {len(items)} files (~{total:.0f} MB) -> {OUT.name}")
