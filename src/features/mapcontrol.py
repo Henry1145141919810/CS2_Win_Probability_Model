@@ -147,6 +147,9 @@ def _area_tree(map_name: str = "de_inferno"):
 
 SMOKE_RADIUS = 144.0   # CS2 smoke ~144u radius
 HALF_FOV = 90.0        # forward hemisphere a player can contest/react to
+CLOSE_RANGE = 280.0    # you control your immediate surroundings regardless of facing
+MAX_RANGE = 1800.0
+DECAY_SEC = 15.0       # cleared territory stays yours this long without re-checking
 
 
 def _smoke_blocks(px, py, ax, ay, smokes):
@@ -180,14 +183,16 @@ def _contest_masks(px, py, teams, yaws, smokes, map_name, max_range, half_fov):
     ct_can = np.zeros(n, bool)
     t_can = np.zeros(n, bool)
     for k in range(px.size):
-        reach = np.hypot(ax - px[k], ay - py[k]) <= max_range
+        dist = np.hypot(ax - px[k], ay - py[k])
+        far = dist <= max_range
         if vis is not None:                              # walls
-            reach &= vis[player_areas[k]]
+            far &= vis[player_areas[k]]
         if yaws is not None and not np.isnan(yaws[k]):   # facing / FOV
             ang = np.degrees(np.arctan2(ay - py[k], ax - px[k]))
-            reach &= np.abs((ang - yaws[k] + 180) % 360 - 180) <= half_fov
+            far &= np.abs((ang - yaws[k] + 180) % 360 - 180) <= half_fov
         if smokes:                                       # smoke occlusion
-            reach &= ~_smoke_blocks(px[k], py[k], ax, ay, smokes)
+            far &= ~_smoke_blocks(px[k], py[k], ax, ay, smokes)
+        reach = far | (dist <= CLOSE_RANGE)              # immediate area held regardless
         (ct_can if teams[k] == "CT" else t_can)[:] |= reach
     return ct_can, t_can, sizes
 
@@ -218,7 +223,7 @@ def contest_control(px, py, teams, yaws=None, smokes=None, map_name: str = "de_i
 
 
 def contest_owner(px, py, teams, yaws=None, smokes=None, map_name: str = "de_inferno",
-                  max_range: float = 1800.0, half_fov: float = HALF_FOV):
+                  max_range: float = MAX_RANGE, half_fov: float = HALF_FOV):
     """Per-area 4-state label ('CT'/'T'/'contested'/'grey') for visualization."""
     xy, _, _ = nav_grid(map_name)
     px = np.asarray(px, float)
@@ -230,6 +235,55 @@ def contest_owner(px, py, teams, yaws=None, smokes=None, map_name: str = "de_inf
     out[t_can & ~ct_can] = "T"
     out[ct_can & t_can] = "contested"
     return out
+
+
+TERRITORY_COLS = ["ct_terr_control", "t_terr_control", "terr_contested_pct",
+                  "terr_grey_pct", "ct_terr_deficit"]
+
+
+class TerritoryControl:
+    """Map control WITH MEMORY + DECAY (stateful within a round).
+
+    Each tick, the instantaneous "can see/hold" mask (range + LOS + FOV + smoke, plus
+    immediate surroundings) MARKS areas as that team's territory. Once marked, an area
+    stays the team's until (a) the enemy marks it, or (b) `decay_sec` pass without the
+    team re-seeing it -> it reverts toward grey. So cleared space remains held while a
+    team rotates away, and FOV only matters for (re)acquiring neglected/new areas.
+
+    Create one per round; call `update(...)` per snapshot in time order.
+    """
+
+    def __init__(self, map_name: str = "de_inferno", decay_sec: float = DECAY_SEC,
+                 tickrate: int = 64, max_range: float = MAX_RANGE, half_fov: float = HALF_FOV):
+        xy, sizes, _ = nav_grid(map_name)
+        self.n = len(xy)
+        self.sizes = sizes
+        self.map_name = map_name
+        self.max_range = max_range
+        self.half_fov = half_fov
+        self.decay = decay_sec * tickrate
+        self.ct_seen = np.full(self.n, -1e18)
+        self.t_seen = np.full(self.n, -1e18)
+
+    def update(self, px, py, teams, yaws=None, smokes=None, tick: int = 0) -> dict:
+        px = np.asarray(px, float)
+        if px.size:
+            ct_can, t_can, _ = _contest_masks(px, py, teams, yaws, smokes,
+                                              self.map_name, self.max_range, self.half_fov)
+            self.ct_seen[ct_can] = tick
+            self.t_seen[t_can] = tick
+        ct_act = (tick - self.ct_seen) <= self.decay
+        t_act = (tick - self.t_seen) <= self.decay
+        w = self.sizes
+        tot = w.sum()
+        ct = float(w[ct_act & ~t_act].sum() / tot)
+        t = float(w[t_act & ~ct_act].sum() / tot)
+        return {
+            "ct_terr_control": ct, "t_terr_control": t,
+            "terr_contested_pct": float(w[ct_act & t_act].sum() / tot),
+            "terr_grey_pct": float(w[~ct_act & ~t_act].sum() / tot),
+            "ct_terr_deficit": ct - t,
+        }
 
 
 MAPCONTROL_LOS_COLS = [

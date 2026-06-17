@@ -26,7 +26,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from data.validate_parquet import clean_rounds  # noqa: E402
 from features.economy import economy_features  # noqa: E402
 from features.mapcontrol import (control_features, control_trend,  # noqa: E402
-                                 control_volatility, contest_control)
+                                 control_volatility, contest_control, TerritoryControl)
 from features.positional import tactical_features  # noqa: E402
 from features.bomb import plant_info, bomb_features  # noqa: E402
 
@@ -68,6 +68,7 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
         rt = ticks.filter((pl.col("round_num") == rn) & (pl.col("tick") >= rr["freeze_end"])
                           & (pl.col("tick") <= rr["end"]))
         ctrl_series = []  # CT overall control over the round, for trend/volatility
+        terr = TerritoryControl()  # stateful map control w/ memory+decay (per round)
         for tick in sorted(rt["tick"].unique().to_list()):
             snap = rt.filter(pl.col("tick") == tick)
             if snap.height < 2:
@@ -81,14 +82,14 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
             mc["control_volatility"] = control_volatility(ctrl_series)
             active_smokes = [(x, y) for (s, e, x, y) in smokes_by_round.get(rn, [])
                              if s <= tick < e]
-            los = contest_control(  # distance + FOV(yaw) + LOS(if cached) + smoke occlusion
+            yaws = alive["yaw"].to_list() if "yaw" in alive.columns else None
+            ter = terr.update(  # territory WITH MEMORY + DECAY (held space persists)
                 alive["X"].to_list(), alive["Y"].to_list(), alive["side"].to_list(),
-                yaws=alive["yaw"].to_list() if "yaw" in alive.columns else None,
-                smokes=active_smokes)
+                yaws=yaws, smokes=active_smokes, tick=tick)
             tac = tactical_features(snap)
             bmb = bomb_features(snap, bomb_plants.get(rn), tick)
-            rows.append({"match_id": match_id, "tick": tick, **feats, **mc, **los, **tac,
-                         **bmb, "ct_won": label})
+            rows.append({"match_id": match_id, "tick": tick, **feats, **mc, **ter,
+                         **tac, **bmb, "ct_won": label})
         # update running score AFTER the round
         if rr["winner"] == "ct":
             ct_score += 1
