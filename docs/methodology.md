@@ -14,8 +14,26 @@ The git-tracked companion to the proposal. Mirrors the protocol implemented in
   one match are correlated; folding by round leaks and inflates AUC.
 
 ## Metrics
+**Primary (comparable to Xenopoulos/ESTA and prior CS win-prob work):**
 - **AUC-ROC** — discrimination (needs only 0/1 labels; rank-correctness).
 - **Log-loss + Brier** — calibration (do the probabilities mean what they say).
+
+**Complementary (standard outputs of `train_pipeline.py`):**
+- **ECE** (Expected Calibration Error, 10 bins) — single-number summary of the reliability
+  diagram: average |predicted% − observed win-rate| over probability bins. All our models
+  are well-calibrated (ECE < 0.02). Reliability curve in `calibration.py` (with bootstrap CIs).
+- **BSS** (Brier Skill Score) = 1 − Brier/Brier_base, where Brier_base uses the constant
+  base-rate predictor. Scale-free (0 = no skill, 1 = perfect); easier to read than raw Brier.
+- **contested-AUC (cAUC)** — AUC computed ONLY on *contested* snapshots (equal players alive
+  AND |equipment diff| ≤ 1500). This is the headline complementary metric. *Rationale:*
+  overall AUC is dominated by easy lopsided snapshots (5v2, eco vs full-buy) that economy
+  already nails, which DILUTES the spatial signal — the aggregate map-control lift looks
+  tiny (+0.003). A "better metric" will NOT inflate that +0.003; it is genuinely small on
+  average. But cAUC correctly reports the lift **where it actually matters** (genuinely even
+  rounds), where it is ~+0.013 — the honest *and* stronger framing. Economy's own AUC
+  collapses from ~0.83 overall to ~0.58 on contested snapshots (near coin-flip), so the
+  contested regime is exactly where any added signal is valuable. AUC/Brier stay primary
+  (literature-comparable); cAUC/ECE/BSS are reported alongside.
 - **Calibration curve** (reliability diagram, 10 bins) — predicted vs observed win rate;
   apply isotonic regression if miscalibrated.
 - **DeLong's test** — each feature set's AUC vs the economy baseline (Model A), on the
@@ -106,6 +124,64 @@ Restricting to contested subsets (XGBoost, OOF AUC):
   Logistic gets ~0/negative there. So logistic wins on easy snapshots; xgb wins where it's hard.
 Paper framing: "map control is most informative exactly when economy fails (contested rounds),
 and its signal needs nonlinear models." Key figure material.
+
+## Interpretability — logistic coefficients (src/models/logistic_coefficients.py)
+Because the headline model is logistic and ~ties tuned XGBoost (signal near-linear), the
+standardized coefficients ARE the explanation. All inputs are z-scored, so coefficient
+magnitude = effect size; sign = direction (+ favors CT). Outputs: console table + CSV
+(`outputs/logistic_coefficients.csv`) + bar chart (`outputs/figures/logistic_coefficients.png`),
+all sets (A / E / ET). Sanity (set ET, top drivers, coef on z-scale):
+- Economy/combat dominate and have sensible signs: `min_ct_dist_to_bomb` −0.78 (CTs far
+  from bomb = retake = worse), `ct_health_total` +0.72, `ct_equipment_value` +0.71,
+  `t_equipment_value` −0.67, `t_players_alive` −0.57, `bomb_planted` −0.31.
+- **Map control is the strongest non-economy/non-bomb signal**: `control_deficit` /
+  `ct_voronoi_control_pct` +0.27 each (odds ×1.31 per SD), `ct_mid_control` −0.37 (collinear
+  proxy; mid is a T-side staging read), `ct_banana_control` −0.16. Territory coefs are tiny
+  (`ct_terr_deficit` +0.05) — consistent with territory being redundant with Voronoi once
+  Voronoi is in the model (the ablation finding, restated by the linear model).
+- Note: `control_deficit` ≡ `ct_voronoi_control_pct` − 0.5, so they're perfectly collinear
+  and split one coefficient; report them as a single Voronoi term in the paper.
+
+## Qualitative — where map control flips the call (src/viz/control_shift_examples.py)
+To SHOW (not just measure) the spatial signal, fit OOF logreg A (economy) and E (economy +
+**map control only**, deliberately excluding tactical/bomb so the delta is purely spatial),
+then per snapshot `delta = P_E − P_A` is the win-prob attributable to map control. Rank
+rounds by a sustained, contested (both teams alive, ≤1 player apart), correct shift; pick 3
+distinct matches. Each yields a win-prob timeline (P_A vs P_E) + the 3-model map at the peak
+second. Best example: **b8 vs flyquest m3 r12, a 4v4 with even economy** — economy alone
+hugs 0.50 (coin flip) the whole round, but map control consistently and correctly pulls
+toward T, who won (peak shift −22% at t+50s). This is the figure that makes the
+contested-AUC number concrete: economy is blind in even rounds; control sees the read.
+
+## Three-model control visualization (src/viz/mapcontrol_viz.py)
+Renders all three control models stacked over the radar for chosen round/seconds:
+Voronoi (greedy total partition) / grey (instantaneous LOS+FOV+smoke, ~60-80% grey, with
+facing lines + smokes drawn) / territory (memory+decay 15s, replayed from freeze-end).
+Documents the PROCESS and the negative result visually: grey flickers and is mostly
+uncontested; territory stabilizes it back toward the Voronoi read.
+
+## Model matrix — 5 architectures × {A, E, ET} (train_pipeline.py, 220 demos / 476,595 snaps)
+5-fold GroupKFold OOF; metrics AUC (primary) / ECE / BSS / cAUC; B=500 match-block bootstrap.
+| model | A AUC | E AUC | ET AUC | E−A (95% CI) | ECE(E) | cAUC(E) |
+|---|---|---|---|---|---|---|
+| logreg   | 0.8465 | **0.8493** | 0.8493 | +0.0028 (+0.0014,+0.0042) | 0.016 | 0.590 |
+| xgb (tuned) | 0.8443 | 0.8476 | 0.8480 | +0.0034 (+0.0020,+0.0047) | 0.012 | 0.585 |
+| lgbm     | 0.8448 | 0.8479 | 0.8476 | +0.0031 (+0.0018,+0.0042) | 0.014 | 0.586 |
+| catboost | 0.8448 | 0.8478 | 0.8474 | +0.0030 (+0.0018,+0.0043) | 0.011 | 0.590 |
+| rf       | 0.8228 | 0.8426 | 0.8428 | +0.0198 (+0.0165,+0.0228) | 0.011 | 0.585 |
+
+- **Every model, every set: control lift E−A and ET−A is significant** (all bootstrap CIs
+  exclude 0; DeLong p≈0). The well-specified models (logreg/xgb/lgbm/catboost) AGREE on the
+  honest magnitude: **+0.003** aggregate. ET ≈ E everywhere (territory redundant w/ Voronoi).
+- logistic E/ET is the best model (0.8493) and ~ties the GBMs (0.8474–0.8480) → signal is
+  near-linear; the three GBMs are interchangeable.
+- **RF is the cautionary cell**: its economy baseline UNDERFITS (0.8228, ECE 0.042 — poorly
+  calibrated), so adding control "helps" a huge +0.0198 and fixes calibration (ECE→0.011).
+  That large lift is a *weak-baseline artifact*, not extra spatial signal — exactly why we
+  report the lift across architectures, not from one model. All non-RF cells are well
+  calibrated (ECE < 0.02); cAUC ≈ 0.58–0.59 everywhere (economy collapses on contested snaps).
+- Time-window AUC (5→25s) rises 0.69→0.76 for all; E/A curves nearly overlap (aggregate
+  spatial lift is small and roughly constant in time), consistent with the contested story.
 
 ## Current status (June 2026, 220 demos / 476,595 snapshots)
 - Tier-1-filtered (dropped an ESL qualifier + a women's-team game); 1 demo off-list.

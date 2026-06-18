@@ -311,6 +311,17 @@ class TerritoryControl:
                 out[f"terr_{z}_deficit"] = 0.0
         return out
 
+    def owner(self, tick: int):
+        """Per-area 4-state label ('CT'/'T'/'contested'/'grey') from the CURRENT memory
+        state (call after update(...) for the same tick). For visualization."""
+        ct_act = (tick - self.ct_seen) <= self.decay
+        t_act = (tick - self.t_seen) <= self.decay
+        out = np.full(self.n, "grey", dtype=object)
+        out[ct_act & ~t_act] = "CT"
+        out[t_act & ~ct_act] = "T"
+        out[ct_act & t_act] = "contested"
+        return out
+
 
 TERRITORY_ZONE_COLS = [f"terr_{z}_deficit" for z in NAMED_ZONES]
 

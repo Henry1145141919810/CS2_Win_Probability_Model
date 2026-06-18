@@ -1,9 +1,14 @@
-"""Visualize de_inferno map control over the radar: Voronoi vs the LOS/FOV/smoke grey model.
+"""Visualize de_inferno map control over the radar: ALL THREE control models, side by side.
 
-Top row  = Voronoi (each nav area -> nearest living player's team; the kept feature).
-Bottom row = grey model (4-state CT/T/contested/grey; area controlled only if a player is
-             in range AND has line-of-sight AND is facing it AND no smoke blocks it),
-             overlaid with player FACING LINES (yaw) and active SMOKES.
+Row 1 = Voronoi          (each nav area -> nearest living player's team; the KEPT feature).
+Row 2 = grey (LOS+FOV+smoke) — instantaneous 4-state CT/T/contested/grey: an area is
+              controlled only if a living player is in range AND has line-of-sight AND is
+              facing it AND no smoke blocks it. Overlaid with FACING LINES (yaw) + SMOKES.
+Row 3 = territory (memory+decay) — the grey model but cleared space STAYS a team's for
+              `decay`=15s without re-checking (replayed from freeze-end to each tick).
+
+Shows the PROCESS: Voronoi is greedy/total, grey is realistic-but-flickery (~80% grey),
+territory is the stabilized version that recovers Voronoi-level predictiveness.
 
 Reads the parsed parquet (memory-light; ticks already carry yaw), so no demo re-parse.
 
@@ -27,7 +32,7 @@ import polars as pl  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # src/ on path
 from awpy.plot.utils import game_to_pixel  # noqa: E402
 from features.mapcontrol import (load_nav, voronoi_owner, contest_owner,  # noqa: E402
-                                 voronoi_control, contest_control)
+                                 voronoi_control, contest_control, TerritoryControl)
 
 ROOT = Path(__file__).resolve().parents[2]
 PARQ = ROOT / "data" / "parquet"
@@ -41,6 +46,7 @@ COLORS = {"CT": (0.16, 0.44, 0.82), "T": (0.92, 0.52, 0.12),
 _nav = load_nav()
 _tris_px = [np.array([game_to_pixel("de_inferno", (c.x, c.y, c.z))[:2] for c in a.corners])
             for a in _nav.areas.values()]
+_nav_sizes = np.array([a.size for a in _nav.areas.values()], float)
 
 
 def _pix(x, y):
@@ -89,25 +95,42 @@ def main():
     fe = rr["freeze_end"]
     rt = t.filter((pl.col("round_num") == args.round) & (pl.col("tick") >= fe))
     avail = sorted(rt["tick"].unique().to_list())
+    target_ticks = [min(avail, key=lambda x: abs(x - (fe + sec * TICKRATE))) for sec in secs]
 
-    fig, axes = plt.subplots(2, len(secs), figsize=(5.2 * len(secs), 10.4))
-    for col, sec in enumerate(secs):
-        tk = min(avail, key=lambda x: abs(x - (fe + sec * TICKRATE)))
+    def _smokes_at(tk):
+        return [(row["X"], row["Y"]) for row in
+                sm.filter((pl.col("round_num") == args.round) & (pl.col("start_tick") <= tk)).iter_rows(named=True)
+                if (row["end_tick"] or row["start_tick"] + SMOKE_DUR) > tk]
+
+    # Row 3 (territory) is STATEFUL: replay the round freeze-end -> each target tick,
+    # snapshotting the memory owner-map whenever we hit a requested second.
+    terr = TerritoryControl()
+    terr_owner_at = {}
+    want = set(target_ticks)
+    for tk in avail:
+        s = rt.filter((pl.col("tick") == tk) & (pl.col("health") > 0))
+        if s.height >= 1:  # update memory whenever >=1 player is alive (carry over otherwise)
+            yw = s["yaw"].to_list() if "yaw" in s.columns else None
+            terr.update(s["X"].to_list(), s["Y"].to_list(), s["side"].to_list(),
+                        yaws=yw, smokes=_smokes_at(tk), tick=tk)
+        if tk in want:  # always snapshot a requested second (territory persists from memory)
+            terr_owner_at[tk] = terr.owner(tk)
+
+    fig, axes = plt.subplots(3, len(secs), figsize=(5.2 * len(secs), 15.6))
+    for col, (sec, tk) in enumerate(zip(secs, target_ticks)):
         s = rt.filter((pl.col("tick") == tk) & (pl.col("health") > 0))
         px, py, side = s["X"].to_list(), s["Y"].to_list(), s["side"].to_list()
         yaws = s["yaw"].to_list() if "yaw" in s.columns else None
-        smk = [(row["X"], row["Y"]) for row in
-               sm.filter((pl.col("round_num") == args.round) & (pl.col("start_tick") <= tk)).iter_rows(named=True)
-               if (row["end_tick"] or row["start_tick"] + SMOKE_DUR) > tk]
+        smk = _smokes_at(tk)
 
-        # top: Voronoi
+        # row 1: Voronoi
         a0 = axes[0, col] if len(secs) > 1 else axes[0]
         _surface(a0, voronoi_owner(px, py, side))
         _draw_players(a0, px, py, side)
         vc = voronoi_control(px, py, side)["ct_voronoi_control_pct"]
         a0.set_title(f"t+{sec}s — Voronoi\nCT {vc:.0%}", fontsize=10)
 
-        # bottom: grey model + facing + smokes
+        # row 2: grey model + facing + smokes
         a1 = axes[1, col] if len(secs) > 1 else axes[1]
         _surface(a1, contest_owner(px, py, side, yaws=yaws, smokes=smk))
         _draw_smokes(a1, smk)
@@ -116,9 +139,21 @@ def main():
         a1.set_title(f"t+{sec}s — grey (LOS+FOV+smoke)\nCT {cc['ct_los_control']:.0%} "
                      f"grey {cc['grey_pct']:.0%}", fontsize=10)
 
+        # row 3: territory (memory + decay)
+        a2 = axes[2, col] if len(secs) > 1 else axes[2]
+        _surface(a2, terr_owner_at[tk])
+        _draw_smokes(a2, smk)
+        _draw_players(a2, px, py, side, yaws=np.asarray(yaws, float) if yaws else None, facing=True)
+        owner = terr_owner_at[tk]
+        ct_terr = float(_nav_sizes[owner == "CT"].sum() / _nav_sizes.sum())
+        grey_terr = float(_nav_sizes[owner == "grey"].sum() / _nav_sizes.sum())
+        a2.set_title(f"t+{sec}s — territory (memory+decay 15s)\nCT {ct_terr:.0%} "
+                     f"grey {grey_terr:.0%}", fontsize=10)
+
     fig.suptitle(f"{args.match}  round {args.round} (winner {rr['winner'].upper()}) — "
-                 f"Voronoi vs grey control   [blue=CT orange=T purple=contested grey=neutral; "
-                 f"lines=facing, white=smoke]", fontsize=11)
+                 f"three control models: Voronoi / grey / territory   "
+                 f"[blue=CT orange=T purple=contested grey=neutral; lines=facing, white=smoke]",
+                 fontsize=11)
     OUT.mkdir(parents=True, exist_ok=True)
     out = OUT / f"mapcontrol_compare_{args.match}_r{args.round}.png"
     fig.tight_layout(rect=[0, 0, 1, 0.97])

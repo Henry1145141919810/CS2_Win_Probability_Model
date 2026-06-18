@@ -68,7 +68,29 @@ def make_model(name: str):
                              min_child_weight=10, reg_lambda=10.0,
                              subsample=0.8, colsample_bytree=0.8, n_jobs=-1,
                              tree_method="hist", eval_metric="logloss", random_state=0)
+    if name == "lgbm":
+        from lightgbm import LGBMClassifier
+        return LGBMClassifier(n_estimators=600, max_depth=3, num_leaves=15,
+                              learning_rate=0.03, reg_lambda=10.0, subsample=0.8,
+                              colsample_bytree=0.8, n_jobs=-1, random_state=0, verbose=-1)
+    if name == "catboost":
+        from catboost import CatBoostClassifier
+        return CatBoostClassifier(iterations=600, depth=3, learning_rate=0.03,
+                                  l2_leaf_reg=10.0, subsample=0.8, random_seed=0,
+                                  verbose=False, allow_writing_files=False)
     raise ValueError(name)
+
+
+def bss(y, p) -> float:
+    """Brier Skill Score = 1 - Brier(model) / Brier(base-rate). Fraction of the base-rate
+    predictor's error removed; 0 = no better than always predicting the mean, higher better."""
+    base = y.mean()
+    ref = base * (1 - base)  # Brier of the constant base-rate prediction
+    return float(1 - brier_score_loss(y, p) / ref) if ref > 0 else float("nan")
+
+
+import warnings as _warnings  # noqa: E402
+_warnings.filterwarnings("ignore")  # quiet sklearn/lightgbm feature-name notes
 
 
 def ece(y, p, bins: int = 10) -> float:
@@ -175,14 +197,26 @@ def main():
 
     # --- overall metrics + DeLong vs set A ---
     oof_store = {}
-    print(f"{'model':8s} {'set':>3} {'AUC':>7} {'logloss':>8} {'brier':>7} {'ECE':>7}")
+    # contested subset = even economy AND equal alive-count (where economy ~ coin-flip,
+    # so map control / firepower carry the signal). Primary metrics stay AUC/Brier/logloss
+    # (comparable to Xenopoulos/ESTA); ECE + BSS + contested-AUC are complementary and show
+    # WHERE the spatial value really is. See docs/methodology.md "Evaluation metrics".
+    contested = (
+        (df["ct_players_alive"] == df["t_players_alive"])
+        & ((df["ct_equipment_value"] - df["t_equipment_value"]).abs() <= 1500)
+    ).to_numpy()
+
+    print(f"{'model':8s} {'set':>3} {'AUC':>7} {'logloss':>8} {'brier':>7} {'ECE':>7} "
+          f"{'BSS':>6} {'cAUC':>6}")
     for mdl in models:
         for s in sets:
             oof, y = oof_predict(df, FEATURE_SETS[s], mdl)
             oof_store[(mdl, s)] = oof
+            cauc = roc_auc_score(y[contested], oof[contested]) if contested.sum() > 50 else float("nan")
             print(f"{mdl:8s} {s:>3} {roc_auc_score(y, oof):>7.4f} "
                   f"{log_loss(y, oof):>8.4f} {brier_score_loss(y, oof):>7.4f} "
-                  f"{ece(y, oof):>7.4f}")
+                  f"{ece(y, oof):>7.4f} {bss(y, oof):>6.3f} {cauc:>6.4f}")
+    print(f"(cAUC = AUC on {int(contested.sum()):,} CONTESTED snapshots: even econ & equal alive)")
     print()
     y = df["ct_won"].to_numpy()
     for mdl in models:
