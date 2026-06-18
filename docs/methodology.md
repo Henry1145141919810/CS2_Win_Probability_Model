@@ -134,13 +134,18 @@ all sets (A / E / ET). Sanity (set ET, top drivers, coef on z-scale):
 - Economy/combat dominate and have sensible signs: `min_ct_dist_to_bomb` −0.78 (CTs far
   from bomb = retake = worse), `ct_health_total` +0.72, `ct_equipment_value` +0.71,
   `t_equipment_value` −0.67, `t_players_alive` −0.57, `bomb_planted` −0.31.
-- **Map control is the strongest non-economy/non-bomb signal**: `control_deficit` /
-  `ct_voronoi_control_pct` +0.27 each (odds ×1.31 per SD), `ct_mid_control` −0.37 (collinear
-  proxy; mid is a T-side staging read), `ct_banana_control` −0.16. Territory coefs are tiny
-  (`ct_terr_deficit` +0.05) — consistent with territory being redundant with Voronoi once
-  Voronoi is in the model (the ablation finding, restated by the linear model).
-- Note: `control_deficit` ≡ `ct_voronoi_control_pct` − 0.5, so they're perfectly collinear
-  and split one coefficient; report them as a single Voronoi term in the paper.
+- **Map control is the strongest non-economy/non-bomb signal, but second-order.** CAVEAT:
+  coefficients *inside* the full control block are collinearity-inflated and unstable —
+  `control_deficit` ≡ `ct_voronoi_control_pct` − 0.5 (perfect duplicate, L2 splits → +0.27
+  each) and the per-zone controls are correlated (`ct_mid_control` −0.37). Do NOT read +0.27
+  as the Voronoi effect size. **Robust standalone fit (economy + one summary feature each):**
+  Voronoi `control_deficit` **+0.115**, territory `ct_terr_deficit` **+0.066** (≈ half of
+  Voronoi; the two are only r=0.47 correlated, so territory is a related-but-noisier proxy,
+  redundant with Voronoi at the AUC level — ET≈E — not an identical signal). For scale,
+  economy/combat terms are 5–8× larger.
+- **Economy magnitudes (set A, clean):** `t_players_alive` −0.89, `ct_health_total` +0.74,
+  `ct_equipment_value` +0.72, `t_equipment_value` −0.61, `bomb_planted` −0.51,
+  `t_health_total` −0.43, `ct_players_alive` +0.43; (tactical) `min_ct_dist_to_bomb` −0.78.
 
 ## Qualitative — where map control flips the call (src/viz/control_shift_examples.py)
 To SHOW (not just measure) the spatial signal, fit OOF logreg A (economy) and E (economy +
