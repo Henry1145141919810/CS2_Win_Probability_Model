@@ -71,6 +71,18 @@ def make_model(name: str):
     raise ValueError(name)
 
 
+def ece(y, p, bins: int = 10) -> float:
+    """Expected Calibration Error: avg |predicted% - actual win-rate| over prob bins.
+    The single-number 'are the probabilities honest?' score (lower = better; <0.02 good)."""
+    edges = np.linspace(0, 1, bins + 1)
+    e = 0.0
+    for lo, hi in zip(edges[:-1], edges[1:]):
+        m = (p >= lo) & (p < hi) if hi < 1 else (p >= lo) & (p <= hi)
+        if m.sum():
+            e += m.mean() * abs(p[m].mean() - y[m].mean())
+    return float(e)
+
+
 def oof_predict(df: pl.DataFrame, cols: list[str], model_name: str):
     """Return out-of-fold predicted probabilities aligned to df rows."""
     X = np.nan_to_num(df[cols].to_numpy().astype(float))
@@ -163,13 +175,14 @@ def main():
 
     # --- overall metrics + DeLong vs set A ---
     oof_store = {}
-    print(f"{'model':8s} {'set':>3} {'AUC':>7} {'logloss':>8} {'brier':>7}")
+    print(f"{'model':8s} {'set':>3} {'AUC':>7} {'logloss':>8} {'brier':>7} {'ECE':>7}")
     for mdl in models:
         for s in sets:
             oof, y = oof_predict(df, FEATURE_SETS[s], mdl)
             oof_store[(mdl, s)] = oof
             print(f"{mdl:8s} {s:>3} {roc_auc_score(y, oof):>7.4f} "
-                  f"{log_loss(y, oof):>8.4f} {brier_score_loss(y, oof):>7.4f}")
+                  f"{log_loss(y, oof):>8.4f} {brier_score_loss(y, oof):>7.4f} "
+                  f"{ece(y, oof):>7.4f}")
     print()
     y = df["ct_won"].to_numpy()
     for mdl in models:

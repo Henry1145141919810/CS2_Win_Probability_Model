@@ -1,10 +1,11 @@
-"""Calibration test: are the predicted probabilities HONEST? (reliability diagram + ECE)
+"""Calibration ('are the probabilities honest?') across models, WITH confidence intervals.
 
-AUC only checks ranking. This checks whether "the model said 70%" actually means CT won
-~70% of the time. Produces:
-  - outputs/figures/calibration.png : reliability diagram (predicted % vs observed win-rate)
-  - ECE (expected calibration error) + Brier + log-loss, for logistic E and xgb ET.
-Uses out-of-fold predictions from the same 5-fold GroupKFold.
+AUC only checks ranking. This checks whether "the model said 70%" -> CT won ~70%.
+  - ECE table (Brier, log-loss, ECE) for the key (model, feature-set) pairs.
+  - Reliability diagram for the two headline models with PER-BIN bootstrap error bars
+    + a bootstrap 95% CI on ECE -> tells which deviations from the diagonal are REAL
+    miscalibration vs sampling noise (the CI question).
+Match-level bootstrap (resample the 220 matches) so the CIs respect within-match correlation.
 
 Usage: python src/models/calibration.py
 """
@@ -30,10 +31,17 @@ from features.bomb import BOMB_COLS  # noqa: E402
 DATA = ROOT / "data" / "training_dataset.parquet"
 OUT = ROOT / "outputs" / "figures" / "calibration.png"
 TAC = TACTICAL_COLS + BOMB_COLS
-MODELS = {
-    "logistic E": (ECONOMY_COLS + MAPCONTROL_COLS + TAC, "logreg"),
+SETS = {  # label -> (columns, model-kind)
+    "logreg A": (ECONOMY_COLS, "logreg"),
+    "logreg E": (ECONOMY_COLS + MAPCONTROL_COLS + TAC, "logreg"),
+    "logreg ET": (ECONOMY_COLS + MAPCONTROL_COLS + TAC + TERRITORY_COLS, "logreg"),
+    "xgb A": (ECONOMY_COLS, "xgb"),
+    "xgb E": (ECONOMY_COLS + MAPCONTROL_COLS + TAC, "xgb"),
     "xgb ET": (ECONOMY_COLS + MAPCONTROL_COLS + TAC + TERRITORY_COLS, "xgb"),
 }
+HEADLINE = ["logreg E", "xgb ET"]
+BINS = 10
+B = 200
 
 
 def make_model(kind):
@@ -61,47 +69,55 @@ def oof(df, cols, y, groups, kind):
     return p
 
 
-def ece(y, p, bins=10):
-    edges = np.linspace(0, 1, bins + 1)
-    e = 0.0
-    rows = []
+def bin_stats(y, p):
+    edges = np.linspace(0, 1, BINS + 1)
+    conf, acc, e = [], [], 0.0
     for lo, hi in zip(edges[:-1], edges[1:]):
         m = (p >= lo) & (p < hi) if hi < 1 else (p >= lo) & (p <= hi)
         if m.sum() == 0:
-            continue
-        conf, acc, w = p[m].mean(), y[m].mean(), m.mean()
-        e += w * abs(conf - acc)
-        rows.append((conf, acc, int(m.sum())))
-    return e, rows
+            conf.append(np.nan); acc.append(np.nan); continue
+        conf.append(p[m].mean()); acc.append(y[m].mean())
+        e += m.mean() * abs(p[m].mean() - y[m].mean())
+    return np.array(conf), np.array(acc), e
 
 
 def main():
     df = pl.read_parquet(DATA)
     y = df["ct_won"].to_numpy()
     groups = df["match_id"].to_numpy()
+    midx = {m: np.where(groups == m)[0] for m in np.unique(groups)}
+    matches = list(midx)
+    rng = np.random.default_rng(42)
 
-    fig, ax = plt.subplots(figsize=(7, 7))
-    ax.plot([0, 1], [0, 1], "k--", lw=1, label="perfect calibration")
-    for name, (cols, kind) in MODELS.items():
+    print(f"{'model/set':12s} {'Brier':>7} {'logloss':>8} {'ECE':>7} {'ECE 95% CI':>18}")
+    fig, ax = plt.subplots(figsize=(7.5, 7.5))
+    ax.plot([0, 1], [0, 1], "k--", lw=1, label="perfect (honest)")
+    for label, (cols, kind) in SETS.items():
         p = oof(df, cols, y, groups, kind)
-        e, rows = ece(y, p, bins=10)
-        conf = [r[0] for r in rows]
-        acc = [r[1] for r in rows]
-        ax.plot(conf, acc, "o-", label=f"{name}  (ECE={e:.3f}, Brier={brier_score_loss(y,p):.3f}, "
-                                       f"logloss={log_loss(y,p):.3f})")
-        print(f"{name:12s} ECE={e:.4f}  Brier={brier_score_loss(y,p):.4f}  "
-              f"logloss={log_loss(y,p):.4f}")
-        print("   pred% -> actual% (n):  " +
-              "  ".join(f"{c:.2f}->{a:.2f}({n})" for c, a, n in rows))
-    ax.set_xlabel("predicted P(CT win)")
-    ax.set_ylabel("observed CT win-rate")
-    ax.set_title("Reliability diagram — are the probabilities honest?\n"
-                 "(on the diagonal = honest; ECE = avg gap)")
-    ax.legend(loc="upper left", fontsize=9)
-    ax.set_aspect("equal")
+        conf, acc, e = bin_stats(y, p)
+        # match-level bootstrap -> ECE CI (+ per-bin acc CI for headline)
+        boot_ece, boot_acc = [], []
+        for _ in range(B):
+            idx = np.concatenate([midx[matches[i]] for i in
+                                  rng.integers(0, len(matches), len(matches))])
+            c, a, ee = bin_stats(y[idx], p[idx])
+            boot_ece.append(ee); boot_acc.append(a)
+        lo, hi = np.percentile(boot_ece, [2.5, 97.5])
+        print(f"{label:12s} {brier_score_loss(y,p):>7.4f} {log_loss(y,p):>8.4f} "
+              f"{e:>7.4f}  ({lo:.4f},{hi:.4f})")
+        if label in HEADLINE:
+            ba = np.array(boot_acc)
+            alo = np.nanpercentile(ba, 2.5, axis=0)
+            ahi = np.nanpercentile(ba, 97.5, axis=0)
+            ax.errorbar(conf, acc, yerr=[acc - alo, ahi - acc], marker="o", capsize=3,
+                        lw=1.8, label=f"{label} (ECE={e:.3f}, CI {lo:.3f}-{hi:.3f})")
+    ax.set_xlabel("predicted P(CT win)"); ax.set_ylabel("observed CT win-rate")
+    ax.set_title("Reliability diagram with 95% CIs — are the probabilities honest?\n"
+                 "(on the diagonal = honest; error bar crossing the line = no real miscalibration)")
+    ax.legend(loc="upper left", fontsize=9); ax.set_aspect("equal")
     OUT.parent.mkdir(parents=True, exist_ok=True)
     fig.tight_layout(); fig.savefig(OUT, dpi=120); plt.close(fig)
-    print(f"saved {OUT}")
+    print(f"\nsaved {OUT}")
 
 
 if __name__ == "__main__":
