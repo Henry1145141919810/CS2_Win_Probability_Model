@@ -36,6 +36,8 @@ BOMB_DIR = ROOT / "data" / "parquet" / "bomb"
 SMOKES_DIR = ROOT / "data" / "parquet" / "smokes"
 OUT = ROOT / "data" / "training_dataset.parquet"
 SMOKE_DUR_TICKS = 18 * 64  # CS2 smoke ~18s of vision block
+INTERACTION_COLS = ["ctrl_x_eveneco", "terr_x_eveneco",
+                    "ctrl_x_equalalive", "terr_x_equalalive"]
 
 
 def _smokes_by_round(match_id):
@@ -88,8 +90,19 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
                 yaws=yaws, smokes=active_smokes, tick=tick)
             tac = tactical_features(snap)
             bmb = bomb_features(snap, bomb_plants.get(rn), tick)
+            # interactions: control matters MORE when the round is even (else economy decides)
+            even_eco = 1.0 - min(1.0, abs(feats["ct_equipment_value"]
+                                          - feats["t_equipment_value"]) / 4000.0)
+            equal_alive = float(feats["ct_players_alive"] == feats["t_players_alive"])
+            cd = mc.get("control_deficit", mc["ct_voronoi_control_pct"] - 0.5)
+            inter = {
+                "ctrl_x_eveneco": cd * even_eco,
+                "terr_x_eveneco": ter["ct_terr_deficit"] * even_eco,
+                "ctrl_x_equalalive": cd * equal_alive,
+                "terr_x_equalalive": ter["ct_terr_deficit"] * equal_alive,
+            }
             rows.append({"match_id": match_id, "tick": tick, **feats, **mc, **ter,
-                         **tac, **bmb, "ct_won": label})
+                         **inter, **tac, **bmb, "ct_won": label})
         # update running score AFTER the round
         if rr["winner"] == "ct":
             ct_score += 1

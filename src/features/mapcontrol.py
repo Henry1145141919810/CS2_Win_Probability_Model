@@ -264,6 +264,9 @@ class TerritoryControl:
         self.decay = decay_sec * tickrate
         self.ct_seen = np.full(self.n, -1e18)
         self.t_seen = np.full(self.n, -1e18)
+        zl = _zone_labels(map_name)  # per-area macro zone (a_site/b_site/banana/mid/ct_spawn)
+        self.zone_masks = {z: (zl == z) for z in NAMED_ZONES}
+        self.zone_tot = {z: float(sizes[m].sum()) for z, m in self.zone_masks.items()}
 
     def update(self, px, py, teams, yaws=None, smokes=None, tick: int = 0) -> dict:
         """Returns BOTH the instantaneous grey control (MAPCONTROL_LOS_COLS) and the
@@ -299,7 +302,17 @@ class TerritoryControl:
             "terr_grey_pct": float(w[~ct_act & ~t_act].sum() / tot),
             "ct_terr_deficit": tc_ct - tc_t,
         })
+        # per-zone territory deficit (who HOLDS each key zone — location matters more than total)
+        for z in NAMED_ZONES:
+            m, zt = self.zone_masks[z], self.zone_tot[z]
+            if zt > 0:
+                out[f"terr_{z}_deficit"] = float((w[m & ct_act].sum() - w[m & t_act].sum()) / zt)
+            else:
+                out[f"terr_{z}_deficit"] = 0.0
         return out
+
+
+TERRITORY_ZONE_COLS = [f"terr_{z}_deficit" for z in NAMED_ZONES]
 
 
 MAPCONTROL_LOS_COLS = [

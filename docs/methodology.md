@@ -79,6 +79,34 @@ memory/decay fixes the flickering grey model to match proximity-Voronoi, validat
 "realistic ≠ predictive unless stabilized." Territory is also the most interpretable for viz.
 All three control models kept in the dataset (74 cols) for the ablation narrative.
 
+## XGBoost tuning + improved encoding — the spatial lift was partly overfitting
+- tune_xgb.py (GroupKFold grid): default depth-6 overfits; tuned depth-3/min_child-10/
+  lambda-10 (n_est 600, lr 0.03, subsample/colsample 0.8) → +0.007 on ET. Adopted as the
+  pipeline default. Tuned xgb (~0.848) now ~ties logistic (0.849) → signal near-linear.
+- CRUCIAL: tuned baseline A jumped 0.8318→0.8443; spatial lift E−A shrank +0.0090→+0.0034.
+  So a chunk of the "spatial contribution" was XGBoost OVERFITTING noise. Honest spatial
+  lift on a proper model = ~+0.003-0.004 (logistic agreed all along: +0.0028).
+- Better encoding (ET+ = per-zone territory deficits + control×economy interactions): did
+  NOT help (ET+ ≈ ET, logistic dipped). Redundant with aggregate control + economy. Negative.
+- Best model: logistic E/ET 0.8493 (tuned xgb ET 0.8480). Spatial pillars real+significant
+  but modest (~+0.003), concentrated in contested rounds (~+0.013, see below). Next lever:
+  Pillar 3 firepower.
+
+## Conditional analysis — WHERE map control matters (src/models/conditional_analysis.py)
+Aggregate spatial lift is small (+0.009) because it's diluted by easy lopsided snapshots.
+Restricting to contested subsets (XGBoost, OOF AUC):
+- Economy baseline COLLAPSES in even rounds: ALL 0.832 → equal-alive 0.686 → even-econ 0.674
+  → equal-alive & even-econ 0.578 (~coin flip). The "0.83 overall" is carried by easy
+  lopsided snapshots; economy knows little in genuinely even rounds.
+- Map-control lift is LARGER where it matters: equal-alive (half the data) E−A = +0.0131
+  vs +0.0090 overall (~45% bigger); even-econ +0.0107; pre-plant +0.0103.
+- Magnitude is bigger but moderate (~+0.013, not +0.02-0.04); the most-contested subset is
+  near-coin-flip for ALL features (0.58) = irreducible randomness of an even CS round.
+- NEW insight: spatial signal is NONLINEAR — XGBoost extracts the lift in contested subsets,
+  Logistic gets ~0/negative there. So logistic wins on easy snapshots; xgb wins where it's hard.
+Paper framing: "map control is most informative exactly when economy fails (contested rounds),
+and its signal needs nonlinear models." Key figure material.
+
 ## Current status (June 2026, 220 demos / 476,595 snapshots)
 - Tier-1-filtered (dropped an ESL qualifier + a women's-team game); 1 demo off-list.
 - Map control A/B (XGBoost): A 0.8318; B Voronoi 0.8366; G distance-grey 0.8357;

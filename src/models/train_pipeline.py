@@ -31,11 +31,13 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 from features.economy import ECONOMY_COLS  # noqa: E402
 from features.mapcontrol import (MAPCONTROL_COLS, MAPCONTROL_LOS_COLS,  # noqa: E402
-                                 TERRITORY_COLS)
+                                 TERRITORY_COLS, TERRITORY_ZONE_COLS)
 from features.positional import TACTICAL_COLS  # noqa: E402
 from features.bomb import BOMB_COLS  # noqa: E402
+from features.assemble import INTERACTION_COLS  # noqa: E402
 
 TACTICAL = TACTICAL_COLS + BOMB_COLS
+IMPROVED = TERRITORY_COLS + TERRITORY_ZONE_COLS + INTERACTION_COLS  # better spatial encoding
 DATA = ROOT / "data" / "training_dataset.parquet"
 # Three control models kept side-by-side for the comparison narrative:
 #   Voronoi (proximity) | grey (instantaneous LOS/FOV/smoke) | territory (grey + memory/decay)
@@ -48,6 +50,7 @@ FEATURE_SETS = {
     "DG": ECONOMY_COLS + TACTICAL + MAPCONTROL_LOS_COLS,      # tactical + grey (no Voronoi)
     "DT": ECONOMY_COLS + TACTICAL + TERRITORY_COLS,           # tactical + territory (no Voronoi)
     "ET": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + TERRITORY_COLS,  # E + territory
+    "ET+": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + IMPROVED,  # + per-zone terr + interactions
 }
 WINDOWS = [5, 10, 15, 20, 25]
 
@@ -59,9 +62,12 @@ def make_model(name: str):
         return RandomForestClassifier(n_estimators=300, n_jobs=-1, random_state=0)
     if name == "xgb":
         from xgboost import XGBClassifier
-        return XGBClassifier(n_estimators=400, max_depth=6, learning_rate=0.05,
-                             subsample=0.9, colsample_bytree=0.9, n_jobs=-1,
-                             eval_metric="logloss", random_state=0)
+        # tuned via tune_xgb.py (GroupKFold): shallow+regularized trees fix the depth-6
+        # overfitting (+0.007 AUC). depth 3 / min_child 10 / lambda 10.
+        return XGBClassifier(n_estimators=600, max_depth=3, learning_rate=0.03,
+                             min_child_weight=10, reg_lambda=10.0,
+                             subsample=0.8, colsample_bytree=0.8, n_jobs=-1,
+                             tree_method="hist", eval_metric="logloss", random_state=0)
     raise ValueError(name)
 
 
