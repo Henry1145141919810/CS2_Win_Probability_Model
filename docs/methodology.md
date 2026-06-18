@@ -13,6 +13,22 @@ The git-tracked companion to the proposal. Mirrors the protocol implemented in
 - **5-fold GroupKFold by `match_id`.** Never split within a match — rounds/snapshots of
   one match are correlated; folding by round leaks and inflates AUC.
 
+## Standard evaluation protocol — RUN FOR EVERY NEW MODEL/METHOD
+A model is not "done" at a bare AUC. To keep results comparable and honest across all
+architectures, **every new model or method must pass the same battery** (one command:
+`src/models/model_report.py --models <m> --sets <s>`):
+1. **Metrics** — AUC / log-loss / Brier (primary) + ECE / BSS / contested-AUC (complementary).
+2. **Uncertainty** — match-level block-bootstrap 95% CI on the AUC and the E−A lift; plus a
+   per-round **win-prob CI band** (`winprob_chart.py`: logistic = analytic delta-method,
+   trees = bootstrap-retrain).
+3. **Calibration** — ECE + reliability diagram (bootstrap CI, `calibration.py`) and
+   **calibration-over-time** (`calibration_over_time.py`); apply isotonic/Platt if needed.
+4. **Interpretation** — model-agnostic **permutation importance** (`permutation_importance.py`,
+   collinearity-robust); **SHAP** for tree models (`shap_analysis.py`); standardized
+   coefficients for linear models (`logistic_coefficients.py`).
+This is a standing requirement, not a one-off (the three interpretation methods must agree
+before a feature claim is trusted — see the Voronoi coefficient-collinearity catch below).
+
 ## Metrics
 **Primary (comparable to Xenopoulos/ESTA and prior CS win-prob work):**
 - **AUC-ROC** — discrimination (needs only 0/1 labels; rank-correctness).
@@ -187,6 +203,43 @@ uncontested; territory stabilizes it back toward the Voronoi read.
   calibrated (ECE < 0.02); cAUC ≈ 0.58–0.59 everywhere (economy collapses on contested snaps).
 - Time-window AUC (5→25s) rises 0.69→0.76 for all; E/A curves nearly overlap (aggregate
   spatial lift is small and roughly constant in time), consistent with the contested story.
+
+## Full ablation + robustness/interpretation/uncertainty battery (June 2026)
+**Ablation (logreg & xgb × 9 feature sets, `train_pipeline.py`):** A 0.8465 → B (+Voronoi)
+0.8485 → E (Voronoi+tactical) **0.8493** (logreg). Grey (G) 0.8467 and territory (Terr)
+0.8468 **alone barely beat economy** — the negative result, crisp; the lift comes from
+Voronoi + tactical. ET ≈ E (territory redundant); ET+ no better. Voronoi's contested-AUC is
+the highest single-pillar cAUC (B 0.594), i.e. it helps most exactly in even rounds.
+
+**Three interpretation methods AGREE (economy ≫ map control; control real but second-order):**
+- Permutation importance (`permutation_importance.py`, all 5 models, AUC-drop): top 8 are
+  economy/combat (equipment, health, armor) + bomb geometry (`min_ct_dist_to_bomb`); map
+  control (`ct_a_site_control`, `control_deficit`, `ct_mid_control`) ranks ~10-12th at
+  +0.005–0.010 — consistent across logreg/xgb/lgbm/catboost/rf.
+- SHAP (`shap_analysis.py`, TreeSHAP on xgb): same order — `ct_equipment_value` 0.46,
+  `t_equipment_value` 0.46, health ~0.35, `min_ct_dist_to_bomb` 0.30, then map control
+  (`ct_a_site_control` 0.11, `ct_voronoi_control_pct` 0.10) ~10th.
+- Logistic standalone coefficients agree (Voronoi ~+0.11, economy 0.5–0.9). The collinearity
+  trap (full-model +0.27 artifact) is exactly why we cross-check with the two methods above.
+
+**Ensemble (`ensemble.py`):** soft-vote of the 5 classical models = AUC **0.8503** (+0.0010
+over best single logreg) — the best result so far; the linear+nonlinear mix is mildly
+decorrelated. Logit-average ≈ same.
+
+**Uncertainty — win-prob CI band (`winprob_chart.py`):** logistic analytic band is tight
+(mean width ~0.03); the xgb bootstrap band is ~7× wider (~0.21) → boosted trees have much
+higher epistemic (train-sample) variance. Another reason to prefer logistic: better AUC,
+tighter predictions, and interpretable.
+
+**Calibration-over-time (`calibration_over_time.py`):** both headline models stay honest at
+every phase (ECE < 0.03 throughout, tightest late as rounds resolve); xgb is slightly better
+calibrated mid-round than logreg.
+
+**Worst-prediction audit (`worst_prediction_audit.py`):** only 3.1% of snapshots are
+confidently-wrong; the model is NOT overconfident in contested rounds (0.82% conf-wrong
+there — it correctly says ~coin flip; contested log-loss 0.67 vs 0.43 elsewhere). Confident
+errors are upsets in lopsided situations (80% eco-mismatch, 21% man-advantage) = irreducible
+comebacks, not a systematic blind spot. Healthy, well-calibrated behavior.
 
 ## Current status (June 2026, 220 demos / 476,595 snapshots)
 - Tier-1-filtered (dropped an ESL qualifier + a women's-team game); 1 demo off-list.
