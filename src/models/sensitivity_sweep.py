@@ -92,7 +92,7 @@ def main():
             print(f"  {name}={v!s:>6}: AUC {a:.4f}  (Δ vs baseline {a-base:+.4f})")
         setter(default)  # restore
         print()
-    print("Interpretation: |Δ| small across a parameter ⇒ result robust to that choice.")
+    print("Interpretation: |delta| small across a parameter => result robust to that choice.")
 
 
 if __name__ == "__main__":

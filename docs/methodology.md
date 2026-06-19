@@ -292,6 +292,12 @@ Hardest where the round is still open: **Ts in mid (AUC 0.787) or banana (0.808)
 site (0.93). B-site retakes a touch harder than A (log loss 0.191 vs 0.166). Early (0.615) ≫
 endgame (0.396) log loss — the irreducible-uncertainty gradient.
 
+**Sensitivity sweep (`sensitivity_sweep.py`, 35-demo subset, logreg EBT2):** the result is
+robust to every design constant — re-assembling under territory decay ∈ {10,15,20}s, Voronoi
+weighting {area,count}, bomb-local radius ∈ {400,600,800}u, and CT defuse speed ∈
+{215,250,285} moves AUC by **|Δ| ≤ 0.0004** (baseline 0.8509). No result depends on an
+arbitrary parameter choice — the constants are not load-bearing.
+
 ## Current status (June 2026, 220 demos / 476,595 snapshots)
 - Tier-1-filtered (dropped an ESL qualifier + a women's-team game); 1 demo off-list.
 - Map control A/B (XGBoost): A 0.8318; B Voronoi 0.8366; G distance-grey 0.8357;
