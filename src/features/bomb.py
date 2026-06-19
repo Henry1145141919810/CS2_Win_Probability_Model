@@ -20,15 +20,20 @@ import numpy as np
 import polars as pl
 from scipy.spatial import cKDTree
 
-from features.mapcontrol import load_nav, nav_grid
+from features.mapcontrol import load_nav, nav_grid, _norm_side
 
 SITE_CODE = {"BombsiteA": 0, "BombsiteB": 1}
 _NEAR = 500.0
+BOMB_TIMER_SEC = 40.0    # CS2 C4 fuse
+DEFUSE_KIT_SEC = 5.0     # defuse time with kit
+DEFUSE_NOKIT_SEC = 10.0  # without kit
+CT_SPEED = 250.0         # ~run speed (u/s) for a rough defuse-race time
+BOMB_LOCAL_RADIUS = 600.0  # "around the bomb" neighbourhood
 
 # area-id lookup structures (built once)
 _nav = load_nav()
 _area_ids = list(_nav.areas.keys())
-_cents, _, _ = nav_grid()
+_cents, _sizes, _ = nav_grid()
 _tree = cKDTree(_cents[:, :2])
 _id_centroid = {aid: np.array([a.centroid.x, a.centroid.y]) for aid, a in _nav.areas.items()}
 
@@ -90,4 +95,131 @@ def bomb_features(snap: pl.DataFrame, plant: dict | None, tick: int) -> dict:
 BOMB_COLS = [
     "bomb_site", "bomb_plant_x", "bomb_plant_y",
     "min_ct_dist_to_bomb", "min_ct_path_to_bomb", "n_ct_near_bomb",
+]
+
+
+# ---------------------------------------------------------------------------
+# Bomb-STATE tracking + map control AROUND the bomb (carried / dropped / planted)
+# ---------------------------------------------------------------------------
+# Motivation: the existing features only fire post-PLANT and only use the fixed plant
+# location. But control of the bomb's neighbourhood matters in other high-leverage states:
+#   - retake (planted): who controls the area immediately around the planted bomb decides
+#     whether a defuse is even attemptable, more precisely than whole-site control.
+#   - dropped (T carrier killed -> loose C4): a scramble — CTs "sitting on" the bomb deny
+#     the pickup; whoever controls that spot effectively holds the round.
+#   - carried: the bomb is wherever the T carrier is (which site is being hit).
+# So we track the bomb's live (state, x, y) from the bomb event stream and compute Voronoi
+# control in a radius around it, plus a defuse-race feasibility margin for the planted case.
+
+STATE_CODE = {"carried": 0, "dropped": 1, "planted": 2, "over": 3}
+
+
+class BombTracker:
+    """Reconstruct the bomb's (state, x, y) at any tick from a round's bomb events.
+
+    Events (each with X,Y): pickup / drop / plant / defuse / detonate. The bomb's position is
+    that of the latest event, except while 'carried' (after a pickup) when it rides the carrier
+    — we resolve that from the live tick snapshot by steamid.
+    """
+
+    def __init__(self, bomb_df_round):
+        self.ev = sorted(
+            ({"tick": r["tick"], "event": r["event"], "x": r["X"], "y": r["Y"],
+              "steamid": r["steamid"]} for r in bomb_df_round.iter_rows(named=True)),
+            key=lambda e: e["tick"])
+
+    def _last(self, tick):
+        last = None
+        for e in self.ev:
+            if e["tick"] <= tick:
+                last = e
+            else:
+                break
+        return last
+
+    def state_at(self, tick, snap):
+        """Return (state_str, x, y). snap = tick rows (needs steamid, X, Y, side, health)."""
+        e = self._last(tick)
+        if e is None:                       # before any event: bomb is with the T side
+            t = snap.filter((pl.col("side") == "t") & (pl.col("health") > 0))
+            if t.height:
+                return "carried", float(t["X"].mean()), float(t["Y"].mean())
+            return "carried", float("nan"), float("nan")
+        ev = e["event"]
+        if ev == "plant":
+            return "planted", float(e["x"]), float(e["y"])
+        if ev in ("defuse", "detonate"):
+            return "over", float(e["x"]), float(e["y"])
+        if ev == "drop":
+            return "dropped", float(e["x"]), float(e["y"])
+        # pickup -> carried: find the carrier in the snapshot, else fall back to event pos
+        carrier = snap.filter(pl.col("steamid") == e["steamid"])
+        if carrier.height and carrier["health"][0] > 0:
+            return "carried", float(carrier["X"][0]), float(carrier["Y"][0])
+        return "carried", float(e["x"]), float(e["y"])
+
+
+def _local_control(bx, by, px, py, teams):
+    """Area-weighted CT/T Voronoi control among nav areas within BOMB_LOCAL_RADIUS of (bx,by)."""
+    if not np.isfinite(bx) or not np.isfinite(by) or len(px) == 0:
+        return float("nan"), float("nan")
+    near = (_cents[:, 0] - bx) ** 2 + (_cents[:, 1] - by) ** 2 <= BOMB_LOCAL_RADIUS ** 2
+    idx = np.where(near)[0]
+    if idx.size == 0:                       # bomb far from any centroid -> nearest area
+        idx = np.array([int(np.argmin((_cents[:, 0] - bx) ** 2 + (_cents[:, 1] - by) ** 2))])
+    teams = _norm_side(teams)
+    ptree = cKDTree(np.column_stack([np.asarray(px, float), np.asarray(py, float)]))
+    owner = teams[ptree.query(_cents[idx, :2])[1]]
+    w = _sizes[idx]
+    tot = w.sum()
+    ct = float(w[owner == "CT"].sum() / tot)
+    t = float(w[owner == "T"].sum() / tot)
+    return ct, ct - t
+
+
+def bomb_live_features(snap, tracker: "BombTracker", plant: dict | None, tick: int) -> dict:
+    """Bomb-state + map-control-around-the-bomb + defuse-race features (all round states)."""
+    state, bx, by = tracker.state_at(tick, snap)
+    alive = snap.filter(pl.col("health") > 0)
+    ct = alive.filter(pl.col("side") == "ct")
+    t = alive.filter(pl.col("side") == "t")
+    loc_ct, loc_def = _local_control(bx, by, alive["X"].to_list(), alive["Y"].to_list(),
+                                     alive["side"].to_list())
+
+    def _min_dist(team_df):
+        if not team_df.height or not np.isfinite(bx):
+            return float("nan")
+        return float(np.min(np.hypot(np.asarray(team_df["X"]) - bx,
+                                     np.asarray(team_df["Y"]) - by)))
+    d_ct, d_t = _min_dist(ct), _min_dist(t)
+    closer = float(d_ct < d_t) if (np.isfinite(d_ct) and np.isfinite(d_t)) else float("nan")
+
+    # defuse-race margin (planted only): time left on fuse minus (run-to-bomb + defuse) time
+    margin = float("nan")
+    if state == "planted" and plant is not None:
+        time_left = BOMB_TIMER_SEC - (tick - plant["tick"]) / 64.0
+        if ct.height:
+            xs, ys = ct["X"].to_list(), ct["Y"].to_list()
+            di = int(np.argmin([math.dist((x, y), (bx, by)) for x, y in zip(xs, ys)]))
+            path = _path_dist(_area_of(xs[di], ys[di]), plant["area"])
+            defuse = DEFUSE_KIT_SEC if int(ct["has_defuser"].sum()) > 0 else DEFUSE_NOKIT_SEC
+            margin = time_left - (path / CT_SPEED + defuse)
+
+    return {
+        "bomb_state": STATE_CODE.get(state, 0),
+        "bomb_dropped": int(state == "dropped"),
+        "ct_bomb_local_control": loc_ct,
+        "ct_bomb_local_deficit": loc_def,
+        "min_ct_dist_to_bomb_live": d_ct,
+        "min_t_dist_to_bomb_live": d_t,
+        "ct_closer_to_bomb": closer,
+        "defuse_time_margin": margin,
+    }
+
+
+BOMB_LIVE_COLS = [
+    "bomb_state", "bomb_dropped",
+    "ct_bomb_local_control", "ct_bomb_local_deficit",
+    "min_ct_dist_to_bomb_live", "min_t_dist_to_bomb_live", "ct_closer_to_bomb",
+    "defuse_time_margin",
 ]

@@ -241,6 +241,32 @@ there — it correctly says ~coin flip; contested log-loss 0.67 vs 0.43 elsewher
 errors are upsets in lopsided situations (80% eco-mismatch, 21% man-advantage) = irreducible
 comebacks, not a systematic blind spot. Healthy, well-calibrated behavior.
 
+## Bomb-state features + defuse-race feasibility (June 2026) — best result so far
+Added bomb-state tracking (carried / dropped / planted, reconstructed from the bomb event
+stream) and features for control AROUND the live bomb, the dropped-bomb scramble, and the
+**defuse race** (`defuse_time_margin` = fuse time left − run-to-bomb time − defuse time).
+Dataset → 91 cols; bomb states: carried 63% / dropped 18% / planted 19%.
+
+**Benchmark (all 5 models, E vs E+bomb-live, B=300 bootstrap):** significant in EVERY model
+(all CIs exclude 0). logreg 0.8493→**0.8506**, xgb 0.8476→0.8492, lgbm +0.0013, catboost
++0.0011, rf +0.0014. `logreg EB 0.8506` is the best single model in the study (ensemble was
+0.8503). Log loss drops too (logreg 0.4605→0.4578).
+
+**Concentrated where designed (retake + endgame):** post-plant log loss −7-8% (xgb
+0.187→0.172, AUC 0.962→0.967); endgame (plant/30+) log loss 0.401→0.396 across all models.
+This is the "better endgame features lower endgame log loss" lever from the calibration study,
+realised — and ECE stays ~0.013 (calibration preserved).
+
+**Honest decomposition (permutation importance, xgb):** the win is almost entirely
+**`defuse_time_margin` (AUC-drop +0.0090, rank #8/68)** — a top-tier feature. The other new
+features are weak: `min_ct_dist_to_bomb_live` #19, then bomb-local control / dropped-bomb /
+state all ~#22-59 (near-zero). NEGATIVE result within the positive: **map control *around*
+the bomb is redundant** with the existing site-control features, and the **dropped-bomb
+scramble barely predicts** the outcome (dropped subset log loss 0.492→0.490) — a loose bomb
+is mostly a *consequence* of a lost round, not a cause. Lesson: the defuse-race GEOMETRY is
+what matters post-plant, not bomb-neighbourhood ownership. Feature sets EB / EBT added to
+train_pipeline; bomb-live promoted into the canonical dataset.
+
 ## Current status (June 2026, 220 demos / 476,595 snapshots)
 - Tier-1-filtered (dropped an ESL qualifier + a women's-team game); 1 demo off-list.
 - Map control A/B (XGBoost): A 0.8318; B Voronoi 0.8366; G distance-grey 0.8357;
