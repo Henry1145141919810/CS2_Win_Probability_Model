@@ -1,7 +1,7 @@
 # Results Checkpoint — CS2 Win-Probability Model (de_inferno)
 
-**Date:** 2026-06-18 · **Dataset:** 220 Tier-1 demos / 476,595 snapshots / 91 cols · base P(CT win)=0.445
-**Canonical model:** logistic regression on set **EB** = **0.8506 AUC** (best in study)
+**Date:** 2026-06-19 · **Dataset:** 220 Tier-1 demos / 476,595 snapshots / 95 cols · base P(CT win)=0.445
+**Best single model:** logistic on **EB2** = **0.8508 AUC** · **best practical:** soft-vote (5 models, EB2) = **0.8518** (calibrated)
 
 Snapshot of every pillar, model, feature set, test/metric, and the honest verdict on what
 works. Companion to `docs/methodology.md` (full protocol + derivations).
@@ -70,8 +70,15 @@ AUC-ROC, log-loss, Brier (primary) · ECE, BSS, **contested-AUC** (complementary
 | Terr +territory | 0.8468 | 0.8453 | — | — | — |
 | E +Voronoi+tactical | 0.8493 | 0.8476 | 0.8479 | 0.8478 | 0.8426 |
 | ET +territory | 0.8493 | 0.8480 | 0.8476 | 0.8474 | 0.8428 |
-| **EB +bomb-live** | **0.8506** | 0.8492 | 0.8491 | 0.8489 | 0.8440 |
-| Ensemble (set E) | — | — | — | — | 0.8503 |
+| **EB +bomb-live** | 0.8506 | 0.8492 | 0.8491 | 0.8489 | 0.8440 |
+| **EB2 +defuse-race v2** | **0.8508** | 0.8489 | 0.8493 | 0.8491 | 0.8446 |
+| EBT2 full | 0.8508 | 0.8494 | 0.8497 | 0.8489 | 0.8445 |
+| **Soft-vote (5 models, EB2)** | — | — | — | — | **0.8518** |
+| Logistic stack (EB2) | — | — | — | — | 0.8520 (ECE 0.046 — miscalibrated) |
+
+*Defuse-race v2 (EB2) ≈ v1 (EB): the simple defuse_time_margin already captured it. Soft-vote
+is the best practical model (calibrated); the stack's extra +0.0002 AUC ruins calibration.
+Model weakest where the round is open (Ts in mid AUC 0.787 / banana 0.808), strong at sites (0.93).*
 
 ### By model class
 1. **Logistic — winner.** Best/tied at every set, tightest CI band (~0.03 vs xgb ~0.21), most

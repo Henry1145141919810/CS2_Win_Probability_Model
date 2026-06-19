@@ -267,6 +267,31 @@ is mostly a *consequence* of a lost round, not a cause. Lesson: the defuse-race 
 what matters post-plant, not bomb-neighbourhood ownership. Feature sets EB / EBT added to
 train_pipeline; bomb-live promoted into the canonical dataset.
 
+## Defuse-race v2, stacking, error map, SHAP mechanism (June 2026)
+**Defuse-race v2 (per-CT kit-aware finish time, defuse-capable count, T-contest window):**
+re-assembled (95 cols, sets EB2/EBT2). Result: **≈ v1, no real gain** — logreg EB 0.8506 →
+EB2 0.8508 (+0.0002), xgb −0.0003; the simple `defuse_time_margin` already captured the
+signal. Honest marginal/negative refinement. Best single model = **logreg EB2 0.8508**
+(highest contested-AUC yet, 0.596); EBT2 helps trees slightly (xgb 0.8494, lgbm 0.8497). All
+bomb sets significant vs A (DeLong p≈0).
+
+**Ensembling (`stacking.py`, set EB2):** **soft-vote = 0.8518** (ECE 0.014, BSS 0.375) is the
+best PRACTICAL model — calibrated. A logistic **stack** edges AUC to 0.8520 but **wrecks
+calibration** (ECE 0.046, worse log loss): the meta-learner overfits the probability scale on
+correlated OOF preds (xgb gets a negative weight — collinearity). Lesson: prefer soft-vote;
+the stack's +0.0002 AUC isn't worth the calibration damage.
+
+**SHAP dependence (`shap_dependence.py`) — HOW the defuse race acts:** `defuse_margin_kit`
+swings SHAP from −1.19 (CT can't reach+defuse in time → strongly T) to +0.04 (CT can) around
+the feasibility boundary; even larger than v1 (−0.91). `defuse_contest_margin` adds the
+T-interruption axis (−0.57→+0.33). Voronoi `control_deficit` SHAP is tiny in xgb (±0.01),
+consistent with second-order.
+
+**Error map (`zone_side_error.py`, logreg EB2):** calibration-gap ≈ 0 in every cut (no bias).
+Hardest where the round is still open: **Ts in mid (AUC 0.787) or banana (0.808)** vs at a
+site (0.93). B-site retakes a touch harder than A (log loss 0.191 vs 0.166). Early (0.615) ≫
+endgame (0.396) log loss — the irreducible-uncertainty gradient.
+
 ## Current status (June 2026, 220 demos / 476,595 snapshots)
 - Tier-1-filtered (dropped an ESL qualifier + a women's-team game); 1 demo off-list.
 - Map control A/B (XGBoost): A 0.8318; B Voronoi 0.8366; G distance-grey 0.8357;

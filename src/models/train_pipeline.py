@@ -33,7 +33,7 @@ from features.economy import ECONOMY_COLS  # noqa: E402
 from features.mapcontrol import (MAPCONTROL_COLS, MAPCONTROL_LOS_COLS,  # noqa: E402
                                  TERRITORY_COLS, TERRITORY_ZONE_COLS)
 from features.positional import TACTICAL_COLS  # noqa: E402
-from features.bomb import BOMB_COLS, BOMB_LIVE_COLS  # noqa: E402
+from features.bomb import BOMB_COLS, BOMB_LIVE_COLS, BOMB_DEFUSE_COLS  # noqa: E402
 from features.assemble import INTERACTION_COLS  # noqa: E402
 
 TACTICAL = TACTICAL_COLS + BOMB_COLS
@@ -53,6 +53,9 @@ FEATURE_SETS = {
     "ET+": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + IMPROVED,  # + per-zone terr + interactions
     "EB": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + BOMB_LIVE_COLS,  # E + bomb-live (defuse race)
     "EBT": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + TERRITORY_COLS + BOMB_LIVE_COLS,  # full
+    "EB2": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS,  # + defuse-race v2
+    "EBT2": (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + TERRITORY_COLS
+             + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS),  # full + defuse-race v2
 }
 WINDOWS = [5, 10, 15, 20, 25]
 

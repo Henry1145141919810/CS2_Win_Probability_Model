@@ -223,3 +223,51 @@ BOMB_LIVE_COLS = [
     "min_ct_dist_to_bomb_live", "min_t_dist_to_bomb_live", "ct_closer_to_bomb",
     "defuse_time_margin",
 ]
+
+
+def defuse_race_features(snap, plant: dict | None, tick: int) -> dict:
+    """Refined defuse-race geometry (post-plant only; the v1 winner was defuse_time_margin).
+
+    Per-CT, kit-aware: each alive CT's finish time = nav-path/run-speed + (5s w/ kit else 10s).
+    The defusing CT is the one with the smallest finish time. Adds:
+      - defuse_margin_kit     : fuse time left - best CT finish time  (per-CT kit-aware; >0 feasible)
+      - n_ct_can_defuse       : # CTs that could arrive+defuse before detonation
+      - best_defuser_has_kit  : does the fastest-to-finish CT carry a kit
+      - defuse_contest_margin : nearest-T arrival time - best CT finish time  (>0 = CT finishes
+                                before any T can rotate back to interrupt = a 'clean' defuse)
+    """
+    nan = float("nan")
+    base = {"defuse_margin_kit": nan, "n_ct_can_defuse": 0,
+            "best_defuser_has_kit": 0, "defuse_contest_margin": nan}
+    if plant is None or tick < plant["tick"]:
+        return base
+    time_left = BOMB_TIMER_SEC - (tick - plant["tick"]) / 64.0
+    barea = plant["area"]
+    ct = snap.filter((pl.col("side") == "ct") & (pl.col("health") > 0))
+    if not ct.height:
+        return base
+    xs, ys = ct["X"].to_list(), ct["Y"].to_list()
+    kits = ct["has_defuser"].to_list()
+    finishes = []
+    for x, y, k in zip(xs, ys, kits):
+        arrive = _path_dist(_area_of(x, y), barea) / CT_SPEED
+        finishes.append((arrive + (DEFUSE_KIT_SEC if k else DEFUSE_NOKIT_SEC), bool(k)))
+    best_finish, best_kit = min(finishes, key=lambda f: f[0])
+    n_can = int(sum(f <= time_left for f, _ in finishes))
+    # nearest T arrival (path) to contest the defuse
+    t = snap.filter((pl.col("side") == "t") & (pl.col("health") > 0))
+    if t.height:
+        t_arrive = min(_path_dist(_area_of(x, y), barea) / CT_SPEED
+                       for x, y in zip(t["X"].to_list(), t["Y"].to_list()))
+        contest = t_arrive - best_finish
+    else:
+        contest = float(time_left)   # no T alive -> uncontested by definition
+    return {"defuse_margin_kit": float(time_left - best_finish),
+            "n_ct_can_defuse": n_can,
+            "best_defuser_has_kit": int(best_kit),
+            "defuse_contest_margin": float(contest)}
+
+
+BOMB_DEFUSE_COLS = [
+    "defuse_margin_kit", "n_ct_can_defuse", "best_defuser_has_kit", "defuse_contest_margin",
+]
