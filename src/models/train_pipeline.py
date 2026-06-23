@@ -34,6 +34,7 @@ from features.mapcontrol import (MAPCONTROL_COLS, MAPCONTROL_LOS_COLS,  # noqa: 
                                  TERRITORY_COLS, TERRITORY_ZONE_COLS)
 from features.positional import TACTICAL_COLS  # noqa: E402
 from features.bomb import BOMB_COLS  # noqa: E402
+from features.firepower import FIREPOWER_COLS  # noqa: E402
 from features.assemble import INTERACTION_COLS  # noqa: E402
 
 TACTICAL = TACTICAL_COLS + BOMB_COLS
@@ -46,11 +47,14 @@ FEATURE_SETS = {
     "B": ECONOMY_COLS + MAPCONTROL_COLS,                      # + Voronoi
     "G": ECONOMY_COLS + MAPCONTROL_LOS_COLS,                  # + grey (instantaneous)
     "Terr": ECONOMY_COLS + TERRITORY_COLS,                    # + territory (memory+decay)
+    "D": ECONOMY_COLS + TACTICAL,                             # economy + tactical only (no map control)
     "E": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL,           # Voronoi + tactical (best so far)
     "DG": ECONOMY_COLS + TACTICAL + MAPCONTROL_LOS_COLS,      # tactical + grey (no Voronoi)
     "DT": ECONOMY_COLS + TACTICAL + TERRITORY_COLS,           # tactical + territory (no Voronoi)
     "ET": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + TERRITORY_COLS,  # E + territory
     "ET+": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + IMPROVED,  # + per-zone terr + interactions
+    "F": ECONOMY_COLS + FIREPOWER_COLS,                       # economy + firepower (isolate Pillar 3)
+    "EF": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + FIREPOWER_COLS,  # E + firepower (all 4 pillars)
 }
 WINDOWS = [5, 10, 15, 20, 25]
 

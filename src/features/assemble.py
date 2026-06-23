@@ -29,6 +29,7 @@ from features.mapcontrol import (control_features, control_trend,  # noqa: E402
                                  control_volatility, contest_control, TerritoryControl)
 from features.positional import tactical_features  # noqa: E402
 from features.bomb import plant_info, bomb_features  # noqa: E402
+from features.firepower import firepower_features  # noqa: E402
 
 ROUNDS_DIR = ROOT / "data" / "parquet" / "rounds"
 TICKS_DIR = ROOT / "data" / "parquet" / "ticks"
@@ -90,6 +91,7 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
                 yaws=yaws, smokes=active_smokes, tick=tick)
             tac = tactical_features(snap)
             bmb = bomb_features(snap, bomb_plants.get(rn), tick)
+            fp = firepower_features(snap, match_id)
             # interactions: control matters MORE when the round is even (else economy decides)
             even_eco = 1.0 - min(1.0, abs(feats["ct_equipment_value"]
                                           - feats["t_equipment_value"]) / 4000.0)
@@ -102,7 +104,7 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
                 "terr_x_equalalive": ter["ct_terr_deficit"] * equal_alive,
             }
             rows.append({"match_id": match_id, "tick": tick, **feats, **mc, **ter,
-                         **inter, **tac, **bmb, "ct_won": label})
+                         **inter, **tac, **bmb, **fp, "ct_won": label})
         # update running score AFTER the round
         if rr["winner"] == "ct":
             ct_score += 1
