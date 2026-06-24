@@ -33,7 +33,8 @@ sys.path.insert(0, str(ROOT / "src"))
 from features.economy import ECONOMY_COLS  # noqa: E402
 from features.mapcontrol import MAPCONTROL_COLS, TERRITORY_COLS, MAPCONTROL_LOS_COLS  # noqa: E402
 from features.positional import TACTICAL_COLS  # noqa: E402
-from features.bomb import BOMB_COLS  # noqa: E402
+from features.bomb import BOMB_COLS, BOMB_LIVE_COLS, BOMB_DEFUSE_COLS  # noqa: E402
+from features.firepower import FIREPOWER_COLS  # noqa: E402
 from models.train_pipeline import make_model  # noqa: E402
 
 DATA = ROOT / "data" / "training_dataset.parquet"
@@ -42,10 +43,14 @@ TAC = TACTICAL_COLS + BOMB_COLS
 SETS = {
     "E": ECONOMY_COLS + MAPCONTROL_COLS + TAC,
     "ET": ECONOMY_COLS + MAPCONTROL_COLS + TAC + TERRITORY_COLS,
+    "EF": ECONOMY_COLS + MAPCONTROL_COLS + TAC + FIREPOWER_COLS,
+    "EFB2": (ECONOMY_COLS + MAPCONTROL_COLS + TAC + TERRITORY_COLS
+             + FIREPOWER_COLS + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS),
 }
 PILLAR = ({c: "economy" for c in ECONOMY_COLS} | {c: "voronoi" for c in MAPCONTROL_COLS}
           | {c: "territory" for c in TERRITORY_COLS} | {c: "grey" for c in MAPCONTROL_LOS_COLS}
-          | {c: "tactical" for c in TAC})
+          | {c: "tactical" for c in TAC + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS}
+          | {c: "firepower" for c in FIREPOWER_COLS})
 # slower TreeSHAP for RF -> cap its sample
 RF_CAP = 6000
 

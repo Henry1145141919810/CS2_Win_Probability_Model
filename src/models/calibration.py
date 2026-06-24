@@ -26,20 +26,26 @@ sys.path.insert(0, str(ROOT / "src"))
 from features.economy import ECONOMY_COLS  # noqa: E402
 from features.mapcontrol import MAPCONTROL_COLS, TERRITORY_COLS  # noqa: E402
 from features.positional import TACTICAL_COLS  # noqa: E402
-from features.bomb import BOMB_COLS  # noqa: E402
+from features.bomb import BOMB_COLS, BOMB_LIVE_COLS, BOMB_DEFUSE_COLS  # noqa: E402
+from features.firepower import FIREPOWER_COLS  # noqa: E402
 
 DATA = ROOT / "data" / "training_dataset.parquet"
 OUT = ROOT / "outputs" / "figures" / "calibration.png"
 TAC = TACTICAL_COLS + BOMB_COLS
+_EF = ECONOMY_COLS + MAPCONTROL_COLS + TAC + FIREPOWER_COLS                 # all 4 pillars
+_EFB2 = (ECONOMY_COLS + MAPCONTROL_COLS + TAC + TERRITORY_COLS              # everything
+         + FIREPOWER_COLS + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS)
 SETS = {  # label -> (columns, model-kind)
     "logreg A": (ECONOMY_COLS, "logreg"),
     "logreg E": (ECONOMY_COLS + MAPCONTROL_COLS + TAC, "logreg"),
-    "logreg ET": (ECONOMY_COLS + MAPCONTROL_COLS + TAC + TERRITORY_COLS, "logreg"),
+    "logreg EF": (_EF, "logreg"),
+    "logreg EFB2": (_EFB2, "logreg"),
     "xgb A": (ECONOMY_COLS, "xgb"),
     "xgb E": (ECONOMY_COLS + MAPCONTROL_COLS + TAC, "xgb"),
-    "xgb ET": (ECONOMY_COLS + MAPCONTROL_COLS + TAC + TERRITORY_COLS, "xgb"),
+    "xgb EF": (_EF, "xgb"),
+    "xgb EFB2": (_EFB2, "xgb"),
 }
-HEADLINE = ["logreg E", "xgb ET"]
+HEADLINE = ["logreg EFB2", "xgb EFB2"]
 BINS = 10
 B = 200
 

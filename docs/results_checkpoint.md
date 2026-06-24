@@ -1,7 +1,7 @@
 # Results Checkpoint — CS2 Win-Probability Model (de_inferno)
 
-**Date:** 2026-06-19 · **Dataset:** 220 Tier-1 demos / 476,595 snapshots / 95 cols · base P(CT win)=0.445
-**Best single model:** logistic on **EB2** = **0.8508 AUC** · **best practical:** soft-vote (5 models, EB2) = **0.8518** (calibrated)
+**Date:** 2026-06-24 · **Dataset:** 220 Tier-1 demos / 476,595 snapshots / **104 cols (4 pillars)** · base P(CT win)=0.445
+**Best single model:** logistic on **EFB2 (all pillars)** = **0.8515 AUC** (vs A +0.0049, CI +0.0031..+0.0069) · best practical: soft-vote ≈ 0.852 (calibrated)
 
 Snapshot of every pillar, model, feature set, test/metric, and the honest verdict on what
 works. Companion to `docs/methodology.md` (full protocol + derivations).
@@ -61,24 +61,25 @@ AUC-ROC, log-loss, Brier (primary) · ECE, BSS, **contested-AUC** (complementary
 
 ## PART 2 — Stage verdict: what's good & meaningful
 
-### Master AUC grid (OOF, 5-fold)
-| set ↓ \ model → | logreg | xgb | lgbm | catboost | rf |
-|---|---|---|---|---|---|
-| A economy | 0.8465 | 0.8443 | 0.8448 | 0.8448 | 0.8228 |
-| B +Voronoi | 0.8485 | 0.8468 | — | — | — |
-| G +grey | 0.8467 | 0.8451 | — | — | — |
-| Terr +territory | 0.8468 | 0.8453 | — | — | — |
-| E +Voronoi+tactical | 0.8493 | 0.8476 | 0.8479 | 0.8478 | 0.8426 |
-| ET +territory | 0.8493 | 0.8480 | 0.8476 | 0.8474 | 0.8428 |
-| **EB +bomb-live** | 0.8506 | 0.8492 | 0.8491 | 0.8489 | 0.8440 |
-| **EB2 +defuse-race v2** | **0.8508** | 0.8489 | 0.8493 | 0.8491 | 0.8446 |
-| EBT2 full | 0.8508 | 0.8494 | 0.8497 | 0.8489 | 0.8445 |
-| **Soft-vote (5 models, EB2)** | — | — | — | — | **0.8518** |
-| Logistic stack (EB2) | — | — | — | — | 0.8520 (ECE 0.046 — miscalibrated) |
+### Master AUC grid (OOF, 5-fold; B=300 bootstrap CI vs A)
+| set ↓ \ model → | logreg | xgb | lgbm | catboost | rf | lift vs A (logreg, 95% CI) |
+|---|---|---|---|---|---|---|
+| A economy | 0.8465 | 0.8443 | 0.8448 | 0.8448 | 0.8228 | — |
+| B +Voronoi | 0.8485 | 0.8468 | 0.8469 | 0.8468 | — | +0.0020 (+0.0011,+0.0029) ✅ |
+| D +tactical | 0.8487 | 0.8472 | 0.8471 | 0.8473 | — | +0.0021 (+0.0010,+0.0036) ✅ |
+| **F +firepower** | 0.8484 | 0.8459 | 0.8454 | 0.8455 | 0.8338 | +0.0018 (+0.0004,+0.0032) ✅ logreg only |
+| E +Voronoi+tactical | 0.8493 | 0.8476 | 0.8479 | 0.8478 | 0.8426 | +0.0027 (+0.0015,+0.0042) ✅ |
+| EF (4 pillars) | 0.8500 | 0.8475 | 0.8481 | 0.8468 | 0.8426 | +0.0034 (+0.0015,+0.0053) ✅ |
+| EB2 +defuse-race | 0.8508 | 0.8489 | 0.8493 | 0.8491 | 0.8446 | +0.0043 (+0.0027,+0.0059) ✅ |
+| EBT2 +territory | 0.8508 | 0.8494 | 0.8497 | 0.8489 | 0.8445 | +0.0043 (+0.0028,+0.0059) ✅ |
+| **EFB2 (ALL pillars)** | **0.8515** | 0.8498 | 0.8498 | 0.8483 | 0.8442 | **+0.0049 (+0.0031,+0.0069) ✅** |
 
-*Defuse-race v2 (EB2) ≈ v1 (EB): the simple defuse_time_margin already captured it. Soft-vote
-is the best practical model (calibrated); the stack's extra +0.0002 AUC ruins calibration.
-Model weakest where the round is open (Ts in mid AUC 0.787 / banana 0.808), strong at sites (0.93).*
+*EFB2 (all four pillars + bomb defuse-race) is the new best — logreg 0.8515. Firepower is the
+**weakest pillar**: F−A significant only on logreg (xgb/lgbm/catboost CIs include 0); EF−E ≈ 0.
+Its value is conditional (contested-AUC F−A ≈ +0.007 across models). CRITICAL: firepower_rating_diff
+(perm-importance #1) is 0.988-correlated with the player-count advantage — a count proxy, not skill
+(→ firepower v2: use average rating). All non-RF models well-calibrated (ECE < 0.02); EFB2 logreg
+has the best Brier (0.1552) and log-loss (0.4559) in the study.*
 
 ### By model class
 1. **Logistic — winner.** Best/tied at every set, tightest CI band (~0.03 vs xgb ~0.21), most
