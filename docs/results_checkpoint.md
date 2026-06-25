@@ -74,13 +74,21 @@ AUC-ROC, log-loss, Brier (primary) · ECE, BSS, **contested-AUC** (complementary
 | EBT2 +territory | 0.8508 | 0.8494 | 0.8497 | 0.8489 | 0.8445 | +0.0043 (+0.0028,+0.0059) ✅ |
 | **EFB2 (ALL pillars)** | **0.8515** | 0.8498 | 0.8498 | 0.8483 | 0.8442 | **+0.0049 (+0.0031,+0.0069) ✅** |
 
-**Deep model (Betty GPU, causal TCN, 5-fold OOF):** tuned best (dropout 0.5 / hidden 48 / seq-len 160)
-= AUC **0.8493**, ECE **0.0090** (best calibration in study), BSS 0.370, cAUC 0.574; multi-seed
-**0.8485 ± 0.0004** (5 seeds — very stable). → **Ties the classical model on AUC** (within its bootstrap
-CI), **wins on calibration**, still **loses on contested rounds** (0.574 vs 0.596). seq-len is critical
-(160→0.849, 100→0.826, 64→0.780: shorter truncates the decisive late-round snapshots). Sequence/deep
-model matches but does not surpass the calibrated linear model on ~220 matches; next levers = more data
-and/or trajectory-level features (GAT). Deep-model bootstrap/seeds run on GPU (per plan).
+**Deep models (Betty GPU, 5-fold OOF, B=500 match bootstrap CIs) — a statistical DEAD HEAT:**
+| model | AUC | AUC 95% CI | ECE | cAUC |
+|---|---|---|---|---|
+| classical EFB2 (logreg) | **0.8515** | ~(0.845, 0.858) | 0.016 | **0.596** |
+| TCN (sequence, aggregate feats) | 0.8488 | (0.8420, 0.8557) | **0.013** | 0.572 |
+| GAT (player self-attention, raw trajectories) | 0.8465 | (0.8396, 0.8534) | 0.014 | 0.576 |
+
+Every model's point estimate falls **inside the others' 95% CIs** → classical, TCN, and GAT are
+**statistically indistinguishable**; no deep model beats the calibrated classical baseline, none is
+worse. TCN tuned best = dropout 0.5/hidden 48/seq-len 160 (seq-len critical: 160→0.849, 100→0.826,
+64→0.780); multi-seed 0.8485±0.0004. GAT on raw per-player trajectories (x/y/vel/yaw/hp/equip) is the
+weakest (per-snapshot, no temporal, data-hungry). **Takeaway: on ~220 matches, careful feature
+engineering + a simple calibrated model matches sequence (TCN) and spatial (GAT) deep learning;
+surpassing it needs ~2-5× more data and/or a spatio-temporal trajectory model.** Classical is the
+practical pick (no GPU, interpretable, best on contested). Deep bootstrap reports CIs on all metrics.
 
 *EFB2 (all four pillars + bomb defuse-race) is the best classical model — logreg 0.8515. Firepower is the
 **weakest pillar**: F−A significant only on logreg (xgb/lgbm/catboost CIs include 0); EF−E ≈ 0.
