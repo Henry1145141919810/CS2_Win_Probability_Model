@@ -22,4 +22,5 @@ nvidia-smi
 
 python src/models/deep/tcn.py \
     --data "$PROJ/data/training_dataset.parquet" \
-    --cv --epochs 40 --patience 6
+    --cv --epochs 40 --patience 6 \
+    --save-oof "$PROJ/outputs/oof_tcn.parquet"
