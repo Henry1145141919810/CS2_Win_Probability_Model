@@ -74,7 +74,15 @@ AUC-ROC, log-loss, Brier (primary) · ECE, BSS, **contested-AUC** (complementary
 | EBT2 +territory | 0.8508 | 0.8494 | 0.8497 | 0.8489 | 0.8445 | +0.0043 (+0.0028,+0.0059) ✅ |
 | **EFB2 (ALL pillars)** | **0.8515** | 0.8498 | 0.8498 | 0.8483 | 0.8442 | **+0.0049 (+0.0031,+0.0069) ✅** |
 
-*EFB2 (all four pillars + bomb defuse-race) is the new best — logreg 0.8515. Firepower is the
+**Deep model (Betty GPU, causal TCN, 5-fold OOF):** tuned best (dropout 0.5 / hidden 48 / seq-len 160)
+= AUC **0.8493**, ECE **0.0090** (best calibration in study), BSS 0.370, cAUC 0.574; multi-seed
+**0.8485 ± 0.0004** (5 seeds — very stable). → **Ties the classical model on AUC** (within its bootstrap
+CI), **wins on calibration**, still **loses on contested rounds** (0.574 vs 0.596). seq-len is critical
+(160→0.849, 100→0.826, 64→0.780: shorter truncates the decisive late-round snapshots). Sequence/deep
+model matches but does not surpass the calibrated linear model on ~220 matches; next levers = more data
+and/or trajectory-level features (GAT). Deep-model bootstrap/seeds run on GPU (per plan).
+
+*EFB2 (all four pillars + bomb defuse-race) is the best classical model — logreg 0.8515. Firepower is the
 **weakest pillar**: F−A significant only on logreg (xgb/lgbm/catboost CIs include 0); EF−E ≈ 0.
 Its value is conditional (contested-AUC F−A ≈ +0.007 across models). CRITICAL: firepower_rating_diff
 (perm-importance #1) is 0.988-correlated with the player-count advantage — a count proxy, not skill
