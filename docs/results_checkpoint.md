@@ -1,7 +1,7 @@
 # Results Checkpoint — CS2 Win-Probability Model (de_inferno)
 
 **Date:** 2026-06-24 · **Dataset:** 220 Tier-1 demos / 476,595 snapshots / **104 cols (4 pillars)** · base P(CT win)=0.445
-**Best single model:** logistic on **EFB2 (all pillars)** = **0.8515 AUC** (vs A +0.0049, CI +0.0031..+0.0069) · best practical: soft-vote ≈ 0.852 (calibrated)
+**Best single model:** logistic on **EFB2 (all pillars)** = **0.8515 AUC** · **Best overall: 4-model SOFT-VOTE ensemble = 0.8531** (best AUC + best calibration: ECE 0.009, BSS 0.378) · **9-architecture matrix complete**
 
 Snapshot of every pillar, model, feature set, test/metric, and the honest verdict on what
 works. Companion to `docs/methodology.md` (full protocol + derivations).
@@ -81,14 +81,30 @@ AUC-ROC, log-loss, Brier (primary) · ECE, BSS, **contested-AUC** (complementary
 | TCN (sequence, aggregate feats) | 0.8488 | (0.8420, 0.8557) | **0.013** | 0.572 |
 | GAT (player self-attention, raw trajectories) | 0.8465 | (0.8396, 0.8534) | 0.014 | 0.576 |
 
-Every model's point estimate falls **inside the others' 95% CIs** → classical, TCN, and GAT are
-**statistically indistinguishable**; no deep model beats the calibrated classical baseline, none is
-worse. TCN tuned best = dropout 0.5/hidden 48/seq-len 160 (seq-len critical: 160→0.849, 100→0.826,
-64→0.780); multi-seed 0.8485±0.0004. GAT on raw per-player trajectories (x/y/vel/yaw/hp/equip) is the
-weakest (per-snapshot, no temporal, data-hungry). **Takeaway: on ~220 matches, careful feature
-engineering + a simple calibrated model matches sequence (TCN) and spatial (GAT) deep learning;
-surpassing it needs ~2-5× more data and/or a spatio-temporal trajectory model.** Classical is the
-practical pick (no GPU, interpretable, best on contested). Deep bootstrap reports CIs on all metrics.
+Every model's point estimate falls **inside the others' 95% CIs** → classical, TCN, Transformer, and
+GAT are **statistically indistinguishable**; no deep model beats the calibrated classical baseline,
+none is worse. TCN tuned best = dropout 0.5/hidden 48/seq-len 160 (seq-len critical: 160→0.849,
+100→0.826, 64→0.780); multi-seed 0.8485±0.0004. Transformer (causal encoder) 0.8473, best point
+calibration (ECE 0.009). GAT on raw per-player trajectories the weakest (per-snapshot, no temporal,
+data-hungry).
+
+**9-ARCHITECTURE MATRIX COMPLETE — full deep + ensemble (OOF, B=500 CIs):**
+| model | AUC | AUC 95% CI | ECE | BSS | cAUC |
+|---|---|---|---|---|---|
+| logreg EFB2 | 0.8515 | (0.844,0.858) | 0.016 | 0.372 | 0.596 |
+| xgb EFB2 | 0.8498 | (0.843,0.857) | 0.013 | 0.370 | 0.591 |
+| TCN | 0.8489 | (0.842,0.856) | 0.012 | 0.368 | 0.572 |
+| Transformer | 0.8473 | (0.840,0.854) | 0.009 | 0.365 | 0.568 |
+| GAT | 0.8465 | (0.840,0.853) | 0.014 | 0.361 | 0.576 |
+| **SOFT-VOTE (4)** | **0.8531** | (0.846,0.860) | **0.009** | **0.378** | 0.589 |
+| logistic-stack | 0.8529 | (0.846,0.860) | 0.042⚠ | 0.368 | 0.590 |
+
+**Takeaways:** (1) on ~220 matches, careful feature engineering + a calibrated classical model
+MATCHES sequence (TCN/Transformer) and spatial (GAT) deep learning — all statistically tied.
+(2) The **soft-vote of classical+deep is the best overall model (0.8531, best calibration)** — deep
+models don't win alone but ADD ENSEMBLE DIVERSITY. (3) soft-vote > logistic-stack (stack overfits the
+prob scale, ECE 0.042). (4) Surpassing this clearly needs ~2-5× more data / spatio-temporal models.
+Classical/soft-vote are the practical picks. ensemble_oof.py combines saved deep OOF + classical.
 
 *EFB2 (all four pillars + bomb defuse-race) is the best classical model — logreg 0.8515. Firepower is the
 **weakest pillar**: F−A significant only on logreg (xgb/lgbm/catboost CIs include 0); EF−E ≈ 0.
