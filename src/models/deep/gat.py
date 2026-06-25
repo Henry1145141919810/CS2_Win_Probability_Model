@@ -58,22 +58,41 @@ def metric_line(name, y, p, contested=None):
     return s
 
 
-def block_bootstrap_auc(y, p, groups, B=500, seed=0):
-    """Match-level block bootstrap CI on AUC over fixed OOF predictions (no retraining) —
-    same procedure as the classical pipeline, so the CI is directly comparable."""
+_BOOT_METRICS = ["AUC", "logloss", "brier", "ECE", "BSS", "cAUC"]
+
+
+def block_bootstrap_metrics(y, p, groups, contested, B=500, seed=0):
+    """Match-level block bootstrap -> 95% CI on EVERY metric (not just AUC), over fixed OOF
+    predictions (no retraining). Same resampling unit (match) as the classical pipeline."""
     rng = np.random.default_rng(seed)
     by = {}
     for i, g in enumerate(groups):
         by.setdefault(g, []).append(i)
     keys = list(by); arrs = [np.asarray(by[k]) for k in keys]
-    aucs = []
+    acc = {m: [] for m in _BOOT_METRICS}
     for _ in range(B):
         samp = np.concatenate([arrs[j] for j in rng.integers(0, len(keys), len(keys))])
-        ys = y[samp]
-        if ys.min() != ys.max():
-            aucs.append(roc_auc_score(ys, p[samp]))
-    lo, hi = np.percentile(aucs, [2.5, 97.5])
-    return float(np.mean(aucs)), float(lo), float(hi)
+        ys, ps = y[samp], p[samp]
+        if ys.min() == ys.max():
+            continue
+        acc["AUC"].append(roc_auc_score(ys, ps))
+        acc["logloss"].append(log_loss(ys, ps, labels=[0, 1]))
+        acc["brier"].append(brier_score_loss(ys, ps))
+        acc["ECE"].append(ece(ys, ps))
+        acc["BSS"].append(bss(ys, ps))
+        cs = contested[samp]
+        if cs.sum() > 50 and ys[cs].min() != ys[cs].max():
+            acc["cAUC"].append(roc_auc_score(ys[cs], ps[cs]))
+    return {m: (float(np.mean(v)), float(np.percentile(v, 2.5)), float(np.percentile(v, 97.5)))
+            for m, v in acc.items() if v}
+
+
+def print_bootstrap(ci, B):
+    print(f"  match-level block bootstrap (B={B}) 95% CIs:")
+    for m in _BOOT_METRICS:
+        if m in ci:
+            mean, lo, hi = ci[m]
+            print(f"    {m:8s} {mean:.4f}  ({lo:.4f}, {hi:.4f})")
 
 
 # ----------------------------- data -----------------------------
@@ -240,9 +259,7 @@ def main():
                           np.concatenate(aC), np.concatenate(aG))
         print("\n" + metric_line("GAT (5-fold OOF)", Yf, Pf, Cf))
         if args.bootstrap:
-            m, lo, hi = block_bootstrap_auc(Yf, Pf, Gf, args.bootstrap)
-            print(f"  AUC match-level block bootstrap (B={args.bootstrap}): "
-                  f"{m:.4f}  95% CI ({lo:.4f}, {hi:.4f})")
+            print_bootstrap(block_bootstrap_metrics(Yf, Pf, Gf, Cf, args.bootstrap), args.bootstrap)
         print(BASELINE)
     else:
         rng = np.random.default_rng(args.seed)
