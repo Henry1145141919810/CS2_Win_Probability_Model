@@ -97,8 +97,8 @@ def print_bootstrap(ci, B):
 
 # ----------------------------- data -----------------------------
 def build_sequences(df: pl.DataFrame, cols, seq_len: int):
-    """-> X[N,T,F], M[N,T] mask, Y[N] label, G[N] match_id, C[N,T] contested-flag (per timestep)."""
-    X, M, Y, G, C = [], [], [], [], []
+    """-> X[N,T,F], M[N,T] mask, Y[N] label, G[N] match_id, C[N,T] contested, Tk[N,T] tick."""
+    X, M, Y, G, C, T = [], [], [], [], [], []
     for (mid, _rn), g in df.sort("tick").group_by(["match_id", "round_num"], maintain_order=True):
         feats = np.nan_to_num(g.select(cols).to_numpy().astype(np.float32))
         t = min(len(feats), seq_len)
@@ -109,8 +109,10 @@ def build_sequences(df: pl.DataFrame, cols, seq_len: int):
         ce = g["ct_equipment_value"].to_numpy(); te = g["t_equipment_value"].to_numpy()
         cont = (ca == ta) & (np.abs(ce - te) <= 1500)         # contested: equal alive & even econ
         cc = np.zeros(seq_len, bool); cc[:t] = cont[:t]
-        X.append(xx); M.append(mm); Y.append(int(g["ct_won"][0])); G.append(mid); C.append(cc)
-    return (np.stack(X), np.stack(M), np.array(Y, np.float32), np.array(G), np.stack(C))
+        tk = np.zeros(seq_len, np.int64); tk[:t] = g["tick"].to_numpy()[:t]
+        X.append(xx); M.append(mm); Y.append(int(g["ct_won"][0])); G.append(mid); C.append(cc); T.append(tk)
+    return (np.stack(X), np.stack(M), np.array(Y, np.float32), np.array(G),
+            np.stack(C), np.stack(T))
 
 
 # ----------------------------- model -----------------------------
@@ -207,9 +209,9 @@ def fit(Xs, M, Y, tri, vai, args, device, ckpt=None, cols=None, quiet=False):
 
 
 @torch.no_grad()
-def collect(model, Xs, M, Y, C, ridx, device, batch, G=None):
-    """Flattened (y, p, contested[, match_id]) over valid (non-pad) timesteps for round indices."""
-    model.eval(); ys, ps, cs, gs = [], [], [], []
+def collect(model, Xs, M, Y, C, ridx, device, batch, G=None, Tk=None):
+    """Flattened (y, p, contested[, match_id, tick]) over valid (non-pad) timesteps."""
+    model.eval(); ys, ps, cs, gs, ts = [], [], [], [], []
     for s in range(0, len(ridx), batch):
         b = ridx[s:s + batch]
         p = torch.sigmoid(model(torch.tensor(Xs[b]).to(device))).cpu().numpy()
@@ -217,9 +219,9 @@ def collect(model, Xs, M, Y, C, ridx, device, batch, G=None):
         yb = np.repeat(Y[b][:, None], p.shape[1], axis=1)
         ps.append(p[mm]); ys.append(yb[mm]); cs.append(C[b][mm])
         if G is not None:
-            gs.append(np.repeat(G[b][:, None], p.shape[1], axis=1)[mm])
+            gs.append(np.repeat(G[b][:, None], p.shape[1], axis=1)[mm]); ts.append(Tk[b][mm])
     out = (np.concatenate(ys), np.concatenate(ps), np.concatenate(cs).astype(bool))
-    return out + (np.concatenate(gs),) if G is not None else out
+    return out + (np.concatenate(gs), np.concatenate(ts)) if G is not None else out
 
 
 BASELINE = "classical best (logreg EFB2): AUC 0.8515  logloss 0.4559  brier 0.1552  ECE 0.016  cAUC 0.596"
@@ -243,6 +245,7 @@ def main():
     ap.add_argument("--cv", action="store_true",
                     help="5-fold GroupKFold OOF (full metrics over ALL rounds; comparable to classical)")
     ap.add_argument("--bootstrap", type=int, default=500, help="match-level block bootstrap B for OOF AUC CI")
+    ap.add_argument("--save-oof", default="", help="if set (+ --cv), write OOF (match_id,tick,y,p) parquet here")
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
     torch.manual_seed(args.seed); np.random.seed(args.seed)
@@ -254,7 +257,7 @@ def main():
         keep = df["match_id"].unique().to_list()[: args.limit_matches]
         df = df.filter(pl.col("match_id").is_in(keep))
     cols = [c for c in df.columns if c not in NON_FEATURES and c != "round_num"]
-    X, M, Y, G, C = build_sequences(df, cols, args.seq_len)
+    X, M, Y, G, C, Tk = build_sequences(df, cols, args.seq_len)
     print(f"{len(Y)} rounds x {args.seq_len} steps x {len(cols)} features; "
           f"{df['match_id'].n_unique()} matches; dropout {args.dropout} wd {args.weight_decay}\n")
 
@@ -266,7 +269,7 @@ def main():
     if args.cv:
         # 5-fold GroupKFold by match -> out-of-fold predictions over EVERY round (no leakage),
         # so the metric suite is directly comparable to the classical matrix.
-        aY, aP, aC, aG = [], [], [], []
+        aY, aP, aC, aG, aT = [], [], [], [], []
         for k, (tri, tei) in enumerate(GroupKFold(5).split(np.zeros(len(Y)), Y, G), 1):
             Xs = standardize(tri)
             g_tr = np.array(sorted(set(G[tri])))           # carve an inner val for early stopping
@@ -276,14 +279,17 @@ def main():
             iva = np.array([i for i in tri if G[i] in inner])
             print(f"fold {k}: train {len(itr)} / inner-val {len(iva)} / test {len(tei)}")
             model, _ = fit(Xs, M, Y, itr, iva, args, device, ckpt=None, cols=cols, quiet=True)
-            y, p, c, g = collect(model, Xs, M, Y, C, tei, device, args.batch, G=G)
-            aY.append(y); aP.append(p); aC.append(c); aG.append(g)
+            y, p, c, g, t = collect(model, Xs, M, Y, C, tei, device, args.batch, G=G, Tk=Tk)
+            aY.append(y); aP.append(p); aC.append(c); aG.append(g); aT.append(t)
         Yf, Pf, Cf = np.concatenate(aY), np.concatenate(aP), np.concatenate(aC)
-        Gf = np.concatenate(aG)
+        Gf, Tf = np.concatenate(aG), np.concatenate(aT)
         print("\n" + metric_line("TCN (5-fold OOF)", Yf, Pf, Cf))
         if args.bootstrap:
             print_bootstrap(block_bootstrap_metrics(Yf, Pf, Gf, Cf, args.bootstrap), args.bootstrap)
         print(BASELINE)
+        if args.save_oof:
+            pl.DataFrame({"match_id": Gf, "tick": Tf, "y": Yf, "p_tcn": Pf}).write_parquet(args.save_oof)
+            print(f"saved OOF -> {args.save_oof}")
     else:
         # single match-level split (fast iteration)
         rng = np.random.default_rng(args.seed)
