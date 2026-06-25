@@ -58,6 +58,24 @@ def metric_line(name, y, p, contested=None):
     return s
 
 
+def block_bootstrap_auc(y, p, groups, B=500, seed=0):
+    """Match-level block bootstrap CI on AUC over fixed OOF predictions (no retraining) —
+    same procedure as the classical pipeline, so the CI is directly comparable."""
+    rng = np.random.default_rng(seed)
+    by = {}
+    for i, g in enumerate(groups):
+        by.setdefault(g, []).append(i)
+    keys = list(by); arrs = [np.asarray(by[k]) for k in keys]
+    aucs = []
+    for _ in range(B):
+        samp = np.concatenate([arrs[j] for j in rng.integers(0, len(keys), len(keys))])
+        ys = y[samp]
+        if ys.min() != ys.max():
+            aucs.append(roc_auc_score(ys, p[samp]))
+    lo, hi = np.percentile(aucs, [2.5, 97.5])
+    return float(np.mean(aucs)), float(lo), float(hi)
+
+
 # ----------------------------- data -----------------------------
 def load_data(path, limit_matches=0):
     df = pl.read_parquet(path)
@@ -194,6 +212,7 @@ def main():
     ap.add_argument("--val-frac", type=float, default=0.2)
     ap.add_argument("--limit-matches", type=int, default=0)
     ap.add_argument("--cv", action="store_true", help="5-fold GroupKFold OOF (full metrics)")
+    ap.add_argument("--bootstrap", type=int, default=500, help="match-level block bootstrap B for the OOF AUC CI")
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
     torch.manual_seed(args.seed); np.random.seed(args.seed)
@@ -205,7 +224,7 @@ def main():
           f"{len(set(G))} matches; dim {args.dim} heads {args.heads} layers {args.layers}\n")
 
     if args.cv:
-        aY, aP, aC = [], [], []
+        aY, aP, aC, aG = [], [], [], []
         for k, (tri, tei) in enumerate(GroupKFold(5).split(np.zeros(len(Y)), Y, G), 1):
             Xs = standardize(X, Mk, tri)
             g_tr = np.array(sorted(set(G[tri])))
@@ -216,9 +235,14 @@ def main():
             print(f"fold {k}: train {len(itr)} / inner-val {len(iva)} / test {len(tei)}")
             model, _ = fit(Xs, Mk, Y, itr, iva, args, device, quiet=True)
             aP.append(predict(model, Xs, Mk, tei, device, args.batch))
-            aY.append(Y[tei]); aC.append(C[tei])
-        Yf, Pf, Cf = np.concatenate(aY), np.concatenate(aP), np.concatenate(aC)
+            aY.append(Y[tei]); aC.append(C[tei]); aG.append(G[tei])
+        Yf, Pf, Cf, Gf = (np.concatenate(aY), np.concatenate(aP),
+                          np.concatenate(aC), np.concatenate(aG))
         print("\n" + metric_line("GAT (5-fold OOF)", Yf, Pf, Cf))
+        if args.bootstrap:
+            m, lo, hi = block_bootstrap_auc(Yf, Pf, Gf, args.bootstrap)
+            print(f"  AUC match-level block bootstrap (B={args.bootstrap}): "
+                  f"{m:.4f}  95% CI ({lo:.4f}, {hi:.4f})")
         print(BASELINE)
     else:
         rng = np.random.default_rng(args.seed)

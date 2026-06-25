@@ -59,6 +59,23 @@ def metric_line(name, y, p, contested=None) -> str:
     return s
 
 
+def block_bootstrap_auc(y, p, groups, B=500, seed=0):
+    """Match-level block bootstrap CI on AUC over fixed OOF predictions (same as classical)."""
+    rng = np.random.default_rng(seed)
+    by = {}
+    for i, g in enumerate(groups):
+        by.setdefault(g, []).append(i)
+    keys = list(by); arrs = [np.asarray(by[k]) for k in keys]
+    aucs = []
+    for _ in range(B):
+        samp = np.concatenate([arrs[j] for j in rng.integers(0, len(keys), len(keys))])
+        ys = y[samp]
+        if ys.min() != ys.max():
+            aucs.append(roc_auc_score(ys, p[samp]))
+    lo, hi = np.percentile(aucs, [2.5, 97.5])
+    return float(np.mean(aucs)), float(lo), float(hi)
+
+
 # ----------------------------- data -----------------------------
 def build_sequences(df: pl.DataFrame, cols, seq_len: int):
     """-> X[N,T,F], M[N,T] mask, Y[N] label, G[N] match_id, C[N,T] contested-flag (per timestep)."""
@@ -171,16 +188,19 @@ def fit(Xs, M, Y, tri, vai, args, device, ckpt=None, cols=None, quiet=False):
 
 
 @torch.no_grad()
-def collect(model, Xs, M, Y, C, ridx, device, batch):
-    """Flattened (y, p, contested) over valid (non-pad) timesteps for the given round indices."""
-    model.eval(); ys, ps, cs = [], [], []
+def collect(model, Xs, M, Y, C, ridx, device, batch, G=None):
+    """Flattened (y, p, contested[, match_id]) over valid (non-pad) timesteps for round indices."""
+    model.eval(); ys, ps, cs, gs = [], [], [], []
     for s in range(0, len(ridx), batch):
         b = ridx[s:s + batch]
         p = torch.sigmoid(model(torch.tensor(Xs[b]).to(device))).cpu().numpy()
         mm = M[b].astype(bool)
         yb = np.repeat(Y[b][:, None], p.shape[1], axis=1)
         ps.append(p[mm]); ys.append(yb[mm]); cs.append(C[b][mm])
-    return np.concatenate(ys), np.concatenate(ps), np.concatenate(cs).astype(bool)
+        if G is not None:
+            gs.append(np.repeat(G[b][:, None], p.shape[1], axis=1)[mm])
+    out = (np.concatenate(ys), np.concatenate(ps), np.concatenate(cs).astype(bool))
+    return out + (np.concatenate(gs),) if G is not None else out
 
 
 BASELINE = "classical best (logreg EFB2): AUC 0.8515  logloss 0.4559  brier 0.1552  ECE 0.016  cAUC 0.596"
@@ -203,6 +223,7 @@ def main():
     ap.add_argument("--checkpoint", default="checkpoints/tcn.pt")
     ap.add_argument("--cv", action="store_true",
                     help="5-fold GroupKFold OOF (full metrics over ALL rounds; comparable to classical)")
+    ap.add_argument("--bootstrap", type=int, default=500, help="match-level block bootstrap B for OOF AUC CI")
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
     torch.manual_seed(args.seed); np.random.seed(args.seed)
@@ -226,7 +247,7 @@ def main():
     if args.cv:
         # 5-fold GroupKFold by match -> out-of-fold predictions over EVERY round (no leakage),
         # so the metric suite is directly comparable to the classical matrix.
-        aY, aP, aC = [], [], []
+        aY, aP, aC, aG = [], [], [], []
         for k, (tri, tei) in enumerate(GroupKFold(5).split(np.zeros(len(Y)), Y, G), 1):
             Xs = standardize(tri)
             g_tr = np.array(sorted(set(G[tri])))           # carve an inner val for early stopping
@@ -236,10 +257,15 @@ def main():
             iva = np.array([i for i in tri if G[i] in inner])
             print(f"fold {k}: train {len(itr)} / inner-val {len(iva)} / test {len(tei)}")
             model, _ = fit(Xs, M, Y, itr, iva, args, device, ckpt=None, cols=cols, quiet=True)
-            y, p, c = collect(model, Xs, M, Y, C, tei, device, args.batch)
-            aY.append(y); aP.append(p); aC.append(c)
+            y, p, c, g = collect(model, Xs, M, Y, C, tei, device, args.batch, G=G)
+            aY.append(y); aP.append(p); aC.append(c); aG.append(g)
         Yf, Pf, Cf = np.concatenate(aY), np.concatenate(aP), np.concatenate(aC)
+        Gf = np.concatenate(aG)
         print("\n" + metric_line("TCN (5-fold OOF)", Yf, Pf, Cf))
+        if args.bootstrap:
+            m, lo, hi = block_bootstrap_auc(Yf, Pf, Gf, args.bootstrap)
+            print(f"  AUC match-level block bootstrap (B={args.bootstrap}): "
+                  f"{m:.4f}  95% CI ({lo:.4f}, {hi:.4f})")
         print(BASELINE)
     else:
         # single match-level split (fast iteration)
