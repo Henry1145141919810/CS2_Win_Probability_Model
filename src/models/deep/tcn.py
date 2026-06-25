@@ -110,9 +110,12 @@ def main():
     ap.add_argument("--seq-len", type=int, default=160)
     ap.add_argument("--epochs", type=int, default=30)
     ap.add_argument("--batch", type=int, default=64)
-    ap.add_argument("--hidden", type=int, default=64)
-    ap.add_argument("--dropout", type=float, default=0.2)
+    ap.add_argument("--hidden", type=int, default=48)
+    ap.add_argument("--dropout", type=float, default=0.3)        # was 0.2 -> fight overfitting
     ap.add_argument("--lr", type=float, default=1e-3)
+    ap.add_argument("--weight-decay", type=float, default=1e-4)  # L2 regularization
+    ap.add_argument("--patience", type=int, default=6,           # early stopping
+                    help="stop if val AUC doesn't improve for this many epochs")
     ap.add_argument("--val-frac", type=float, default=0.2)
     ap.add_argument("--limit-matches", type=int, default=0, help="subset N matches for a smoke test")
     ap.add_argument("--checkpoint", default="checkpoints/tcn.pt")
@@ -146,12 +149,13 @@ def main():
     tl, vl = loader(tr, True), loader(va, False)
 
     model = TCN(len(cols), args.hidden, dropout=args.dropout).to(device)
-    opt = torch.optim.Adam(model.parameters(), lr=args.lr)
+    opt = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     n_params = sum(p.numel() for p in model.parameters())
-    print(f"TCN params: {n_params:,}; train {tr.sum()} / val {va.sum()} rounds\n")
+    print(f"TCN params: {n_params:,}; train {tr.sum()} / val {va.sum()} rounds; "
+          f"dropout {args.dropout}, wd {args.weight_decay}, patience {args.patience}\n")
 
     ckpt = Path(args.checkpoint); ckpt.parent.mkdir(parents=True, exist_ok=True)
-    best = 0.0
+    best = 0.0; since = 0
     for ep in range(1, args.epochs + 1):
         model.train(); t0 = time.time(); tot = 0.0
         for xb, mb, yb in tl:
@@ -159,12 +163,19 @@ def main():
             loss = masked_bce(model(xb.to(device)), yb.to(device), mb.to(device))
             loss.backward(); opt.step(); tot += loss.item() * len(yb)
         auc, _, _ = evaluate(model, vl, device)
-        print(f"epoch {ep:3d}  train_loss {tot/tr.sum():.4f}  val_AUC {auc:.4f}  ({time.time()-t0:.1f}s)")
+        flag = ""
         if auc > best:
-            best = auc
+            best = auc; since = 0; flag = "  *best (saved)"
             torch.save({"model": model.state_dict(), "epoch": ep, "val_auc": auc,
                         "cols": cols, "mu": mu, "sd": sd, "args": vars(args)}, ckpt)
-    print(f"\nbest val AUC {best:.4f} (saved {ckpt}); classical baseline logreg EB2 = 0.8508")
+        else:
+            since += 1
+        print(f"epoch {ep:3d}  train_loss {tot/tr.sum():.4f}  val_AUC {auc:.4f}  "
+              f"({time.time()-t0:.1f}s){flag}")
+        if since >= args.patience:
+            print(f"early stop: no val-AUC improvement for {args.patience} epochs (best {best:.4f})")
+            break
+    print(f"\nbest val AUC {best:.4f} (saved {ckpt}); classical baseline logreg EFB2 = 0.8515")
 
 
 if __name__ == "__main__":
