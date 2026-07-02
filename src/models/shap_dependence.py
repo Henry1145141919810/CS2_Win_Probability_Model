@@ -24,7 +24,8 @@ from models.train_pipeline import FEATURE_SETS, make_model  # noqa: E402
 DATA = ROOT / "data" / "training_dataset.parquet"
 OUT = ROOT / "outputs" / "figures"
 FEATURES = ["defuse_time_margin", "defuse_margin_kit", "defuse_contest_margin",
-            "control_deficit", "min_ct_dist_to_bomb", "ct_bomb_local_deficit"]
+            "control_deficit", "min_ct_dist_to_bomb", "ct_bomb_local_deficit",
+            "firepower_rating_diff", "ct_clutch_score", "ct_firepower_rating"]
 
 
 def main():

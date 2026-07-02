@@ -1,7 +1,7 @@
 # Results Checkpoint — CS2 Win-Probability Model (de_inferno)
 
-**Date:** 2026-06-19 · **Dataset:** 220 Tier-1 demos / 476,595 snapshots / 95 cols · base P(CT win)=0.445
-**Best single model:** logistic on **EB2** = **0.8508 AUC** · **best practical:** soft-vote (5 models, EB2) = **0.8518** (calibrated)
+**Date:** 2026-06-24 · **Dataset:** 220 Tier-1 demos / 476,595 snapshots / **104 cols (4 pillars)** · base P(CT win)=0.445
+**Best single model:** logistic on **EFB2 (all pillars)** = **0.8515 AUC** · **Best overall: 4-model SOFT-VOTE ensemble = 0.8531** (best AUC + best calibration: ECE 0.009, BSS 0.378) · **9-architecture matrix complete**
 
 Snapshot of every pillar, model, feature set, test/metric, and the honest verdict on what
 works. Companion to `docs/methodology.md` (full protocol + derivations).
@@ -61,24 +61,57 @@ AUC-ROC, log-loss, Brier (primary) · ECE, BSS, **contested-AUC** (complementary
 
 ## PART 2 — Stage verdict: what's good & meaningful
 
-### Master AUC grid (OOF, 5-fold)
-| set ↓ \ model → | logreg | xgb | lgbm | catboost | rf |
-|---|---|---|---|---|---|
-| A economy | 0.8465 | 0.8443 | 0.8448 | 0.8448 | 0.8228 |
-| B +Voronoi | 0.8485 | 0.8468 | — | — | — |
-| G +grey | 0.8467 | 0.8451 | — | — | — |
-| Terr +territory | 0.8468 | 0.8453 | — | — | — |
-| E +Voronoi+tactical | 0.8493 | 0.8476 | 0.8479 | 0.8478 | 0.8426 |
-| ET +territory | 0.8493 | 0.8480 | 0.8476 | 0.8474 | 0.8428 |
-| **EB +bomb-live** | 0.8506 | 0.8492 | 0.8491 | 0.8489 | 0.8440 |
-| **EB2 +defuse-race v2** | **0.8508** | 0.8489 | 0.8493 | 0.8491 | 0.8446 |
-| EBT2 full | 0.8508 | 0.8494 | 0.8497 | 0.8489 | 0.8445 |
-| **Soft-vote (5 models, EB2)** | — | — | — | — | **0.8518** |
-| Logistic stack (EB2) | — | — | — | — | 0.8520 (ECE 0.046 — miscalibrated) |
+### Master AUC grid (OOF, 5-fold; B=300 bootstrap CI vs A)
+| set ↓ \ model → | logreg | xgb | lgbm | catboost | rf | lift vs A (logreg, 95% CI) |
+|---|---|---|---|---|---|---|
+| A economy | 0.8465 | 0.8443 | 0.8448 | 0.8448 | 0.8228 | — |
+| B +Voronoi | 0.8485 | 0.8468 | 0.8469 | 0.8468 | — | +0.0020 (+0.0011,+0.0029) ✅ |
+| D +tactical | 0.8487 | 0.8472 | 0.8471 | 0.8473 | — | +0.0021 (+0.0010,+0.0036) ✅ |
+| **F +firepower** | 0.8484 | 0.8459 | 0.8454 | 0.8455 | 0.8338 | +0.0018 (+0.0004,+0.0032) ✅ logreg only |
+| E +Voronoi+tactical | 0.8493 | 0.8476 | 0.8479 | 0.8478 | 0.8426 | +0.0027 (+0.0015,+0.0042) ✅ |
+| EF (4 pillars) | 0.8500 | 0.8475 | 0.8481 | 0.8468 | 0.8426 | +0.0034 (+0.0015,+0.0053) ✅ |
+| EB2 +defuse-race | 0.8508 | 0.8489 | 0.8493 | 0.8491 | 0.8446 | +0.0043 (+0.0027,+0.0059) ✅ |
+| EBT2 +territory | 0.8508 | 0.8494 | 0.8497 | 0.8489 | 0.8445 | +0.0043 (+0.0028,+0.0059) ✅ |
+| **EFB2 (ALL pillars)** | **0.8515** | 0.8498 | 0.8498 | 0.8483 | 0.8442 | **+0.0049 (+0.0031,+0.0069) ✅** |
 
-*Defuse-race v2 (EB2) ≈ v1 (EB): the simple defuse_time_margin already captured it. Soft-vote
-is the best practical model (calibrated); the stack's extra +0.0002 AUC ruins calibration.
-Model weakest where the round is open (Ts in mid AUC 0.787 / banana 0.808), strong at sites (0.93).*
+**Deep models (Betty GPU, 5-fold OOF, B=500 match bootstrap CIs) — a statistical DEAD HEAT:**
+| model | AUC | AUC 95% CI | ECE | cAUC |
+|---|---|---|---|---|
+| classical EFB2 (logreg) | **0.8515** | ~(0.845, 0.858) | 0.016 | **0.596** |
+| TCN (sequence, aggregate feats) | 0.8488 | (0.8420, 0.8557) | **0.013** | 0.572 |
+| GAT (player self-attention, raw trajectories) | 0.8465 | (0.8396, 0.8534) | 0.014 | 0.576 |
+
+Every model's point estimate falls **inside the others' 95% CIs** → classical, TCN, Transformer, and
+GAT are **statistically indistinguishable**; no deep model beats the calibrated classical baseline,
+none is worse. TCN tuned best = dropout 0.5/hidden 48/seq-len 160 (seq-len critical: 160→0.849,
+100→0.826, 64→0.780); multi-seed 0.8485±0.0004. Transformer (causal encoder) 0.8473, best point
+calibration (ECE 0.009). GAT on raw per-player trajectories the weakest (per-snapshot, no temporal,
+data-hungry).
+
+**9-ARCHITECTURE MATRIX COMPLETE — full deep + ensemble (OOF, B=500 CIs):**
+| model | AUC | AUC 95% CI | ECE | BSS | cAUC |
+|---|---|---|---|---|---|
+| logreg EFB2 | 0.8515 | (0.844,0.858) | 0.016 | 0.372 | 0.596 |
+| xgb EFB2 | 0.8498 | (0.843,0.857) | 0.013 | 0.370 | 0.591 |
+| TCN | 0.8489 | (0.842,0.856) | 0.012 | 0.368 | 0.572 |
+| Transformer | 0.8473 | (0.840,0.854) | 0.009 | 0.365 | 0.568 |
+| GAT | 0.8465 | (0.840,0.853) | 0.014 | 0.361 | 0.576 |
+| **SOFT-VOTE (4)** | **0.8531** | (0.846,0.860) | **0.009** | **0.378** | 0.589 |
+| logistic-stack | 0.8529 | (0.846,0.860) | 0.042⚠ | 0.368 | 0.590 |
+
+**Takeaways:** (1) on ~220 matches, careful feature engineering + a calibrated classical model
+MATCHES sequence (TCN/Transformer) and spatial (GAT) deep learning — all statistically tied.
+(2) The **soft-vote of classical+deep is the best overall model (0.8531, best calibration)** — deep
+models don't win alone but ADD ENSEMBLE DIVERSITY. (3) soft-vote > logistic-stack (stack overfits the
+prob scale, ECE 0.042). (4) Surpassing this clearly needs ~2-5× more data / spatio-temporal models.
+Classical/soft-vote are the practical picks. ensemble_oof.py combines saved deep OOF + classical.
+
+*EFB2 (all four pillars + bomb defuse-race) is the best classical model — logreg 0.8515. Firepower is the
+**weakest pillar**: F−A significant only on logreg (xgb/lgbm/catboost CIs include 0); EF−E ≈ 0.
+Its value is conditional (contested-AUC F−A ≈ +0.007 across models). CRITICAL: firepower_rating_diff
+(perm-importance #1) is 0.988-correlated with the player-count advantage — a count proxy, not skill
+(→ firepower v2: use average rating). All non-RF models well-calibrated (ECE < 0.02); EFB2 logreg
+has the best Brier (0.1552) and log-loss (0.4559) in the study.*
 
 ### By model class
 1. **Logistic — winner.** Best/tied at every set, tightest CI band (~0.03 vs xgb ~0.21), most

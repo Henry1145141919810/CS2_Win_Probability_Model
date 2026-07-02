@@ -32,7 +32,8 @@ sys.path.insert(0, str(ROOT / "src"))
 from features.economy import ECONOMY_COLS  # noqa: E402
 from features.mapcontrol import MAPCONTROL_COLS, TERRITORY_COLS  # noqa: E402
 from features.positional import TACTICAL_COLS  # noqa: E402
-from features.bomb import BOMB_COLS  # noqa: E402
+from features.bomb import BOMB_COLS, BOMB_LIVE_COLS, BOMB_DEFUSE_COLS  # noqa: E402
+from features.firepower import FIREPOWER_COLS  # noqa: E402
 
 DATA = ROOT / "data" / "training_dataset.parquet"
 OUTCSV = ROOT / "outputs" / "logistic_coefficients.csv"
@@ -46,15 +47,19 @@ for c in MAPCONTROL_COLS:
     PILLAR[c] = "voronoi"
 for c in TERRITORY_COLS:
     PILLAR[c] = "territory"
-for c in TACTICAL_COLS + BOMB_COLS:
+for c in TACTICAL_COLS + BOMB_COLS + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS:
     PILLAR[c] = "tactical"
-PILLAR_COLOR = {"economy": "#4477aa", "voronoi": "#ee6677",
-                "territory": "#228833", "tactical": "#ccbb44"}
+for c in FIREPOWER_COLS:
+    PILLAR[c] = "firepower"
+PILLAR_COLOR = {"economy": "#4477aa", "voronoi": "#ee6677", "territory": "#228833",
+                "tactical": "#ccbb44", "firepower": "#aa3377"}
 
 SETS = {
     "A (economy)": ECONOMY_COLS,
-    "E (econ+Voronoi+tactical)": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL_COLS + BOMB_COLS,
-    "ET (E+territory)": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL_COLS + BOMB_COLS + TERRITORY_COLS,
+    "F (econ+firepower)": ECONOMY_COLS + FIREPOWER_COLS,
+    "EF (4 pillars)": ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL_COLS + BOMB_COLS + FIREPOWER_COLS,
+    "EFB2 (all pillars+bomb)": (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL_COLS + BOMB_COLS
+                                + TERRITORY_COLS + FIREPOWER_COLS + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS),
 }
 
 
@@ -83,7 +88,7 @@ def main():
             print(f"  {cols[i]:28s} {coef[i]:>+9.3f} {np.exp(coef[i]):>7.3f}  "
                   f"{PILLAR.get(cols[i],'?')}")
         print()
-        if label.startswith("ET"):
+        if label.startswith("EFB2"):
             et_rows = [{"feature": cols[i], "coef_standardized": float(coef[i]),
                         "odds_ratio_per_sd": float(np.exp(coef[i])),
                         "pillar": PILLAR.get(cols[i], "?")} for i in order]

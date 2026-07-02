@@ -298,6 +298,36 @@ weighting {area,count}, bomb-local radius ∈ {400,600,800}u, and CT defuse spee
 {215,250,285} moves AUC by **|Δ| ≤ 0.0004** (baseline 0.8509). No result depends on an
 arbitrary parameter choice — the constants are not load-bearing.
 
+## Pillar 3 firepower (v1, by teammate Leu) — integrated & benchmarked (June 2026)
+Firepower = HLTV Rating/ADR/KAST **summed** over alive players + a 1vN **clutch score**, joined
+on `(steamid, year)` (skill drifts yearly). 9 cols; sets **F** (econ+firepower), **EF** (4
+pillars), and a new all-pillars set **EFB2** (econ+map+tactical+territory+firepower+bomb). Canonical
+dataset re-assembled to **104 cols**.
+
+**Full matrix (5 models × {A,B,D,F,E,EF,EB2,EBT2,EFB2}, B=300 bootstrap):** **EFB2 is the new best
+model — logreg 0.8515** (vs A +0.0049, 95% CI +0.0031..+0.0069; xgb 0.8498, lgbm 0.8498). Brier
+0.1552 / log-loss 0.4559 (best in study); ECE 0.016 (calibration preserved).
+
+**Firepower is the WEAKEST, least-robust pillar — honest result:**
+- **F − A significant only on logreg** (+0.0018, CI +0.0004..+0.0032); on xgb/lgbm/catboost the
+  bootstrap CI **includes 0** (not significant). Matches Leu's own caveat.
+- **EF − E ≈ 0** (logreg +0.0007, CI includes 0; xgb −0.0000; catboost −0.0011) — once the other
+  pillars are present, firepower adds essentially nothing to aggregate AUC.
+- **Where it does help = contested rounds:** cAUC F−A ≈ **+0.007** across ALL models (logreg
+  0.587→0.593, xgb 0.580→0.587, …) — same "matters where economy fails" shape as map control.
+- **Clutch (1vN) is NOT where it helps:** AUC ≈ 0.98 for every set there — a 1vN is near-decided by
+  the man-advantage; `clutch_score` adds ~nothing.
+
+**CRITICAL confound (the key critique for firepower v2):** `firepower_rating_diff` is permutation-
+importance **rank #1** (AUC-drop 0.061) — but it correlates **0.988** with the player-count
+advantage `(ct_alive − t_alive)` and predicts `ct_won` *identically* (both r=0.498). Because Rating
+is **summed** over alive players, this feature is ~99% a **player-count proxy, not a skill signal**;
+its apparent dominance is an artifact (it re-encodes the strongest predictor, already in economy),
+which is exactly why its marginal lift (EF−E) is ~0. **Recommendation: firepower v2 should use
+*average* rating per alive player (skill-per-capita) to decouple skill from count.** Also, the
+logistic firepower coefficients sign-flip (`ct_firepower_adr` −1.66) from collinearity among
+rating/ADR/KAST — trust permutation importance + AUC, not raw coefficients.
+
 ## Current status (June 2026, 220 demos / 476,595 snapshots)
 - Tier-1-filtered (dropped an ESL qualifier + a women's-team game); 1 demo off-list.
 - Map control A/B (XGBoost): A 0.8318; B Voronoi 0.8366; G distance-grey 0.8357;

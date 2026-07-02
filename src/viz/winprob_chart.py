@@ -28,7 +28,8 @@ sys.path.insert(0, str(ROOT / "src"))
 from features.economy import ECONOMY_COLS  # noqa: E402
 from features.mapcontrol import MAPCONTROL_COLS, TERRITORY_COLS  # noqa: E402
 from features.positional import TACTICAL_COLS  # noqa: E402
-from features.bomb import BOMB_COLS  # noqa: E402
+from features.bomb import BOMB_COLS, BOMB_LIVE_COLS, BOMB_DEFUSE_COLS  # noqa: E402
+from features.firepower import FIREPOWER_COLS  # noqa: E402
 from models.train_pipeline import make_model  # noqa: E402
 
 DATA = ROOT / "data" / "training_dataset.parquet"
@@ -36,7 +37,9 @@ KILLS_DIR = ROOT / "data" / "parquet" / "kills"
 ROUNDS_DIR = ROOT / "data" / "parquet" / "rounds"
 OUT = ROOT / "outputs" / "figures"
 TICKRATE = 64
-COLS = ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL_COLS + BOMB_COLS + TERRITORY_COLS
+# all-pillars (EFB2) feature set — the best model in the study
+COLS = (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL_COLS + BOMB_COLS + TERRITORY_COLS
+        + FIREPOWER_COLS + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS)
 
 
 def _sigmoid(z):
