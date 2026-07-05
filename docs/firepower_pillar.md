@@ -195,4 +195,33 @@ of this pillar's contribution than the modest aggregate AUC lift.
 | `configs/player_roster.csv` | 1 row / steamid (260) | identity + name variants + team (mode) + years active |
 | `configs/demo_year_map.csv` | 1 row / demo (220) | `demo_id -> year`, used by `firepower.py` at match granularity |
 | `configs/player_match_year.csv` | 1 row / (steamid, demo) (2,202) | long-format scrape-scoping table, not read at train time |
-| `configs/player_stats_raw.csv` | 1 row / (steamid, year) (377) | the actual lookup table `firepower.py` reads: rating/adr/kast/clutching |
+| `configs/player_stats_raw.csv` | 1 row / (steamid, year) (377) | v1 lookup table: rating/adr/kast/clutching |
+| `configs/player_stats_sided.csv` | 1 row / (steamid, year) (377) | **v2** lookup: side-split Rating/Firepower/Entry/Trading/Opening + blended ADR/KAST/Sniping/Utility |
+
+---
+
+## 8. v2 (July 2026) — side-aware + situational gating (commit fc4f719)
+The sections above document **v1** (kept for the process). **v2** is a redesign of `firepower.py`
+(`FIREPOWER_COLS` 9 → **20**):
+- **Side-aware:** each alive player is scored for the side they are *currently* playing (CT-side vs
+  T-side Rating/Firepower/Entrying/Trading/Opening from `player_stats_sided.csv`); ADR/KAST/Sniping/
+  Utility stay blended (HLTV has no per-side split).
+- **Per-player conditional gates:** lone survivor → Clutching (suppress Entry/Trading); teammates alive
+  → Entry/Trading (suppress Clutch); Opening only when both sides are 5-alive (no kills yet).
+- **Sniping** = the AWP holder's role score (NaN if no AWP held). **Utility** = HLTV utility skill ×
+  current grenade dollar value carried, summed per side.
+
+**Benchmark (same 220 demos / 5-fold OOF / B=500; full numbers in `docs/results_checkpoint.md` and
+`docs/methodology.md` "Pillar 3 v1→v2"):**
+- ⬆ **Helps the linear/headline model** — **logreg contested-AUC 0.593 → 0.603** and **logreg EFB2
+  0.8515 → 0.8519** (both the study's best).
+- ⬇ **Hurts the tree models** — EF < E on xgb/lgbm/catboost (catboost −0.0026, significant): the 20
+  sparse, NaN-gated features overfit GBMs.
+- ⚠️ **Count confound persists** — v2 kept **sums**, so `ct_rating_sum − t_rating_sum` is still
+  **0.987**-correlated with the player-count advantage. Permutation importance: sum features still lead
+  (`ct_rating_sum` #9, `t_rating_sum` #12), with `t_trading_sum` #10 and `t_awp_sniping_skill` #19 as
+  the strongest new side-aware signals.
+
+**Open — firepower v3:** use **average** rating per alive player (per-capita) to decouple skill from
+count, and **prune** the sparse gated features (keep the ones importance likes). Use v2 for the
+logistic/headline model; v1 or a pruned v2 for the GBMs.

@@ -95,22 +95,31 @@ def main():
         "Honest probabilities + comebacks: ECE<0.02; says 10% -> side wins 6.8%; winner written off (<=10%) in 7.2% of rounds, calibrated.",
     ])
 
-    h("5. Firepower (your pillar) — v1 result + v2 fix")
-    doc.add_paragraph("v1: HLTV Rating/ADR/KAST summed over alive players + clutch, joined (steamid, year). "
-                      "Integrated cleanly, benchmarked across all 5 models.")
+    h("5. Firepower (your pillar) — v1 -> v2 (both benchmarked)")
+    doc.add_paragraph("v1 (sum-based, 9 feats): summed HLTV Rating/ADR/KAST + 1vN clutch, joined (steamid, year). "
+                      "F-A significant only on logreg; EF-E ~= 0; value conditional (contested +0.007). KEY ISSUE = a "
+                      "count confound: firepower_rating_diff was perm-importance #1 but 0.988-correlated with the "
+                      "player-count advantage (Rating is SUMMED -> ~99% a count proxy, not skill).")
+    doc.add_paragraph("v2 (your redesign, commit fc4f719, 20 feats): side-aware CT/T stats (player_stats_sided.csv), "
+                      "per-player gates (lone survivor->Clutch; teammates->Entry/Trading; Opening only at 5v5), AWP-holder "
+                      "Sniping flag, grenade-$-weighted Utility. Benchmarked on the same 220 demos / 5-fold OOF / B=500.")
+    table(["metric", "v1", "v2"], [
+        ["logreg F-A", "+0.0018 (sig)", "+0.0022 (sig)"],
+        ["logreg contested-AUC (F)", "0.593", "0.603 (up)"],
+        ["logreg EFB2 (best overall)", "0.8515", "0.8519 (up, study best)"],
+        ["xgb/lgbm/catboost EF-E", "~0 (ns)", "negative (catboost -0.0026 sig)"],
+        ["count confound (rating-diff vs count)", "0.988", "0.987 (persists)"],
+    ], bold0=True)
     bullets([
-        "v1 result: F-A significant only on logreg; EF-E ~= 0 (adds ~nothing on top of other pillars). Real value is "
-        "conditional: contested-AUC F-A ~+0.007 across models. Clutch (1vN) is NOT where it helps.",
-        "KEY ISSUE (count confound): firepower_rating_diff is permutation-importance #1 but 0.988-correlated with the "
-        "player-count advantage (ct_alive - t_alive). Because Rating is SUMMED over alive players, it's ~99% a "
-        "count proxy, not skill -> marginal lift ~0. Coefficients sign-flip (ADR) from rating/ADR/KAST collinearity.",
+        "v2 HELPED the linear/headline model: best contested-AUC (0.603) and best overall AUC (logreg EFB2 0.8519) in the study.",
+        "v2 HURT the tree models (EF < E; catboost significantly): the 20 sparse NaN-gated features overfit the GBMs.",
+        "The count confound is STILL there (v2 kept sums). Side-awareness/gating fixed a different axis, not this one.",
     ])
-    p = doc.add_paragraph(); p.add_run("Recommended v2: ").bold = True
+    p = doc.add_paragraph(); p.add_run("Suggested v3 (open item): ").bold = True
     bullets([
-        "Use AVERAGE rating per alive player (skill-per-capita), not the sum -> decouples skill from count "
-        "(e.g. firepower_skill_diff = ct_avg_rating - t_avg_rating).",
-        "Drop/rethink clutch_score (added ~nothing); try situational skill (recent multi-kill rate, opening-duel win rate).",
-        "Keep the year-aware (steamid, year) join. Then re-assemble + re-run the standard 5-model battery on A,F,E,EF,EFB2.",
+        "Use AVERAGE rating per alive player (per-capita), not the sum -> finally decouple skill from count.",
+        "Prune the sparse gated features that hurt GBMs; keep what permutation importance likes (rating->avg, adr, t_trading, AWP sniping).",
+        "Keep v2's good parts: side-awareness + year-aware (steamid, year) join.",
     ])
 
     h("6. Evaluation framework")

@@ -73,31 +73,42 @@ EB2=+defuse-race, **EFB2 = all pillars** (the best).
 
 ---
 
-## 5. Firepower (your pillar) — the v1 result and the v2 fix
-**v1 (what you built):** HLTV Rating/ADR/KAST *summed* over alive players + clutch, joined by
-`(steamid, year)`. Integrated cleanly; benchmarked across all 5 models.
+## 5. Firepower (your pillar) — v1 → v2 (both benchmarked)
 
-**Honest v1 result:**
-- F − A significant **only on logreg** (xgb/lgbm/catboost bootstrap CIs include 0); **EF − E ≈ 0**
-  (adds ~nothing on top of the other pillars).
-- Its real value is **conditional**: contested-AUC F − A ≈ **+0.007** across all models. Clutch (1vN)
-  is *not* where it helps (man-advantage dominates; AUC there ~0.98 for everything).
+**v1 (sum-based, 9 features):** HLTV Rating/ADR/KAST *summed* over alive players + 1vN clutch, joined
+`(steamid, year)`. Result: F − A significant **only on logreg**; **EF − E ≈ 0**; value is conditional
+(contested-AUC +0.007). **Key issue = a count confound:** `firepower_rating_diff` was permutation-
+importance #1 but **0.988**-correlated with the player-count advantage — because Rating is *summed*, it
+was ~99% a player-count proxy, not a skill signal (which is why its marginal lift was ~0).
 
-**⚠️ The key issue to fix in v2 — a count confound.** `firepower_rating_diff` is permutation-
-importance **rank #1**, but it correlates **0.988** with the player-count advantage `(ct_alive −
-t_alive)` and predicts the outcome *identically* (both r=0.498). Because Rating is **summed** over
-alive players, this feature is ~99% a **player-count proxy, not a skill signal** — which is why its
-marginal lift is ~0 (the count is already in economy). The logistic firepower coefficients also
-sign-flip (ADR −1.66) from collinearity among rating/ADR/KAST.
+**v2 (your redesign, commit fc4f719) — side-aware + situational gating, 20 features:** side-specific
+CT/T Rating/Firepower/Entry/Trading/Opening (new `player_stats_sided.csv`), per-player gates (lone
+survivor→Clutch; teammates alive→Entry/Trading; Opening only at 5v5), AWP-holder Sniping flag, grenade-
+$-weighted Utility. Benchmarked on the same 220 demos / 5-fold OOF / B=500.
 
-**Recommended v2:**
-1. Use **average rating per alive player** (skill-per-capita), not the sum → decouples skill from
-   count. e.g. `ct_avg_rating`, `firepower_skill_diff = ct_avg_rating − t_avg_rating`.
-2. Drop or rethink `clutch_score` (added ~nothing) — consider situational skill: recent multi-kill
-   rate, opening-duel win-rate, gated by the same 1vN/entry logic.
-3. Keep the year-aware `(steamid, year)` join (that part is good).
-4. After v2: re-assemble (`python src/features/assemble.py`, ~35 min) and re-run the standard battery
-   `train_pipeline.py --models logreg,xgb,lgbm,catboost,rf --sets A,F,E,EF,EFB2 --bootstrap 500`.
+**v1 vs v2 result (mixed — and useful):**
+| | v1 | v2 |
+|---|---|---|
+| logreg F − A | +0.0018 ✅ | +0.0022 ✅ |
+| logreg EF − E | +0.0007 (ns) | +0.0010 (ns) |
+| **logreg contested-AUC (F)** | 0.593 | **0.603** ⬆ |
+| **logreg EFB2 (best overall)** | 0.8515 | **0.8519** ⬆ (study best) |
+| xgb/lgbm/catboost EF − E | ≈0 (ns) | **negative** (catboost −0.0026 sig) |
+| count confound (rating-diff↔count) | 0.988 | **0.987 (persists)** |
+
+- ✅ **v2 helped the linear/headline model** — best contested-AUC (0.603) and best overall AUC (logreg
+  EFB2 0.8519) in the whole study. The side-aware/situational design pays off where economy fails.
+- ⚠️ **v2 hurt the tree models** (EF < E; catboost significantly) — the 20 sparse, NaN-gated features
+  (Opening only 5v5, Clutch only 1vN) give GBMs noise to overfit. v1's 9 dense features were cleaner for trees.
+- ⚠️ **The count confound is still there** — v2 kept **sums** (`ct_rating_sum − t_rating_sum` is 0.987-
+  correlated with player-count). The side-awareness/gating fixed a *different* axis, not this one.
+
+**Suggested v3 (the open item):**
+1. Use **average rating per alive player** (per-capita), not the sum → finally decouples skill from count.
+2. **Prune** the sparse gated features (opening/clutch/entry/trading) that hurt the GBMs — keep the ones
+   permutation importance likes (`ct/t_rating_sum→avg`, `adr`, `t_trading`, AWP-holder sniping).
+3. Keep the good parts of v2: side-awareness + the year-aware `(steamid, year)` join.
+Re-run: `train_pipeline.py --models logreg,xgb,lgbm,catboost,rf --sets A,F,E,EF,EFB2 --bootstrap 500`.
 
 ---
 

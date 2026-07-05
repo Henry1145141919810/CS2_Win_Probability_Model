@@ -60,7 +60,7 @@ before a feature claim is trusted — see the Voronoi coefficient-collinearity c
 |---|---|
 | A | Economy only (Xenopoulos/ESTA baseline) |
 | B | Economy + Map control |
-| C | Economy + Firepower *(Pillar 3 pending)* |
+| F | Economy + Firepower *(Pillar 3 — implemented v1→v2; historically labelled "C")* |
 | D | Economy + Tactical readiness (incl. bomb/rotation) |
 | E | All available pillars |
 
@@ -298,7 +298,9 @@ weighting {area,count}, bomb-local radius ∈ {400,600,800}u, and CT defuse spee
 {215,250,285} moves AUC by **|Δ| ≤ 0.0004** (baseline 0.8509). No result depends on an
 arbitrary parameter choice — the constants are not load-bearing.
 
-## Pillar 3 firepower (v1, by teammate Leu) — integrated & benchmarked (June 2026)
+## Pillar 3 firepower — v1 → v2 (by teammate Leu)
+
+### Firepower v1 (June 2026) — sum-based, 9 features
 Firepower = HLTV Rating/ADR/KAST **summed** over alive players + a 1vN **clutch score**, joined
 on `(steamid, year)` (skill drifts yearly). 9 cols; sets **F** (econ+firepower), **EF** (4
 pillars), and a new all-pillars set **EFB2** (econ+map+tactical+territory+firepower+bomb). Canonical
@@ -327,6 +329,42 @@ which is exactly why its marginal lift (EF−E) is ~0. **Recommendation: firepow
 *average* rating per alive player (skill-per-capita) to decouple skill from count.** Also, the
 logistic firepower coefficients sign-flip (`ct_firepower_adr` −1.66) from collinearity among
 rating/ADR/KAST — trust permutation importance + AUC, not raw coefficients.
+
+### Firepower v2 (July 2026) — side-aware + situational gating, 20 features
+Leu's v2 (commit fc4f719) is a redesign, kept alongside v1 to show the progression. Changes:
+**side-aware stats** (CT-side vs T-side Rating/Firepower/Entrying/Trading/Opening from a new
+`player_stats_sided.csv`; each alive player queried for the side they're *currently* playing);
+**per-player conditional gates** (lone survivor → Clutching + suppress Entry/Trading; teammates
+alive → Entry/Trading; Opening only when both sides 5-alive); **Sniping** exposed as the AWP
+holder's role score; **Utility** = HLTV utility skill × current grenade $ carried. `FIREPOWER_COLS`
+= **20**; dataset re-assembled to **115 cols**. Same 220 demos / 5-fold OOF / B=500 → directly
+comparable to v1.
+
+**v2 result — mixed, and instructive (both kept on the record):**
+| metric | v1 | v2 |
+|---|---|---|
+| logreg F−A | +0.0018 ✅ | +0.0022 ✅ |
+| logreg EF−E | +0.0007 (ns) | +0.0010 (ns) |
+| **logreg contested-AUC (F)** | 0.593 | **0.603** ⬆ |
+| **logreg EFB2 (best overall)** | 0.8515 | **0.8519** ⬆ (study best; cAUC 0.603) |
+| xgb/lgbm/catboost EF−E | ≈0 (ns) | **negative** (catboost −0.0026, *sig*) |
+| GBM EFB2 (xgb/lgbm/cat) | .8498/.8498/.8483 | .8480/.8479/.8465 ⬇ |
+| count confound (rating-diff ↔ player-count) | 0.988 | **0.987 (persists)** |
+
+- **v2 helps the linear / headline model** where it matters: best **contested-AUC (0.603)** and best
+  overall AUC (**logreg EFB2 0.8519**) in the whole study — the side-aware/situational signal pays off
+  exactly in even rounds.
+- **v2 hurts the tree models** (EF < E; catboost significantly): the 20 sparse, NaN-gated features
+  (Opening only at 5v5, Clutch only 1vN) give GBMs noise to overfit; v1's 9 dense features were cleaner.
+- **The count confound is NOT fixed** — v2 kept **sums**, so `ct_rating_sum − t_rating_sum` is still
+  **0.987**-correlated with the player-count advantage. Permutation importance: the sum features still
+  lead (`ct_rating_sum` #9, `t_rating_sum` #12), with a few new side-aware ones surfacing
+  (`t_trading_sum` #10, `t_awp_sniping_skill` #19).
+- **Open: firepower v3** = *average* rating per alive player (per-capita) to finally decouple skill
+  from count; and prune the sparse gated features that hurt the GBMs.
+
+**Practical takeaway:** use **v2 for the logistic / headline model** (best contested-AUC + best AUC);
+for GBMs, v1 or a pruned v2 is better. Both versions retained in the repo.
 
 ## Current status (June 2026, 220 demos / 476,595 snapshots)
 - Tier-1-filtered (dropped an ESL qualifier + a women's-team game); 1 demo off-list.

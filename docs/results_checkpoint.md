@@ -14,14 +14,14 @@ works. Companion to `docs/methodology.md` (full protocol + derivations).
 - awpy v2.0.2, tickrate 64; one row per second (freeze-end → round end); label `ct_won`.
 - **5-fold GroupKFold by `match_id`** (never split a match). All metrics are out-of-fold.
 
-### B. Pillars (4 of 5 planned; firepower + deep models deliberately skipped)
+### B. Pillars (all 4 feature pillars implemented; deep models done on Betty)
 | Pillar | Status | Feature group (cols) | Encodes |
 |---|---|---|---|
 | 1. Economy / combat | ✅ | `ECONOMY_COLS` (17) | equipment, health, armor, players-alive, kits, score, time, bomb-planted |
 | 2a. Map control — Voronoi | ✅ | `MAPCONTROL_COLS` (9) | nearest-player area ownership; overall + per-zone + trend/volatility |
 | 2b. Map control — grey | ✅ | `MAPCONTROL_LOS_COLS` (5) | instantaneous LOS+FOV+smoke (4-state) |
 | 2c. Map control — territory | ✅ | `TERRITORY_COLS` (5) + `TERRITORY_ZONE_COLS` (5) | grey + memory/decay 15s; per-zone deficits |
-| 3. Firepower | ❌ skipped | — | needs HLTV per-player scrape (manual/ToS) |
+| 3. Firepower (v1→v2, Leu) | ✅ | `FIREPOWER_COLS` (v1: 9 → v2: 20) | HLTV skill: v1 summed Rating/ADR/KAST+clutch; v2 side-aware + situational gating |
 | 4a. Tactical readiness | ✅ | `TACTICAL_COLS` (28) | entropy, per-zone counts, AWP, utility, util advantage |
 | 4b. Bomb geometry (plant) | ✅ | `BOMB_COLS` (6) | site, plant coords, nearest-CT straight + nav-path dist, CTs near bomb |
 | 4c. Bomb-state + defuse race | ✅ NEW | `BOMB_LIVE_COLS` (8) | carried/dropped/planted, control around live bomb, dropped-bomb scramble, `defuse_time_margin` |
@@ -106,12 +106,24 @@ models don't win alone but ADD ENSEMBLE DIVERSITY. (3) soft-vote > logistic-stac
 prob scale, ECE 0.042). (4) Surpassing this clearly needs ~2-5× more data / spatio-temporal models.
 Classical/soft-vote are the practical picks. ensemble_oof.py combines saved deep OOF + classical.
 
-*EFB2 (all four pillars + bomb defuse-race) is the best classical model — logreg 0.8515. Firepower is the
-**weakest pillar**: F−A significant only on logreg (xgb/lgbm/catboost CIs include 0); EF−E ≈ 0.
-Its value is conditional (contested-AUC F−A ≈ +0.007 across models). CRITICAL: firepower_rating_diff
-(perm-importance #1) is 0.988-correlated with the player-count advantage — a count proxy, not skill
-(→ firepower v2: use average rating). All non-RF models well-calibrated (ECE < 0.02); EFB2 logreg
-has the best Brier (0.1552) and log-loss (0.4559) in the study.*
+*EFB2 (all four pillars + bomb defuse-race) is the best classical model. Firepower is the **weakest
+pillar**: F−A significant only on logreg (GBM CIs include 0); EF−E ≈ 0. Its value is conditional
+(contested rounds). All non-RF models well-calibrated (ECE < 0.02).*
+
+**Firepower v1 → v2 (both kept to show the process; same 220 demos / 5-fold OOF / B=500):**
+| | v1 (9 feats, sums) | v2 (20 feats, side-aware+gated) |
+|---|---|---|
+| logreg F−A | +0.0018 ✅ | +0.0022 ✅ |
+| logreg contested-AUC (F) | 0.593 | **0.603** ⬆ |
+| **logreg EFB2 (best overall)** | 0.8515 | **0.8519** ⬆ (study best, cAUC 0.603) |
+| xgb/lgbm/catboost EF−E | ≈0 (ns) | **negative** (catboost −0.0026 sig) |
+| GBM EFB2 (xgb/lgbm/cat) | .8498/.8498/.8483 | .8480/.8479/.8465 ⬇ |
+| count confound (rating-diff↔count) | 0.988 | **0.987 (persists)** |
+
+v2's side-aware + situational design **helps the linear/headline model** (best contested-AUC 0.603
+and best overall AUC logreg EFB2 0.8519 in the study) but **hurts the tree models** (sparse NaN-gated
+features overfit). The **count confound persists** (v2 kept sums) → open **firepower v3 = per-capita
+(average) rating** + prune sparse gated features. Use v2 for the logistic model, v1/pruned-v2 for GBMs.
 
 ### By model class
 1. **Logistic — winner.** Best/tied at every set, tightest CI band (~0.03 vs xgb ~0.21), most
