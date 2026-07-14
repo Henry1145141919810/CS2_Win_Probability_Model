@@ -124,8 +124,10 @@ pillar**: F−A significant only on logreg (GBM CIs include 0); EF−E ≈ 0. It
 
 v2's side-aware + situational design **helps the linear/headline model** (best contested-AUC 0.603
 and best overall AUC logreg EFB2 0.8519 in the study) but **hurts the tree models** (sparse NaN-gated
-features overfit). The **count confound persists** (v2 kept sums) → open **firepower v3 = per-capita
-(average) rating** + prune sparse gated features. Use v2 for the logistic model, v1/pruned-v2 for GBMs.
+features overfit). The **count confound persists** (v2 kept sums; `rating_sum` diff is 0.987-correlated
+with the player-count advantage) — documented as a **limitation, not an open work item**: a per-capita
+redesign (v3) was considered and **deliberately not pursued**, since the 2026 holdout showed the
+pillar's binding constraint is **data coverage across eras**, not feature encoding (see holdout below).
 
 ---
 

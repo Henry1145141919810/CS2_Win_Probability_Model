@@ -168,15 +168,15 @@ Then **tell Henry** — no further action needed from you.
 
 ---
 
-## 9. Optional bonus — firepower v3 (not blocking)
+## 9. Scope note — no firepower v3
 
-Two known issues from the v2 benchmark, if you want to bundle a fix:
-1. **Count confound (still present in v2):** `ct_rating_sum − t_rating_sum` is **0.987**-correlated with
-   the player-count advantage, because Rating is **summed** over alive players → it's mostly a
-   count proxy, not skill. **Fix: use the *average* rating per alive player** (per-capita).
-2. **Sparse gated features hurt the GBMs:** v2's `opening_*` (only at 5v5), `clutch_*` (only 1vN),
-   `entry/trading_*` are mostly NaN → trees overfit them (EF < E; catboost −0.0026, significant).
-   **Fix: prune them**, keep what permutation importance likes (`rating`→avg, `adr`, `t_trading`,
-   AWP `sniping`).
+**We are NOT building a firepower v3.** The scrape (§3) is the *only* firepower work planned.
 
-**But the scrape (§3) is the priority — it unblocks everything.**
+Two known limitations of v2 are documented as **findings/limitations in the paper**, not as work items:
+1. **Count confound:** `ct_rating_sum − t_rating_sum` is **0.987**-correlated with the player-count
+   advantage (Rating is *summed* over alive players), so it is largely a count proxy rather than a
+   pure skill signal.
+2. **Sparse gated features:** v2's `opening_*` (only at 5v5), `clutch_*` (only 1vN) and
+   `entry/trading_*` are mostly NaN, which the GBMs overfit (EF < E; catboost −0.0026, significant).
+
+Both stay as honest limitations. **Please don't spend time on them — just do the scrape.**

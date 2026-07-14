@@ -115,12 +115,13 @@ def main():
         "v2 HURT the tree models (EF < E; catboost significantly): the 20 sparse NaN-gated features overfit the GBMs.",
         "The count confound is STILL there (v2 kept sums). Side-awareness/gating fixed a different axis, not this one.",
     ])
-    p = doc.add_paragraph(); p.add_run("Suggested v3 (open item): ").bold = True
-    bullets([
-        "Use AVERAGE rating per alive player (per-capita), not the sum -> finally decouple skill from count.",
-        "Prune the sparse gated features that hurt GBMs; keep what permutation importance likes (rating->avg, adr, t_trading, AWP sniping).",
-        "Keep v2's good parts: side-awareness + year-aware (steamid, year) join.",
-    ])
+    p = doc.add_paragraph()
+    p.add_run("NO firepower v3 is planned. ").bold = True
+    p.add_run("The count confound and the sparse gated features stay as documented LIMITATIONS in the "
+              "paper, not as work items. Rationale: the 2026 holdout showed the pillar's binding constraint "
+              "is DATA COVERAGE ACROSS ERAS (missing 2026 player stats), not feature encoding -- so a "
+              "per-capita redesign would not address the actual failure. The only remaining firepower work "
+              "is the 2026 scrape (see docs/TODO_leu_2026_scrape.md).")
 
     h("5b. 2026 OUT-OF-TIME HOLDOUT — the big new result (+ action item for you)")
     doc.add_paragraph("Trained on all 220 demos (2024-25), evaluated ONCE on 27 fresh 2026 Inferno matches "
@@ -166,9 +167,12 @@ def main():
 
     h("8. Next steps")
     bullets([
-        "Firepower v2 (Leu): average-rating-per-player fix (s5) — highest near-term ROI for this pillar.",
-        "2026 out-of-time holdout (Henry): parse ~15-20 fresh 2026 Inferno demos, run frozen EFB2 once — last validity gate.",
-        "More data (together): ~2-5x matches and/or multi-map -- the real lever for spatial/deep models to surpass classical.",
+        "THE ONLY BLOCKING TASK - 2026 HLTV scrape (Leu). Full spec: docs/TODO_leu_2026_scrape.md. Two scrapes: "
+        "2026 stats for all 82 players (same-year variant) + 2025 stats for the 17 players missing them "
+        "(leak-free lagged-prior variant). Unblocks the firepower holdout re-run. NO firepower v3 -- do not build one.",
+        "2026 out-of-time holdout (Henry): DONE (s5b). Core model generalises (EB2 0.8493 -> 0.8501); firepower "
+        "collapses due to the data gap. Re-runs once the scrape lands.",
+        "More data (optional, together): ~2-5x matches and/or multi-map -- the only lever for spatial/deep models to surpass classical.",
         "Paper draft: methods + results complete (docs/results_checkpoint.md + docs/metrics.md).",
     ])
 

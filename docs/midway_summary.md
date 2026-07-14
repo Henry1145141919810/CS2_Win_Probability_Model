@@ -103,12 +103,10 @@ $-weighted Utility. Benchmarked on the same 220 demos / 5-fold OOF / B=500.
 - ⚠️ **The count confound is still there** — v2 kept **sums** (`ct_rating_sum − t_rating_sum` is 0.987-
   correlated with player-count). The side-awareness/gating fixed a *different* axis, not this one.
 
-**Suggested v3 (the open item):**
-1. Use **average rating per alive player** (per-capita), not the sum → finally decouples skill from count.
-2. **Prune** the sparse gated features (opening/clutch/entry/trading) that hurt the GBMs — keep the ones
-   permutation importance likes (`ct/t_rating_sum→avg`, `adr`, `t_trading`, AWP-holder sniping).
-3. Keep the good parts of v2: side-awareness + the year-aware `(steamid, year)` join.
-Re-run: `train_pipeline.py --models logreg,xgb,lgbm,catboost,rf --sets A,F,E,EF,EFB2 --bootstrap 500`.
+**No firepower v3 is planned.** The count confound and the sparse gated features stay as **documented
+limitations** in the paper, not as work items. Rationale: the 2026 holdout (§5b) showed the pillar's
+binding constraint is **data coverage across eras**, not feature encoding — so a per-capita redesign
+would not address the actual failure. **The only remaining firepower work is the 2026 scrape (§5b).**
 
 ---
 
@@ -167,11 +165,14 @@ work + all metrics need no GPU.
 ---
 
 ## 8. Next steps
-1. **Firepower v2 (Leu)** — average-rating-per-player fix (§5). Highest near-term ROI for this pillar.
-2. **2026 out-of-time holdout (Henry)** — parse ~15–20 fresh 2026 Inferno demos, run the *frozen*
-   EFB2 model once → the last validity gate before writing. (Harness can be built on request.)
-3. **More data (together)** — the real lever to make spatial/deep models surpass classical is
-   ~2–5× more matches and/or multi-map; also enables trajectory-level features to pay off.
+1. **🔴 THE ONLY BLOCKING TASK — 2026 HLTV scrape (Leu).** Full spec:
+   **`docs/TODO_leu_2026_scrape.md`**. Two scrapes: **2026 stats for all 82** players (same-year
+   variant) + **2025 stats for the 17** players missing them (leak-free *lagged-prior* variant).
+   This unblocks the firepower holdout re-run. **No firepower v3 — do not build one.**
+2. **✅ 2026 out-of-time holdout (Henry) — DONE** (§5b). Core model generalises (`EB2` 0.8493 →
+   0.8501); firepower collapses due to the data gap. Re-runs once the scrape lands.
+3. **More data (optional, together)** — ~2–5× matches and/or multi-map is the only lever that would
+   let spatial/deep models surpass classical.
 4. **Paper draft** — methods + results are complete; `docs/results_checkpoint.md` + `docs/metrics.md`
    contain everything needed.
 

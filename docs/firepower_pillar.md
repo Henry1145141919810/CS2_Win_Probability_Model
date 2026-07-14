@@ -222,6 +222,9 @@ The sections above document **v1** (kept for the process). **v2** is a redesign 
   (`ct_rating_sum` #9, `t_rating_sum` #12), with `t_trading_sum` #10 and `t_awp_sniping_skill` #19 as
   the strongest new side-aware signals.
 
-**Open — firepower v3:** use **average** rating per alive player (per-capita) to decouple skill from
-count, and **prune** the sparse gated features (keep the ones importance likes). Use v2 for the
-logistic/headline model; v1 or a pruned v2 for the GBMs.
+**No firepower v3 planned.** The count confound and the sparse gated features are recorded as honest
+**limitations**, not open work — the 2026 out-of-time holdout showed the pillar's binding constraint is
+**data coverage across eras** (missing 2026 player stats), not feature encoding. Use v2 for the
+logistic/headline model in-sample; v1 is cleaner for GBMs. **Out-of-time, firepower is excluded (EB2).**
+
+**The only remaining firepower work: the 2026 HLTV scrape** — see `docs/TODO_leu_2026_scrape.md`.

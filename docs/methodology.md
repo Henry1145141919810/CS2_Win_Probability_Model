@@ -360,11 +360,14 @@ comparable to v1.
   **0.987**-correlated with the player-count advantage. Permutation importance: the sum features still
   lead (`ct_rating_sum` #9, `t_rating_sum` #12), with a few new side-aware ones surfacing
   (`t_trading_sum` #10, `t_awp_sniping_skill` #19).
-- **Open: firepower v3** = *average* rating per alive player (per-capita) to finally decouple skill
-  from count; and prune the sparse gated features that hurt the GBMs.
+- **Documented LIMITATION (no v3 planned):** the count confound and the sparse gated features are
+  reported as honest limitations of the pillar, not as open work. A per-capita (average-rating)
+  redesign was considered and **deliberately not pursued** — the 2026 holdout showed the pillar's
+  binding constraint is *data coverage across eras*, not feature encoding (see the holdout section).
 
-**Practical takeaway:** use **v2 for the logistic / headline model** (best contested-AUC + best AUC);
-for GBMs, v1 or a pruned v2 is better. Both versions retained in the repo.
+**Practical takeaway:** use **v2 for the logistic / headline model** *in-sample* (best contested-AUC +
+best AUC); for GBMs, v1 is cleaner. Both versions retained in the repo. **Out-of-time, firepower is
+excluded entirely (set EB2) — see the 2026 holdout below.**
 
 ## 2026 OUT-OF-TIME HOLDOUT (touch-once) — the final validity gate ⭐
 Trained on the full 220-demo (2024-25) set, evaluated **once** on **27 fresh 2026 Inferno matches**
