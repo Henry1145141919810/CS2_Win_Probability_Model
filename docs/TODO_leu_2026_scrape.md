@@ -47,8 +47,8 @@ So please scrape **both** variants so we can run the clean experiment:
 | **A. same-year (2026)** | 2026 stats for the 2026 matches | consistent with how the model was **trained**; the direct fix. Leaky — we'll disclose it. |
 | **B. lagged prior (2025)** | 2025 stats used as the prior for 2026 matches | **leak-free** and a realistic deployment scenario ("at match time you only know last season"). This is the scientifically clean test. |
 
-**Good news: variant B is cheap** — 68 of the 82 players already have 2025 rows. You only need 2025
-for the **14 brand-new players**.
+**Good news: variant B is cheap** — **65 of the 82** players already have 2025 rows. You only need to
+scrape 2025 for the **17 players who are missing it** (list in §3, Task B).
 
 ---
 
@@ -63,11 +63,16 @@ for the **14 brand-new players**.
   IEM Kraków 2026, IEM Cologne Major 2026, IEM Atlanta 2026, BLAST Rivals 2026 Season 1).
 - **Output:** append **82 rows with `year=2026`** to `configs/player_stats_sided.csv`.
 
-### Task B (cheap, high value) — scrape **2025** stats for the **14 brand-new** players
-These 14 appear in 2026 but were never scraped in any year:
-`hypex, zweih, Rainwaker, Gizmy, Bymas, luchov, cobrazera, meyern, afro, soulfly, ryu, s1zzi, piriajr, v$m`
+### Task B (cheap, high value) — scrape **2025** stats for the **17** players missing them
+**65 of the 82 already have 2025 rows.** These **17** do not (14 are brand-new; 3 have 2024 only):
+
+`hypex, arT, zweih, HUASOPEEK, max, Rainwaker, Gizmy, Bymas, luchov, cobrazera, meyern, afro,
+soulfly, ryu, s1zzi, piriajr, v$m`
+
+- **Input:** `configs/player_roster_2026_missing2025.csv` (steamid, name, team, name_variants,
+  n_demos, `has_2024`) — generated for you.
 - **HLTV date filter:** **2025-01-01 → 2025-12-31**
-- **Output:** append 14 rows with `year=2025` to `configs/player_stats_sided.csv`.
+- **Output:** append **17 rows with `year=2025`** to `configs/player_stats_sided.csv`.
 - (If a rookie genuinely has no 2025 data, set `found=no` and leave stats null — do **not** invent values.)
 
 ---
