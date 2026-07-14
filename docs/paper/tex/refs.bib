@@ -1,0 +1,146 @@
+% =====================================================================
+%  refs.bib  --  CS2 win probability
+%
+%  !!!  READ THIS  !!!
+%  Every entry below is a SCAFFOLD.  The author/venue/year fields are my
+%  best recollection and are NOT verified.  Do NOT submit until each one
+%  is checked against the actual paper (DOI / DBLP / Google Scholar) and
+%  the "% VERIFY" line is deleted.
+%
+%  Fabricated citations are a desk-reject.  Check them.
+% =====================================================================
+
+% --- Counter-Strike win probability / esports data --------------------
+
+@inproceedings{xenopoulos2020valuing,
+  % VERIFY: authors, venue, year, pages.  This is the "valuing actions /
+  % win probability in CSGO" paper that our Model A baseline follows.
+  author    = {Xenopoulos, Peter and Doraiswamy, Harish and Silva, Claudio},
+  title     = {Valuing Player Actions in Counter-Strike: Global Offensive},
+  booktitle = {IEEE International Conference on Big Data},
+  year      = {2020}
+}
+
+@inproceedings{xenopoulos2022esta,
+  % VERIFY: venue (NeurIPS Datasets \& Benchmarks?), year, authors.
+  author    = {Xenopoulos, Peter and Silva, Claudio},
+  title     = {{ESTA}: An Esports Trajectory and Action Dataset},
+  booktitle = {TODO},
+  year      = {2022}
+}
+
+@misc{awpy,
+  % VERIFY: current citation form for the awpy parser (v2.0.2 used here).
+  author       = {Xenopoulos, Peter and others},
+  title        = {{awpy}: A {Python} Library for {Counter-Strike} Demo Parsing},
+  howpublished = {\url{https://github.com/pnxenopoulos/awpy}},
+  year         = {2024}
+}
+
+% --- Spatial / pitch control in team sports ---------------------------
+
+@article{taki2000quantitative,
+  % VERIFY: the original dominant-region / Voronoi-style formulation.
+  author  = {Taki, Tsuyoshi and Hasegawa, Jun-ichi},
+  title   = {Visualization of Dominant Region in Team Games and Its
+             Application to Teamwork Analysis},
+  journal = {TODO},
+  year    = {2000}
+}
+
+@inproceedings{fernandez2018wide,
+  % VERIFY: authors, venue (MIT SSAC?), year.
+  author    = {Fern{\'a}ndez, Javier and Bornn, Luke},
+  title     = {Wide Open Spaces: A Statistical Technique for Measuring
+               Space Creation in Professional Soccer},
+  booktitle = {MIT Sloan Sports Analytics Conference},
+  year      = {2018}
+}
+
+@inproceedings{spearman2018pitchcontrol,
+  % VERIFY: exact title, venue, year.
+  author    = {Spearman, William},
+  title     = {Beyond Expected Goals},
+  booktitle = {MIT Sloan Sports Analytics Conference},
+  year      = {2018}
+}
+
+% --- Calibration / evaluation -----------------------------------------
+
+@article{murphy1973vector,
+  % VERIFY: the Brier-score (reliability/resolution/uncertainty) decomposition.
+  author  = {Murphy, Allan H.},
+  title   = {A New Vector Partition of the Probability Score},
+  journal = {Journal of Applied Meteorology},
+  year    = {1973}
+}
+
+@inproceedings{guo2017calibration,
+  % VERIFY: "On Calibration of Modern Neural Networks", ICML 2017.
+  author    = {Guo, Chuan and Pleiss, Geoff and Sun, Yu and Weinberger, Kilian Q.},
+  title     = {On Calibration of Modern Neural Networks},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  year      = {2017}
+}
+
+@article{choi2023esports,
+  % VERIFY: THIS ONE IS THE LEAST CERTAIN.  I recall an argument for
+  % calibration-aware metrics over accuracy in esports win probability,
+  % but not the authors/venue.  Find the real paper or drop the claim
+  % in Sect. 2.
+  author  = {TODO},
+  title   = {TODO -- calibration-aware evaluation for esports win probability},
+  journal = {TODO},
+  year    = {2023}
+}
+
+@article{delong1988comparing,
+  % VERIFY: the DeLong test for comparing correlated ROC curves.
+  author  = {DeLong, Elizabeth R. and DeLong, David M. and
+             Clarke-Pearson, Daniel L.},
+  title   = {Comparing the Areas under Two or More Correlated Receiver
+             Operating Characteristic Curves: A Nonparametric Approach},
+  journal = {Biometrics},
+  year    = {1988}
+}
+
+% --- Architectures ----------------------------------------------------
+
+@article{bai2018tcn,
+  % VERIFY: "An Empirical Evaluation of Generic Convolutional and
+  % Recurrent Networks for Sequence Modeling", arXiv 2018.
+  author  = {Bai, Shaojie and Kolter, J. Zico and Koltun, Vladlen},
+  title   = {An Empirical Evaluation of Generic Convolutional and Recurrent
+             Networks for Sequence Modeling},
+  journal = {arXiv preprint arXiv:1803.01271},
+  year    = {2018}
+}
+
+@inproceedings{velickovic2018gat,
+  % VERIFY: Graph Attention Networks, ICLR 2018.
+  author    = {Veli{\v{c}}kovi{\'c}, Petar and Cucurull, Guillem and
+               Casanova, Arantxa and Romero, Adriana and Li{\`o}, Pietro and
+               Bengio, Yoshua},
+  title     = {Graph Attention Networks},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2018}
+}
+
+@inproceedings{vaswani2017attention,
+  % VERIFY: Attention Is All You Need, NeurIPS 2017.
+  author    = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and
+               Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N. and
+               Kaiser, {\L}ukasz and Polosukhin, Illia},
+  title     = {Attention Is All You Need},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2017}
+}
+
+@inproceedings{chen2016xgboost,
+  % VERIFY: XGBoost, KDD 2016.
+  author    = {Chen, Tianqi and Guestrin, Carlos},
+  title     = {{XGBoost}: A Scalable Tree Boosting System},
+  booktitle = {ACM SIGKDD International Conference on Knowledge Discovery
+               and Data Mining (KDD)},
+  year      = {2016}
+}
