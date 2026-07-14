@@ -112,6 +112,36 @@ Re-run: `train_pipeline.py --models logreg,xgb,lgbm,catboost,rf --sets A,F,E,EF,
 
 ---
 
+## 5b. ⭐ 2026 OUT-OF-TIME HOLDOUT — the big new result (and an action item for you)
+Trained on all 220 demos (2024-25), evaluated **once** on **27 fresh 2026 Inferno matches** (55,271
+snapshots; base rate shifts 0.445 → 0.512).
+
+**✅ The core model generalises perfectly.** Without firepower, out-of-time ≈ in-time (some *better*):
+**lgbm EB2 0.8493 → 0.8501**, xgb EB2 0.8489 → 0.8497, xgb E 0.8476 → 0.8476. Contested-AUC even
+**improves** (0.590 → 0.64-0.65). Economy + map control + tactical + defuse-race **transfer**.
+
+**❌ Firepower does NOT transfer.** EFB2 collapses: **logreg 0.8519 → 0.8236** (−0.028), rf −0.029,
+lgbm −0.016; ECE 0.016 → 0.071; calibration intercept −0.36. **The best in-sample model became the
+worst out-of-time.**
+
+**Diagnosis — a data-coverage gap (fixable), not a signal failure:**
+- **0 of 27** 2026 demos are in `demo_year_map.csv` → `year_for_match()` falls back to **2024 stats**.
+- **~30% of 2026 players have no HLTV stats** → firepower = 0 for them. At 5v5, mean `ct_rating_sum`
+  is **5.28 in training but 3.66 on 2026**; 11.8% of 2026 5v5 snapshots have `rating_sum < 3` (0.0% in training).
+- The model reads corrupted firepower as "few/weak players alive" and mispredicts.
+
+**🔧 ACTION FOR YOU (Leu):**
+1. Add the **27 2026 demos to `configs/demo_year_map.csv`** with `year=2026`.
+2. **Scrape 2026 HLTV stats** for the missing 2026 players into `player_stats_sided.csv`.
+3. Then we re-run the holdout as a **separate, disclosed** evaluation (the first run stands as the
+   honest touch-once result for the current pipeline).
+
+**Lesson (a real paper contribution):** a *skill-prior* pillar creates an **inference-time data
+dependency** the other pillars don't have — they're computed from the demo itself and always
+available. **On out-of-time evidence the recommended production model is `EB2` (no firepower).**
+
+---
+
 ## 6. Evaluation framework (full battery — see `docs/metrics.md`)
 - **Primary:** AUC, log-loss, Brier. **Complementary:** ECE, BSS, **contested-AUC**.
 - **Extended (new):** Brier decomposition (reliability/resolution/uncertainty), sharpness,

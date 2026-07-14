@@ -115,3 +115,6 @@ secrets.*
 # share bundles (upload to Drive, never to git)
 *.zip
 cs2_share_bundle.zip
+
+# --- 2026 out-of-time holdout raw channels (isolated from training; regenerable from the bundle) ---
+data/holdout2026/

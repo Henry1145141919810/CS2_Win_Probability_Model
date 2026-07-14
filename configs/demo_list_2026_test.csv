@@ -1,0 +1,31 @@
+demo_id,event,stage,series_date,team_a,team_b,team_score,winner_team,real_rounds,hltv_match_url
+gamerlegion-vs-astralis-m1-inferno,IEM Krakow 2026 Stage 1,group,2026/1/30,GamerLegion,Astralis,5-13,Astralis,18,https://www.hltv.org/matches/2389633/gamerlegion-vs-astralis-iem-krakw-2026-stage-1
+falcons-vs-aurora-m3-inferno,IEM Krakow 2026,group,2026/2/1,Falcons,Aurora,8-13,Aurora,21,https://www.hltv.org/matches/2389644/falcons-vs-aurora-iem-krakw-2026
+the-mongolz-vs-furia-m2-inferno,IEM Krakow 2026,group,2026/2/1,The MongolZ,FURIA,12-16,FURIA,28,https://www.hltv.org/matches/2389646/the-mongolz-vs-furia-iem-krakw-2026
+furia-vs-natus-vincere-m2-inferno,IEM Krakow 2026,group,2026/2/2,FURIA,Natus Vincere,9-13,Natus Vincere,22,https://www.hltv.org/matches/2389653/furia-vs-natus-vincere-iem-krakw-2026
+mouz-vs-aurora-m2-inferno,IEM Krakow 2026,group,2026/2/2,MOUZ,Aurora,9-13,Aurora,22,https://www.hltv.org/matches/2389651/mouz-vs-aurora-iem-krakw-2026
+falcons-vs-mouz-m1-inferno,IEM Krakow 2026,group,2026/2/3,Falcons,MOUZ,14-16,MOUZ,30,https://www.hltv.org/matches/2389660/falcons-vs-mouz-iem-krakw-2026
+furia-vs-vitality-m2-inferno,IEM Krakow 2026,final,2026/2/8,FURIA,Vitality,8-13,Vitality,21,https://www.hltv.org/matches/2389666/furia-vs-vitality-iem-krakw-2026
+furia-vs-gamerlegion-m1-inferno,BLAST Rivals 2026 Season 1,group,2026/4/29,FURIA,GamerLegion,13-5,FURIA,18,https://www.hltv.org/matches/2393322/furia-vs-gamerlegion-blast-rivals-2026-season-1
+gamerlegion-vs-astralis-m2-inferno,BLAST Rivals 2026 Season 1,quarterfinal,2026/5/1,GamerLegion,Astralis,16-14,GamerLegion,30,https://www.hltv.org/matches/2393347/gamerlegion-vs-astralis-blast-rivals-2026-season-1
+natus-vincere-vs-gamerlegion-m1-inferno,IEM Atlanta 2026,group,2026/5/12,Natus Vincere,GamerLegion,13-4,Natus Vincere,17,https://www.hltv.org/matches/2394161/natus-vincere-vs-gamerlegion-iem-atlanta-2026
+natus-vincere-vs-legacy-m1-inferno-iem-atlanta-2026,IEM Atlanta 2026,group,2026/5/13,Natus Vincere,Legacy,11-13,Legacy,24,https://www.hltv.org/matches/2394171/natus-vincere-vs-legacy-iem-atlanta-2026
+natus-vincere-vs-vitality-m3-inferno,IEM Atlanta 2026,quarterfinal,2026/5/15,Natus Vincere,Vitality,13-3,Natus Vincere,16,https://www.hltv.org/matches/2394174/natus-vincere-vs-vitality-iem-atlanta-2026
+pain-vs-gamerlegion-m3-inferno,IEM Atlanta 2026,quarterfinal,2026/5/15,paiN,GamerLegion,8-13,GamerLegion,21,https://www.hltv.org/matches/2394173/pain-vs-gamerlegion-iem-atlanta-2026
+legacy-vs-gamerlegion-m3-inferno,IEM Atlanta 2026,semifinal,2026/5/16,Legacy,GamerLegion,6-13,GamerLegion,19,https://www.hltv.org/matches/2394176/legacy-vs-gamerlegion-iem-atlanta-2026
+b8-vs-gamerlegion-m1-inferno,IEM Cologne Major 2026 Stage 2,group,2026/6/7,B8,GamerLegion,13-11,B8,24,https://www.hltv.org/matches/2394885/b8-vs-gamerlegion-iem-cologne-major-2026-stage-2
+falcons-vs-g2-m1-inferno,IEM Cologne Major 2026,group,2026/6/11,Falcons,G2,10-13,G2,23,https://www.hltv.org/matches/2394899/falcons-vs-g2-iem-cologne-major-2026
+furia-vs-b8-m2-inferno,IEM Cologne Major 2026,group,2026/6/11,FURIA,B8,13-4,FURIA,17,https://www.hltv.org/matches/2394901/furia-vs-b8-iem-cologne-major-2026
+parivision-vs-9z-m3-inferno,IEM Cologne Major 2026,group,2026/6/11,PARIVISION,9z,9-13,9z,22,https://www.hltv.org/matches/2394903/parivision-vs-9z-iem-cologne-major-2026
+vitality-vs-9z-m1-inferno,IEM Cologne Major 2026,group,2026/6/12,Vitality,9z,13-4,Vitality,17,https://www.hltv.org/matches/2394978/vitality-vs-9z-iem-cologne-major-2026
+natus-vincere-vs-legacy-m1-inferno-iem-cologne-major-2026,IEM Cologne Major 2026,group,2026/6/12,Natus Vincere,Legacy,13-4,Natus Vincere,17,https://www.hltv.org/matches/2394976/natus-vincere-vs-legacy-iem-cologne-major-2026
+parivision-vs-monte-m3-inferno,IEM Cologne Major 2026,group,2026/6/12,PARIVISION,Monte,5-13,Monte,18,https://www.hltv.org/matches/2394974/parivision-vs-monte-iem-cologne-major-2026
+furia-vs-mouz-m2-inferno,IEM Cologne Major 2026,group,2026/6/12,FURIA,MOUZ,5-13,MOUZ,18,https://www.hltv.org/matches/2394971/furia-vs-mouz-iem-cologne-major-2026
+parivision-vs-legacy-m1-inferno,IEM Cologne Major 2026,group,2026/6/13,PARIVISION,Legacy,12-16,Legacy,28,https://www.hltv.org/matches/2394984/parivision-vs-legacy-iem-cologne-major-2026
+falcons-vs-monte-m1-inferno,IEM Cologne Major 2026,group,2026/6/13,Falcons,Monte,13-9,Falcons,22,https://www.hltv.org/matches/2394982/falcons-vs-monte-iem-cologne-major-2026
+vitality-vs-mouz-m3-inferno,IEM Cologne Major 2026,group,2026/6/13,Vitality,MOUZ,13-4,Vitality,17,https://www.hltv.org/matches/2394983/vitality-vs-mouz-iem-cologne-major-2026
+the-mongolz-vs-monte-m2-inferno,IEM Cologne Major 2026,group,2026/6/14,The MongolZ,Monte,13-7,The MongolZ,20,https://www.hltv.org/matches/2394988/the-mongolz-vs-monte-iem-cologne-major-2026
+natus-vincere-vs-g2-m2-inferno,IEM Cologne Major 2026,group,2026/6/15,Natus Vincere,G2,14-16,G2,30,https://www.hltv.org/matches/2394995/natus-vincere-vs-g2-iem-cologne-major-2026
+9z-vs-the-mongolz-m1-inferno,IEM Cologne Major 2026,group,2026/6/15,9z,The MongolZ,13-8,9z,21,https://www.hltv.org/matches/2394993/9z-vs-the-mongolz-iem-cologne-major-2026
+falcons-vs-vitality-m2-inferno,IEM Cologne Major 2026,quarterfinal,2026/6/19,Falcons,Vitality,11-13,Vitality,24,https://www.hltv.org/matches/2394999/falcons-vs-vitality-iem-cologne-major-2026
+furia-vs-falcons-m3-inferno,IEM Cologne Major 2026,final,2026/6/21,FURIA,Falcons,8-13,Falcons,21,https://www.hltv.org/matches/2395002/furia-vs-falcons-iem-cologne-major-2026

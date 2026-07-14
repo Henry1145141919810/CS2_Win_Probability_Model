@@ -366,6 +366,62 @@ comparable to v1.
 **Practical takeaway:** use **v2 for the logistic / headline model** (best contested-AUC + best AUC);
 for GBMs, v1 or a pruned v2 is better. Both versions retained in the repo.
 
+## 2026 OUT-OF-TIME HOLDOUT (touch-once) — the final validity gate ⭐
+Trained on the full 220-demo (2024-25) set, evaluated **once** on **27 fresh 2026 Inferno matches**
+(55,271 snapshots; IEM Kraków / Cologne Major / Atlanta, BLAST Rivals) that appear in no fold.
+Base rate shifts **0.445 → 0.512** (2026 Inferno is markedly more CT-sided). B=500 bootstrap CIs
+resample the 27 test matches. Script: `src/models/holdout_2026.py`; figure `outputs/figures/holdout_2026.png`.
+
+**Result 1 — the core model GENERALISES (the headline positive).** Without firepower, out-of-time
+performance is essentially unchanged (some sets slightly *better*):
+| set | model | in-time (OOF) | out-of-time 2026 | Δ |
+|---|---|---|---|---|
+| E | xgb | 0.8476 | 0.8476 | +0.0000 |
+| **EB2** | **lgbm** | 0.8493 | **0.8501** | **+0.0008** |
+| EB2 | xgb | 0.8489 | 0.8497 | +0.0007 |
+| EB2 | catboost | 0.8491 | 0.8494 | +0.0002 |
+| A | xgb | 0.8443 | 0.8441 | −0.0002 |
+
+→ **economy + Voronoi map control + tactical + defuse-race TRANSFER cleanly to a new season.**
+Contested-AUC even *improves* out-of-time (0.590 → 0.64-0.65).
+
+**Result 2 — FIREPOWER DOES NOT TRANSFER (the critical negative).** Set EFB2 collapses:
+| model | in-time | out-of-time | Δ |
+|---|---|---|---|
+| logreg EFB2 | **0.8519** (best in-sample) | **0.8236** | **−0.0283** |
+| rf EFB2 | 0.8446 | 0.8159 | −0.0287 |
+| lgbm EFB2 | 0.8479 | 0.8325 | −0.0155 |
+| xgb EFB2 | 0.8480 | 0.8344 | −0.0136 |
+Calibration breaks too: logreg EFB2 **ECE 0.016 → 0.071**, calibration intercept **−0.36**.
+**The best in-sample model became the worst out-of-time.**
+
+**Diagnosis — a DATA-COVERAGE gap, not a signal failure:**
+- **0 of 27** 2026 demos are in `demo_year_map.csv` → `year_for_match()` silently falls back to
+  `DEFAULT_YEAR=2024`, so **2024 skill stats are used for 2026 matches**.
+- **~30% of 2026 players have no HLTV stats at all** → their firepower contributes **0**. At 5v5,
+  mean `ct_rating_sum` is **5.28 in training** but only **3.66 on 2026**; 11.8% of 2026 5v5 snapshots
+  have `rating_sum < 3` (vs **0.0%** in training).
+- The model therefore reads corrupted firepower as "few/weak players alive" and mispredicts.
+
+**Deployment lesson (a real contribution):** a *skill-prior* pillar creates an **inference-time data
+dependency** that the other pillars do not have — economy/map-control/bomb features are computed
+from the demo itself and always available, whereas firepower needs an external, per-era player
+database. If that database lags the deployment era, the pillar **actively harms** the model.
+
+**Recommended model changes on out-of-time evidence: use EB2 (no firepower), not EFB2.**
+Cross-validation ranked EFB2 first; the holdout overturns that. This is exactly why the touch-once
+out-of-time gate exists — 5-fold CV could never have seen it.
+
+**Base-rate shift:** on the non-firepower sets the shift (0.445→0.512) costs only mild calibration
+drift (ECE 0.013→0.023-0.028; calibration slope ≈1.0, intercept +0.11-0.13 — i.e. the model
+under-predicts CT wins by a roughly constant amount). Ranking (AUC) is unaffected; a simple
+recalibration (intercept shift / isotonic on recent data) fixes it.
+
+**Fix path (Leu):** add the 27 2026 demos to `demo_year_map.csv` (year=2026) and scrape 2026 HLTV
+stats for the missing players into `player_stats_sided.csv`. Any re-evaluation after that fix must be
+reported as a **separate, disclosed** holdout run (the first run above stands as the honest
+touch-once result for the current pipeline).
+
 ## Current status (June 2026, 220 demos / 476,595 snapshots)
 - Tier-1-filtered (dropped an ESL qualifier + a women's-team game); 1 demo off-list.
 - Map control A/B (XGBoost): A 0.8318; B Voronoi 0.8366; G distance-grey 0.8357;

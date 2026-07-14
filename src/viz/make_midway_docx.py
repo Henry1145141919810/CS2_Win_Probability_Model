@@ -122,6 +122,35 @@ def main():
         "Keep v2's good parts: side-awareness + year-aware (steamid, year) join.",
     ])
 
+    h("5b. 2026 OUT-OF-TIME HOLDOUT — the big new result (+ action item for you)")
+    doc.add_paragraph("Trained on all 220 demos (2024-25), evaluated ONCE on 27 fresh 2026 Inferno matches "
+                      "(55,271 snapshots; base rate shifts 0.445 -> 0.512).")
+    table(["", "in-time (OOF)", "out-of-time 2026", "delta"], [
+        ["lgbm EB2 (no firepower)", "0.8493", "0.8501", "+0.0008"],
+        ["xgb EB2", "0.8489", "0.8497", "+0.0007"],
+        ["xgb E", "0.8476", "0.8476", "+0.0000"],
+        ["logreg EFB2 (WITH firepower)", "0.8519 (best in-sample)", "0.8236", "-0.0283"],
+        ["rf EFB2", "0.8446", "0.8159", "-0.0287"],
+    ], bold0=True)
+    bullets([
+        "THE CORE MODEL GENERALISES: without firepower, out-of-time ~= in-time (some better). Contested-AUC even "
+        "IMPROVES (0.590 -> 0.64-0.65). Economy + map control + tactical + defuse-race TRANSFER.",
+        "FIREPOWER DOES NOT TRANSFER: EFB2 collapses; ECE 0.016 -> 0.071; calibration intercept -0.36. "
+        "The best in-sample model became the WORST out-of-time.",
+        "DIAGNOSIS (data-coverage gap, fixable): 0 of 27 2026 demos are in demo_year_map.csv (-> 2024 stats used), "
+        "and ~30% of 2026 players have no HLTV stats (5v5 mean ct_rating_sum: 5.28 train vs 3.66 on 2026; "
+        "11.8% of 2026 5v5 snapshots < 3 vs 0.0% in training). Model reads corrupted firepower as 'weak team'.",
+    ])
+    p = doc.add_paragraph(); p.add_run("ACTION FOR YOU (Leu): ").bold = True
+    bullets([
+        "Add the 27 2026 demos to configs/demo_year_map.csv with year=2026.",
+        "Scrape 2026 HLTV stats for the missing 2026 players into player_stats_sided.csv.",
+        "Then we re-run the holdout as a SEPARATE, DISCLOSED evaluation (the first run stands as the honest touch-once result).",
+    ])
+    doc.add_paragraph("Lesson (a real paper contribution): a skill-prior pillar creates an INFERENCE-TIME DATA "
+                      "DEPENDENCY the other pillars don't have (they're computed from the demo itself). On "
+                      "out-of-time evidence the recommended production model is EB2 (no firepower).")
+
     h("6. Evaluation framework")
     doc.add_paragraph("Primary: AUC, log-loss, Brier. Complementary: ECE, BSS, contested-AUC. Extended (new): "
                       "Brier decomposition (reliability/resolution/uncertainty), sharpness, bin-free calibration "
