@@ -33,6 +33,13 @@ checkpoints/
 # --- Outputs / figures (regenerable) ---
 outputs/figures/*
 !outputs/figures/.gitkeep
+# Paper figures ARE tracked: they are the deliverable, small, and must be
+# reviewable alongside the draft without re-running the pipeline.
+!outputs/figures/paper/
+!outputs/figures/paper/*.png
+
+# --- OOF prediction dumps (large, regenerable) ---
+outputs/oof_*.parquet
 
 # --- Logs ---
 *.log
