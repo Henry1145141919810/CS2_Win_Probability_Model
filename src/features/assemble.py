@@ -37,6 +37,18 @@ TICKS_DIR = ROOT / "data" / "parquet" / "ticks"
 BOMB_DIR = ROOT / "data" / "parquet" / "bomb"
 SMOKES_DIR = ROOT / "data" / "parquet" / "smokes"
 OUT = ROOT / "data" / "training_dataset.parquet"
+
+
+def set_parquet_root(root: Path) -> None:
+    """Point the assembler at a DIFFERENT parsed-parquet tree (e.g. the isolated 2026 holdout at
+    data/holdout2026/parquet). Keeps the out-of-time test set strictly separate from training."""
+    global ROUNDS_DIR, TICKS_DIR, BOMB_DIR, SMOKES_DIR
+    ROUNDS_DIR = root / "rounds"
+    TICKS_DIR = root / "ticks"
+    BOMB_DIR = root / "bomb"
+    SMOKES_DIR = root / "smokes"
+
+
 SMOKE_DUR_TICKS = 18 * 64  # CS2 smoke ~18s of vision block
 INTERACTION_COLS = ["ctrl_x_eveneco", "terr_x_eveneco",
                     "ctrl_x_equalalive", "terr_x_equalalive"]
@@ -123,12 +135,20 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--out", type=Path, default=OUT)
+    ap.add_argument("--parquet-root", type=Path, default=None,
+                    help="parsed-parquet tree to assemble from (default: data/parquet). "
+                         "Use data/holdout2026/parquet to rebuild the 2026 out-of-time test set.")
+    ap.add_argument("--no-exclude", action="store_true",
+                    help="skip configs/excluded_offlist.txt filtering (that list is training-only)")
     args = ap.parse_args()
+    if args.parquet_root:
+        set_parquet_root(args.parquet_root)
+        print(f"parquet root -> {args.parquet_root}")
 
     demos = [Path(f).stem for f in sorted(glob.glob(str(ROUNDS_DIR / "*.parquet")))]
     # drop manually-excluded demos (e.g. qualifier / non-standard games)
     exclude_file = ROOT / "configs" / "excluded_offlist.txt"
-    if exclude_file.exists():
+    if exclude_file.exists() and not args.no_exclude:
         excl = {ln.strip() for ln in exclude_file.read_text(encoding="utf-8").splitlines() if ln.strip()}
         before = len(demos)
         demos = [d for d in demos if d not in excl]
