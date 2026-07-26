@@ -47,7 +47,7 @@
 % regenerated.  The version is stamped on the title page so that a
 % printed or emailed PDF is never ambiguous about which draft it is.
 % ---------------------------------------------------------------------
-\newcommand{\draftversion}{v1}
+\newcommand{\draftversion}{v2}
 
 \title{\textbf{Where Win Probability Comes From --- and Where It Breaks}\\[2mm]
 \large Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check
@@ -101,6 +101,11 @@ player-skill pillar carries an \emph{inference-time data dependency}: it require
 an external, per-era player database that the deployment era does not yet have. We
 argue this failure mode --- invisible to cross-validation by construction --- is a
 general hazard for any ``prior'' feature sourced outside the observation itself.
+Repairing the dependency with a leak-free \emph{lagged} prior (last season's
+skill, at 100\,\% coverage) restores calibration completely and most of the
+discrimination --- yet the skill pillar \emph{still} fails to beat the demo-only
+model out-of-time, turning a plumbing bug into a rigorous negative result: even a
+correctly-constructed external skill prior is not worth its cost here.
 \end{abstract}
 
 \tableofcontents
@@ -1010,12 +1015,84 @@ configuration should be chosen on out-of-time evidence rather than cross-validat
 \textbf{Ours is EB2 --- with no firepower at all --- even though cross-validation ranked EFB2
 first.}
 
-\todo{The 2026 skill data does exist and is being collected. We will report a second,
-\emph{separately disclosed} evaluation (the holdout above was touch-once; any re-run must be
-declared as such) with (a) same-era 2026 statistics and (b) a leak-free \emph{lagged} prior using
-the previous season's statistics. Note that (a) is itself mildly leaky --- a player's 2026 rating
-is computed partly from the very matches being predicted, and would not exist at live inference
-time --- so (b) is the deployment-realistic construction and the one that should headline.}
+\subsection{The lagged-prior variant: fixing the data does not rescue the pillar}
+\label{sec:lagged}
+
+The failure above is a \emph{coverage} failure, so the obvious question is whether it survives a
+correct construction. We answer it directly. We collected the previous season's (2025) statistics for
+all 82 players in the holdout --- achieving 100\,\% coverage --- and rebuilt the holdout so that each
+2026 match looks up the \textbf{lagged prior}: last season's skill, i.e.\ exactly the information a
+live system would have at match time. This is both the leak-free construction (a 2025 rating cannot be
+computed from a 2026 match) and the deployment-realistic one. We re-ran the entire classical holdout
+as a \textbf{separate, disclosed} evaluation; the touch-once run of Sect.~\ref{sec:holdout} stands
+unchanged.
+
+The coverage gap closes completely: the 5-v-5 team skill-sum, which had collapsed to a mean of $3.66$
+on the broken build, returns to $5.36$ (training: $5.28$), with $0.0\,\%$ of snapshots below $3$ (was
+$11.8\,\%$) and $100\,\%$ populated. The feature now means the same thing in 2026 as in training.
+
+The result has two parts, and they matter separately (Fig.~\ref{fig:recovery}).
+
+\paragraph{Calibration recovers completely.}
+The smoking gun of Sect.~\ref{sec:holdout} --- a calibration intercept of $-0.36$ and ECE $0.071$ ---
+is gone. Across all five models the EFB2 intercept flips from over-confident (negative) to the same
+benign $+0.05$ to $+0.09$ base-rate drift the demo-only sets show, and ECE returns to the healthy
+$0.02$--$0.03$ band. The calibration disaster was \emph{entirely} a data-coverage artifact.
+
+\paragraph{Discrimination largely recovers --- but firepower still does not earn its place.}
+Out-of-time EFB2 AUC rises from the broken build substantially (logistic $0.8236 \to 0.8423$; random
+forest $0.8159 \to 0.8378$), shrinking the catastrophic $-0.028$ drop to about $-0.010$. And yet:
+\textbf{even with correct, leak-free, coverage-complete data, EFB2 remains below EB2 --- the
+no-firepower configuration --- on every single model} (Table~\ref{tab:lagged}), by $0.005$ to $0.012$
+AUC, and its contested-AUC is markedly worse ($0.589$ vs $0.637$). The in-sample edge of firepower
+(logistic EFB2 $0.8519$, the study's best in-sample number) is an in-sample artifact that
+\emph{reverses} out-of-time.
+
+\begin{table}[t]
+\centering
+\caption{Lagged-prior holdout: even with correct, leak-free 2025 skill data, adding firepower (EFB2)
+is a net negative out-of-time on every model relative to the demo-only EB2.}
+\label{tab:lagged}
+\begin{tabular}{lrrr}
+\toprule
+Model & EB2 (no firepower) & EFB2 (lagged firepower) & firepower's effect \\
+\midrule
+Logistic     & 0.8474 & 0.8423 & $-0.0051$ \\
+XGBoost      & 0.8497 & 0.8401 & $-0.0096$ \\
+LightGBM     & \textbf{0.8501} & 0.8393 & $-0.0107$ \\
+CatBoost     & 0.8494 & 0.8377 & $-0.0117$ \\
+Random forest& 0.8439 & 0.8378 & $-0.0062$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{F5_firepower_recovery.png}
+\caption{The lagged-prior fix, EFB2 on the 2026 holdout. \textbf{Left:} out-of-time AUC per model,
+broken same-year build (red) vs the fixed lagged-2025 build (green); the fix recovers most of the
+collapse, but every fixed bar still sits below the EB2 no-firepower line (blue dashed). \textbf{Right:}
+calibration intercept --- the broken build is systematically over-confident in the CTs (negative);
+the fixed build sits at the benign $+0.05$--$0.09$ base-rate drift. Calibration recovers completely;
+discrimination does not overtake the demo-only model.}
+\label{fig:recovery}
+\end{figure}
+
+\paragraph{Two lessons, cleanly separated.}
+The two holdout variants isolate two distinct failure modes of an external prior.
+\emph{(i) Plumbing.} An inference-time data dependency can fail catastrophically and \emph{silently}
+when coverage lags --- and that failure is fixable, with a lagged, coverage-complete construction.
+\emph{(ii) Value.} Even correctly plumbed, a leak-free skill prior adds no out-of-time value here: the
+demo-derived pillars already capture what matters, and EB2 remains the best and most robust
+configuration. A reviewer seeing only the broken run might reasonably say ``fix the data''; we fixed
+it, disclosed both variants, and firepower still does not transfer. That is the stronger claim, and it
+is the one we make. The production recommendation of Sect.~\ref{sec:holdout} therefore stands, now for
+a sharper reason: \textbf{ship EB2 --- not because the skill data is unfixable, but because a correct
+skill prior does not beat the demo-only model out-of-time.}
+
+We note one mild caveat: the EFB2 models are \emph{trained} on same-year firepower and \emph{tested} on
+the lagged prior. This is the realistic deployment setup (train on history, serve with last season),
+and the lagged 2026 distribution matches training closely, so the train/serve skew is small.
 
 % =====================================================================
 \section{Chronology: how we actually got here}
@@ -1118,12 +1195,15 @@ you that you need them}.
     map-specific by construction; multi-map generalisation is untested.
   \item \textbf{Scale.} 220 matches, $\approx 4{,}900$ rounds. The deep-model dead heat is a
     statement about this regime and should not be read as a general claim.
-  \item \textbf{Firepower leakage.} Same-era player ratings are partly computed from the matches
-    being predicted, and would not exist at live inference time. The lagged-prior variant (in
-    progress) is the clean construction.
+  \item \textbf{Firepower leakage, and the train/serve skew of the fix.} Same-era player ratings are
+    partly computed from the matches being predicted; the lagged-prior variant (Sect.~\ref{sec:lagged})
+    is the clean construction and is what we recommend acting on. Its one caveat is that the models are
+    trained on same-year firepower and evaluated on the lagged prior --- a small, deployment-realistic
+    skew.
   \item \textbf{Firepower count confound.} The summed-rating feature is approximately a
-    player-count proxy ($r = 0.987$; Fig.~\ref{fig:shapfirepower}). We report rather than repair
-    it, since Sect.~\ref{sec:holdout} shows the binding constraint is data coverage, not encoding.
+    player-count proxy ($r = 0.987$; Fig.~\ref{fig:shapfirepower}). We report rather than repair it;
+    Sect.~\ref{sec:lagged} shows that even with the confound left in and the coverage gap closed, the
+    pillar adds no out-of-time value, so re-encoding it would not change the recommendation.
   \item \textbf{Irreducible ceiling.} Contested rounds sit near $0.58$ for \emph{every} model
     tested. Some of this is genuine aleatoric randomness --- a 5-v-5 on equal buys really is close
     to a coin flip, and it should be. How much is irreducible and how much is headroom is unknown,
@@ -1147,7 +1227,9 @@ contested-AUC as the honest metric. Physical fidelity does not imply predictiven
 realistic map-control model is the least useful until it is given memory. And cross-validation is
 not a deployment test: our best cross-validated model became our worst out-of-time, because one
 pillar depended on a database the future does not yet have --- a failure mode that grouped folds
-cannot expose.
+cannot expose. And when we repaired that dependency with a leak-free lagged prior, the pillar's
+calibration recovered fully but it \emph{still} did not beat the demo-only model, so the negative
+verdict is not about broken data but about the value of external priors themselves.
 
 The features that \emph{did} transfer --- economy, Voronoi map control, and a three-term
 defuse-race inequality --- are the ones computed directly from the game itself.

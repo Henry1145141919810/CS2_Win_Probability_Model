@@ -63,7 +63,7 @@ def main():
     # EB2 no-firepower reference band (mean out-of-time across models)
     eb2 = np.nanmean([col(f, m, "EB2", "out_AUC") for m in MODELS])
     ax1.axhline(eb2, color=BLUE, ls="--", lw=1.3, zorder=1)
-    ax1.text(len(MODELS) - 0.5, eb2 + 0.001, f"EB2 (no firepower) {eb2:.3f}",
+    ax1.text(len(MODELS) - 0.5, eb2 + 0.0012, f"EB2 (no firepower) {eb2:.3f} — still ahead",
              ha="right", va="bottom", fontsize=8, color=BLUE)
     for xi, (vb, vf) in enumerate(zip(ob, of)):
         ax1.text(xi - w/2, vb - 0.004, f"{vb:.3f}", ha="center", va="top", fontsize=7.2, color="white")
@@ -72,8 +72,8 @@ def main():
     ax1.set_ylabel("2026 out-of-time AUC (set EFB2)")
     lo = min(np.nanmin(ob), np.nanmin(of)) - 0.008
     ax1.set_ylim(lo, max(np.nanmax(inb), eb2) + 0.006)
-    ax1.set_title("Firepower recovers out-of-time once fed lagged stats\n"
-                  "red = the broken same-year run; aqua reaches the no-firepower band",
+    ax1.set_title("The lagged fix repairs most of the collapse — but firepower still trails\n"
+                  "red = broken same-year run; aqua = fixed, yet stays below the no-firepower line",
                   fontsize=10, loc="left")
     ax1.legend(loc="lower right", frameon=False, fontsize=8)
 
@@ -90,7 +90,7 @@ def main():
                  ha="center", va="bottom" if vf >= 0 else "top", fontsize=7.2, color=INK2)
     ax2.set_xticks(x); ax2.set_xticklabels([NICE[m] for m in MODELS], fontsize=8, rotation=15)
     ax2.set_ylabel("calibration intercept on 2026 holdout")
-    ax2.set_title("Calibration recovers too\n"
+    ax2.set_title("Calibration, however, fully recovers\n"
                   "broken run is over-confident in the CTs (negative intercept); fixed sits near 0",
                   fontsize=10, loc="left")
     ax2.legend(loc="lower right", frameon=False, fontsize=8)
