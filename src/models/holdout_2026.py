@@ -12,9 +12,17 @@ Reports, for every (model, feature set):
   - the soft-vote ensemble on the holdout
 Plus a DISTRIBUTION-SHIFT check: training base rate 0.445 vs 2026 base rate 0.512.
 
-Usage: python src/models/holdout_2026.py
+Usage:
+  python src/models/holdout_2026.py                       # original same-year build (touch-once)
+  python src/models/holdout_2026.py \
+      --test data/test_dataset_2026_lag2025.parquet \
+      --tag lag2025                                        # leak-free lagged-prior variant
+
+The original run (no args) is the touch-once result of record. Any variant run with --tag is a
+SEPARATE, DISCLOSED evaluation and writes to its own output files, leaving the original untouched.
 """
 from __future__ import annotations
+import argparse
 import sys
 from pathlib import Path
 
@@ -31,9 +39,6 @@ from models.train_pipeline import FEATURE_SETS, make_model, oof_predict, ece, bs
 from models.extended_metrics import brier_decomp, cal_slope_intercept, adaptive_ece  # noqa: E402
 
 TRAIN = ROOT / "data" / "training_dataset.parquet"
-TEST = ROOT / "data" / "test_dataset_2026.parquet"
-OUTCSV = ROOT / "outputs" / "holdout_2026.csv"
-OUTFIG = ROOT / "outputs" / "figures" / "holdout_2026.png"
 MODELS = ["logreg", "xgb", "lgbm", "catboost", "rf"]
 SETS = ["A", "E", "EB2", "EFB2"]
 B = 500
@@ -75,8 +80,21 @@ def metrics(y, p, cont):
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--test", type=Path, default=ROOT / "data" / "test_dataset_2026.parquet",
+                    help="2026 holdout parquet to evaluate")
+    ap.add_argument("--tag", type=str, default="",
+                    help="suffix for output files (e.g. lag2025). Empty = original touch-once outputs.")
+    args = ap.parse_args()
+    sfx = f"_{args.tag}" if args.tag else ""
+    outcsv = ROOT / "outputs" / f"holdout_2026{sfx}.csv"
+    outfig = ROOT / "outputs" / "figures" / f"holdout_2026{sfx}.png"
+    variant = args.tag or "same-year (original)"
+    print(f"=== HOLDOUT VARIANT: {variant} ===")
+    print(f"test set: {args.test}\n")
+
     tr = pl.read_parquet(TRAIN)
-    te = pl.read_parquet(TEST)
+    te = pl.read_parquet(args.test)
     ytr = tr["ct_won"].to_numpy().astype(float)
     yte = te["ct_won"].to_numpy().astype(float)
     gte = te["match_id"].to_numpy()
@@ -126,8 +144,8 @@ def main():
           f"ECE {om['ECE']:.3f} cAUC {om['cAUC']:.3f} slope {om['cal_slope']:.2f}")
 
     tbl = pl.DataFrame(rows)
-    OUTCSV.parent.mkdir(parents=True, exist_ok=True); tbl.write_csv(OUTCSV)
-    print(f"\nwrote {OUTCSV}")
+    outcsv.parent.mkdir(parents=True, exist_ok=True); tbl.write_csv(outcsv)
+    print(f"\nwrote {outcsv}")
 
     # ---- figure: in-time vs out-of-time AUC + reliability on the holdout ----
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5.5))
@@ -139,7 +157,7 @@ def main():
     hi = max(d["in_AUC"].max(), d["out_AUC"].max()) + 0.005
     ax1.plot([lo, hi], [lo, hi], "k--", lw=1, label="y = x (no drop)")
     ax1.set_xlabel("IN-TIME AUC (5-fold OOF, 2024-25)"); ax1.set_ylabel("OUT-OF-TIME AUC (2026)")
-    ax1.set_title("Does the model hold up out-of-time?\n(points below the line = degradation)")
+    ax1.set_title(f"Does the model hold up out-of-time? [{variant}]\n(points below the line = degradation)")
     ax1.legend(fontsize=8)
 
     p_best = test_preds[("logreg", "EFB2")]
@@ -155,9 +173,9 @@ def main():
     ax2.set_xlabel("predicted P(CT win)"); ax2.set_ylabel("observed CT win-rate")
     ax2.set_title("Calibration on the 2026 holdout\n(base-rate shift 0.445 -> 0.512)")
     ax2.legend(fontsize=8); ax2.set_aspect("equal")
-    fig.tight_layout(); OUTFIG.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(OUTFIG, dpi=120); plt.close(fig)
-    print(f"wrote {OUTFIG}")
+    fig.tight_layout(); outfig.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(outfig, dpi=120); plt.close(fig)
+    print(f"wrote {outfig}")
 
 
 if __name__ == "__main__":

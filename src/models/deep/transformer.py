@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import math
 import time
+from pathlib import Path
 
 import numpy as np
 import polars as pl
@@ -108,6 +109,8 @@ def main():
     ap.add_argument("--cv", action="store_true")
     ap.add_argument("--bootstrap", type=int, default=500)
     ap.add_argument("--save-oof", default="")
+    ap.add_argument("--holdout", default="", help="OUT-OF-TIME eval: train on ALL --data, evaluate on this "
+                    "external parquet, standardised with TRAIN stats.")
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
     torch.manual_seed(args.seed); np.random.seed(args.seed)
@@ -128,7 +131,34 @@ def main():
         mu = X[tri][mt].mean(0); sd = X[tri][mt].std(0) + 1e-6
         return ((X - mu) / sd).astype(np.float32)
 
-    if args.cv:
+    if args.holdout:
+        # OUT-OF-TIME: train on ALL --data (inner val for early stopping), evaluate on the external
+        # holdout, standardised with TRAINING stats and the SAME feature columns.
+        rng = np.random.default_rng(args.seed)
+        matches = np.array(sorted(set(G)))
+        val_m = set(rng.choice(matches, max(1, int(len(matches) * 0.15)), replace=False))
+        tri = np.array([i for i in range(len(G)) if G[i] not in val_m])
+        vai = np.array([i for i in range(len(G)) if G[i] in val_m])
+        mt = M[tri].astype(bool)
+        mu = X[tri][mt].mean(0); sd = X[tri][mt].std(0) + 1e-6
+        Xs = ((X - mu) / sd).astype(np.float32)
+        print(f"train {len(tri)} / inner-val {len(vai)} rounds; out-of-time on {args.holdout}\n")
+        model, _ = fit(Xs, M, Y, tri, vai, args, device)
+
+        hd = pl.read_parquet(args.holdout)
+        Xh, Mh, Yh, Gh, Ch, Th = tcn.build_sequences(hd, cols, args.seq_len)
+        Xhs = ((Xh - mu) / sd).astype(np.float32)
+        yh, ph, ch, gh, _ = tcn.collect(model, Xhs, Mh, Yh, Ch, np.arange(len(Yh)), device, args.batch,
+                                        G=Gh, Tk=Th)
+        tag = Path(args.holdout).stem
+        print("\n" + tcn.metric_line(f"Transformer OUT-OF-TIME [{tag}]", yh, ph, ch))
+        if args.bootstrap:
+            tcn.print_bootstrap(tcn.block_bootstrap_metrics(yh, ph, gh, ch, args.bootstrap), args.bootstrap)
+        print(tcn.BASELINE)
+        if args.save_oof:
+            pl.DataFrame({"match_id": gh, "y": yh, "p_transformer": ph}).write_parquet(args.save_oof)
+            print(f"saved holdout preds -> {args.save_oof}")
+    elif args.cv:
         aY, aP, aC, aG, aT = [], [], [], [], []
         for k, (tri, tei) in enumerate(GroupKFold(5).split(np.zeros(len(Y)), Y, G), 1):
             Xs = standardize(tri)

@@ -3,7 +3,11 @@
 **Date:** 2026-06-24 · **Dataset:** 220 Tier-1 demos / 476,595 snapshots / **104 cols (4 pillars)** · base P(CT win)=0.445
 **In-sample best:** logistic on **EFB2** = **0.8519** · 4-model soft-vote **0.8531** · 9-architecture matrix complete
 **⭐ OUT-OF-TIME (2026 holdout) OVERTURNS THIS → recommended model is `EB2` (NO firepower): lgbm EB2 = 0.8501 out-of-time (in-time 0.8493).**
-**Firepower does NOT transfer** (logreg EFB2 0.8519 → **0.8236**) — a data-coverage gap, see §2026 holdout.
+**Firepower does NOT transfer** (logreg EFB2 0.8519 → **0.8236** same-year) — a data-coverage gap.
+**UPDATE 2026-07-25:** the leak-free **lagged-2025** variant (Leu's scrape, 82/82 coverage) fixes the gap →
+calibration fully recovers (intercept −0.36 → **+0.07**), AUC recovers to **0.8423**, but EFB2 **still trails
+EB2** on every model out-of-time (−0.005 to −0.012). Firepower is a rigorous negative even with correct data.
+See [notes_lagged_holdout.md](notes_lagged_holdout.md).
 
 Snapshot of every pillar, model, feature set, test/metric, and the honest verdict on what
 works. Companion to `docs/methodology.md` (full protocol + derivations).

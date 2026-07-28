@@ -52,6 +52,32 @@ they actually happened.
 
 ---
 
+## v2 — 2026-07-25 — lagged-prior firepower result
+
+Tag: `paper-v2` · Zip: `CS2_winprob_overleaf_v2.zip` · Class: `article`
+
+**Changed.** Adds the leak-free lagged-prior firepower holdout (the experiment that was "in
+progress" in v1). Leu's scrape completed 2025 stats to 82/82 coverage; we rebuilt the 2026 holdout
+so each match uses the previous season's skill, and re-ran the classical holdout as a separate,
+disclosed evaluation. New Sect. 7.9 ("The lagged-prior variant"), Table 7, and Fig. F5. Abstract,
+Limitations, and Conclusion updated. Key finding: fixing the coverage gap restores calibration
+completely (intercept −0.36 → +0.07) and most of the AUC, **but firepower still does not beat the
+demo-only EB2 out-of-time on any model** — turning a plumbing bug into a rigorous negative result
+about external skill priors. Recommendation (ship EB2, no firepower) stands, now for a sharper
+reason.
+
+**Re-upload to Overleaf.** main.tex + one new figure: `F5_firepower_recovery.png`
+
+**Figures regenerated.** F5 is new (`src/viz/firepower_recovery.py`). No existing figure changed.
+
+**Still open.** refs.bib still an unverified scaffold; Leu's affiliation; PARCC acknowledgement;
+Appendix B metric tables; deep-model out-of-time (TCN/Transformer queued on Betty — see
+`docs/BETTY_benchmark_guide.md`); GAT out-of-time (needs a 2026 trajectory dataset). Task A (2026
+same-year stats) not done by Leu, so only the lagged variant is reported — which is the one that
+should headline anyway.
+
+---
+
 ## vNext — template (copy this block, don't edit v1)
 
 ```

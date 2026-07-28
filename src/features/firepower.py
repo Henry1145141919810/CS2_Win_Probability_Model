@@ -25,6 +25,7 @@ Source data:
   configs/demo_year_map.csv       — demo_id → year
 """
 from __future__ import annotations
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -57,8 +58,26 @@ def _year_by_demo() -> dict[str, int]:
     return {r["demo_id"]: r["year"] for r in df.iter_rows(named=True)}
 
 
+def _year_lag() -> int:
+    """Opt-in skill-prior year lag, read from the env var FIREPOWER_YEAR_LAG.
+
+    0 (default) = same-year stats, exactly as before — training builds are
+    unaffected unless the caller deliberately sets the var.
+
+    Set FIREPOWER_YEAR_LAG=1 when assembling the 2026 out-of-time holdout to
+    build the LEAK-FREE LAGGED-PRIOR variant: each 2026 match then looks up
+    the previous season's (2025) stats, i.e. only information a live system
+    would actually have at match time. See docs/TODO_leu_2026_scrape.md §2.
+    """
+    try:
+        return int(os.environ.get("FIREPOWER_YEAR_LAG", "0"))
+    except ValueError:
+        return 0
+
+
 def year_for_match(match_id: str) -> int:
-    return _year_by_demo().get(match_id) or DEFAULT_YEAR
+    base = _year_by_demo().get(match_id) or DEFAULT_YEAR
+    return base - _year_lag()
 
 
 def _grenade_value(inventory) -> int:
