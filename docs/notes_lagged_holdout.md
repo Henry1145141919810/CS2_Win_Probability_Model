@@ -1,3 +1,30 @@
+# Notes — the firepower holdout, all THREE variants (2026)
+
+> **2026-07-25 update — the same-year variant is in, and it settles the question.**
+> Leu completed the 2026 same-year stats (82/82). We now have all three constructions of the skill
+> prior, and **firepower fails to beat the demo-only model (EB2) under every one of them** — including
+> the leaky best-case (same-year 2026, full coverage + oracle same-era knowledge). Figure:
+> `outputs/figures/paper/F6_firepower_three_variants.png`.
+>
+> | EFB2 out-of-time AUC | broken | lagged-2025 | same-year 2026 | EB2 (no fp) |
+> |---|---|---|---|---|
+> | logreg | 0.8236 | 0.8423 | 0.8450 | **0.8474** |
+> | xgb | 0.8344 | 0.8401 | 0.8399 | **0.8497** |
+> | lgbm | 0.8325 | 0.8393 | 0.8386 | **0.8501** |
+> | catboost | 0.8386 | 0.8377 | 0.8391 | **0.8494** |
+> | rf | 0.8159 | 0.8378 | 0.8422 | **0.8439** |
+>
+> **Same-year EFB2 beats EB2 on NO model** (−0.002 to −0.011). Contested-AUC with firepower is worse
+> in every variant (0.55–0.59 vs EB2's 0.63–0.66). **Calibration:** only the broken build is
+> miscalibrated (intercept −0.36 → −0.01); both coverage-complete builds sit near zero. **Coverage is
+> the whole calibration story; the year of stats barely matters** (same-year ≈ lagged — consistent with
+> the count confound, r=0.987: the feature mostly counts players, so which season's ratings you sum is
+> nearly irrelevant). **Verdict: ship EB2, no firepower — settled across all three variants.**
+>
+> ---
+>
+> ## (original note, broken vs lagged — kept for the record)
+>
 # Notes — the lagged-prior firepower holdout (2026, leak-free)
 
 **Date:** 2026-07-25 · **Run:** `src/models/holdout_2026.py --test data/test_dataset_2026_lag2025.parquet --tag lag2025`

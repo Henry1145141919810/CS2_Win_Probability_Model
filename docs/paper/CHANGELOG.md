@@ -78,6 +78,31 @@ should headline anyway.
 
 ---
 
+## v3 — 2026-07-25 — the same-year variant completes the firepower triptych
+
+Tag: `paper-v3` · Zip: `CS2_winprob_overleaf_v3.zip` · Class: `article`
+
+**Changed.** Leu delivered the 2026 same-year stats (82/82). Ran the third and final holdout variant
+(same-year 2026: full coverage + same-era knowledge, but leaky — the best case a skill prior could
+have). Sect. 7.9 rewritten from "two variants" to the full three-construction spectrum; Table 7 now
+shows all three vs EB2; **Fig. F5 replaced by F6** (three-variant comparison). Abstract, Conclusion
+updated. **Result: firepower beats the demo-only EB2 under NO construction** — broken, leak-free
+lagged, or leaky same-era oracle — trailing by 0.002–0.011 AUC on every model, with worse
+contested-AUC everywhere. Same-year ≈ lagged confirms the count confound (which season's ratings you
+sum barely matters). The negative verdict is now triangulated and pre-empts every reviewer objection.
+
+**Re-upload to Overleaf.** main.tex + one new figure: `F6_firepower_three_variants.png`. (F5 removed
+from the project — delete it from Overleaf too if you uploaded v2.)
+
+**Figures regenerated.** F6 new (`src/viz/firepower_three_variants.py`). F5 retired.
+
+**Still open.** Same as v2: refs.bib unverified; Leu's affiliation; PARCC acknowledgement; Appendix B
+metric tables; deep-model out-of-time on Betty (TCN/Transformer queued — now runnable against either
+the lagged or same-year holdout); GAT out-of-time (needs 2026 trajectory dataset). **Firepower work is
+now complete — no further scrapes or variants.**
+
+---
+
 ## vNext — template (copy this block, don't edit v1)
 
 ```
