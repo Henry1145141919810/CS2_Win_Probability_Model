@@ -14,6 +14,11 @@ Same-year ≈ lagged (count confound). **Verdict settled: ship EB2, no firepower
 Snapshot of every pillar, model, feature set, test/metric, and the honest verdict on what
 works. Companion to `docs/methodology.md` (full protocol + derivations).
 
+**Planning docs:** [roadmap.md](roadmap.md) (milestones + tracker for Henry & Leu) ·
+[submission_requirements.md](submission_requirements.md) (venue rules, deadlines, links).
+Next milestones: firepower v3 team-ranking weights (Aug 7, Leu) → paper draft 1 to Wyner (Aug 14) →
+SSAC **abstract** Oct 1 → full paper Dec 4.
+
 ---
 
 ## PART 1 — Inventory
