@@ -146,6 +146,13 @@ def main():
         model, _ = fit(Xs, M, Y, tri, vai, args, device)
 
         hd = pl.read_parquet(args.holdout)
+        missing = [c for c in cols if c not in hd.columns]
+        if missing:
+            raise SystemExit(
+                f"\nHOLDOUT SCHEMA MISMATCH: {len(missing)} feature column(s) present in --data are "
+                f"absent from --holdout ({args.holdout}):\n  {missing}\n"
+                f"This means training_dataset.parquet and the holdout were built by DIFFERENT pipeline "
+                f"versions (e.g. firepower v1 vs v2). Rebuild or re-sync so both have identical schemas.\n")
         Xh, Mh, Yh, Gh, Ch, Th = tcn.build_sequences(hd, cols, args.seq_len)
         Xhs = ((Xh - mu) / sd).astype(np.float32)
         yh, ph, ch, gh, _ = tcn.collect(model, Xhs, Mh, Yh, Ch, np.arange(len(Yh)), device, args.batch,
