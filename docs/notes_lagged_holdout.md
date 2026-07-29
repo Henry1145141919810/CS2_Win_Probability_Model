@@ -121,5 +121,12 @@ of the paper.
   lagged firepower. This is the realistic deployment setup (train on history, serve with last season),
   and the lagged 2026 distribution (5.36) matches training (5.28) closely, so the skew is small. Worth
   one sentence in the paper.
-- Deep models (TCN/Transformer) out-of-time on this holdout are pending on Betty (`docs/BETTY_benchmark_guide.md`).
+- Deep models (TCN/Transformer) out-of-time: **DONE 2026-07-29** (Betty). They use all features (=
+  deep EFB2). Same-year: TCN **0.8443** (0.825–0.862), Transformer **0.8448** (0.826–0.863) — tie the
+  classical EFB2 (0.8450), all CIs overlap; the in-time dead heat persists out-of-time. They degrade
+  *less* than classical EFB2 (TCN −0.0046, TF −0.0025 from in-time OOF) and sit below the no-firepower
+  EB2 because they carry firepower. Transformer cAUC 0.62 highest but wide CI (0.55–0.68). Lagged
+  numbers similar (TCN 0.8414, TF 0.8419). See `outputs/holdout_deep_summary.csv`.
 - GAT out-of-time deferred (needs a 2026 trajectory dataset).
+- Fix note: deep jobs first crashed because Betty's `training_dataset.parquet` was stale firepower-v1
+  vs the v2 holdouts; re-synced the file + added a schema-mismatch guard to the deep scripts.

@@ -103,6 +103,33 @@ now complete — no further scrapes or variants.**
 
 ---
 
+## v4 — 2026-07-29 — deep models evaluated out-of-time (closes a limitation)
+
+Tag: `paper-v4` · Zip: `CS2_winprob_overleaf_v4.zip` · Class: `article`
+
+**Changed.** Ran the TCN + Transformer out-of-time on both the lagged and same-year 2026 holdouts
+(Betty). Result: they **tie the classical models out-of-time too** — TCN 0.8443, Transformer 0.8448
+(same-year), landing exactly on classical EFB2 (0.8450), all CIs overlapping. The in-time dead heat is
+not an in-sample artifact. They degrade *less* than classical EFB2 (−0.003/−0.005 vs −0.007/−0.009),
+and — because they consume all features incl. firepower — sit below the no-firepower EB2. Sect. 7.6
+gains a "dead heat persists out-of-time" paragraph; the Limitations "deep-model holdout" item is
+retired and replaced with the finding; abstract gains a clause. No new figure (numbers are in-text +
+`outputs/holdout_deep_summary.csv`).
+
+Also fixed a real bug along the way: the deep `--holdout` path crashed on Betty because the cluster's
+`training_dataset.parquet` was a stale firepower-v1 build while the holdouts are v2 — added a
+schema-mismatch guard to the deep scripts (commit 717b953). Root fix was re-syncing the data file.
+
+**Re-upload to Overleaf.** main.tex only (no figure change).
+
+**Figures regenerated.** None.
+
+**Still open.** refs.bib unverified; Leu's affiliation; PARCC acknowledgement; Appendix B metric
+tables; GAT out-of-time (still needs a 2026 trajectory dataset). Firepower + deep benchmarks now
+COMPLETE.
+
+---
+
 ## vNext — template (copy this block, don't edit v1)
 
 ```

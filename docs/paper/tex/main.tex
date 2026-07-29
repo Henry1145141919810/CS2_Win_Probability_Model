@@ -47,7 +47,7 @@
 % regenerated.  The version is stamped on the title page so that a
 % printed or emailed PDF is never ambiguous about which draft it is.
 % ---------------------------------------------------------------------
-\newcommand{\draftversion}{v3}
+\newcommand{\draftversion}{v4}
 
 \title{\textbf{Where Win Probability Comes From --- and Where It Breaks}\\[2mm]
 \large Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check
@@ -91,7 +91,8 @@ addition beyond economy, cutting post-plant log-loss by 7--8\,\%. Fourth, across
 nine architectures (logistic regression, random forest, XGBoost, LightGBM,
 CatBoost, a causal TCN, a causal Transformer, a player-graph attention network, and
 an ensemble), with match-level block-bootstrap confidence intervals, \emph{all} are
-statistically indistinguishable.
+statistically indistinguishable --- a dead heat that persists out-of-time, where the sequence
+models land exactly on the classical number.
 
 Finally, we subject the model to a \textbf{touch-once out-of-time holdout} on 27
 unseen 2026 matches. The demo-derived pillars transfer essentially perfectly
@@ -846,6 +847,21 @@ learn --- trend and volatility for the TCN, zone control for the GAT --- and 220
 in particular to pull ahead given an order of magnitude more matches, precisely because it is
 the only model with access to information the feature engineering discards.
 
+\paragraph{The dead heat persists out-of-time.}
+We also evaluated the TCN and Transformer on the 2026 holdout (they consume every feature column,
+so they are the deep analogue of the all-pillar EFB2 configuration). On the same-year holdout the
+TCN reaches AUC $0.8443$ (95\,\% CI $0.825$--$0.862$) and the Transformer $0.8448$ ($0.826$--$0.863$)
+--- landing exactly on the classical EFB2 out-of-time number ($0.8450$, logistic) with fully
+overlapping intervals. The in-time tie is therefore not an in-sample artifact: it holds under
+distribution shift. Two smaller observations. First, the deep models degrade \emph{less} out-of-time
+than the classical EFB2 (TCN $-0.0046$, Transformer $-0.0025$ from their in-time OOF, vs $-0.007$ to
+$-0.009$ for the classical EFB2 models) --- they do not overfit the training era more, if anything
+slightly less. Second, because they ingest firepower along with everything else, they sit at the
+EFB2 level and thus \emph{below} the no-firepower EB2 ($0.847$--$0.850$); the deep models inherit the
+skill-prior penalty of Sect.~\ref{sec:lagged} and cannot shed it without retraining on a reduced
+feature set. The Transformer's contested-AUC ($0.62$) is the highest of any model out-of-time, but
+the interval is wide ($0.55$--$0.68$) and we do not read it as significant.
+
 \subsection{Honest probabilities: calibration, phases, and comebacks}
 \label{sec:calibration}
 
@@ -1228,9 +1244,12 @@ you that you need them}.
     tested. Some of this is genuine aleatoric randomness --- a 5-v-5 on equal buys really is close
     to a coin flip, and it should be. How much is irreducible and how much is headroom is unknown,
     and is the most important open question this work leaves.
-  \item \textbf{Deep-model holdout.} The deep models were not re-evaluated out-of-time.
-    \todo{decide whether to run this on EB2 --- they inherit the same firepower dependency, so the
-    interesting question is only whether they degrade \emph{more} than the classical models}
+  \item \textbf{Deep models consume all features, so they carry firepower.} The TCN and Transformer
+    were evaluated out-of-time (Sect.~\ref{sec:deep}); they tie the classical models there too. Because
+    they ingest every feature column, they inherit the firepower penalty and cannot be run in a
+    ``no-firepower'' configuration without retraining on a reduced column set, which we did not do. A
+    deep model restricted to the demo-derived pillars might close the small gap to EB2; we leave that
+    to future work.
   \item \textbf{Single holdout era.} One out-of-time window (2026). The failure mode we identify is
     general, but its \emph{magnitude} here is a single observation.
 \end{enumerate}
