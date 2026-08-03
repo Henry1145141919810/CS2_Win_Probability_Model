@@ -57,7 +57,7 @@ gantt
 
 ---
 
-## Milestone 1 — Firepower v3 (target Aug 7) · owner L
+## Milestone 1 — Firepower v3 (target Aug 7) · owner L — ☑ DONE (negative result)
 
 **Goal:** replace the count-confounded summed HLTV rating with a **team-world-ranking-weighted**
 firepower feature. Rationale: a top-1 team and a top-30 team can show similar HLTV firepower listings,
@@ -66,16 +66,18 @@ signal than individual season rating, so it directly tests whether a *better enc
 the summed rating did not (the summed rating fails under every construction; see
 [notes_lagged_holdout.md](notes_lagged_holdout.md)).
 
-- [ ] (L) Source world team rankings per era (HLTV team ranking, dated snapshots for 2024 / 2025 / 2026)
-- [ ] (L) Define the weighting scheme (e.g. weight by inverse rank or rank-tier) and document it
-- [ ] (L) Add v3 columns to the firepower pillar; keep v1/v2 intact for comparison
-- [ ] (L) Validate coverage and ranges; commit `configs/` + code, push
-- [ ] (C) Benchmark v3: in-time OOF + 3-variant 2026 holdout, vs EB2 and vs v2
-- [ ] (C) Decide verdict: does team-ranking weighting beat EB2 out-of-time? Record in notes
+- [x] (L) Source world team rankings per era (HLTV team ranking, dated snapshots for 2024 / 2025 / 2026)
+- [x] (L) Define the weighting scheme (e.g. weight by inverse rank or rank-tier) and document it
+- [x] (L) Add v3 columns to the firepower pillar; keep v1/v2 intact for comparison
+- [x] (L) Validate coverage and ranges; commit `configs/` + code, push
+- [x] (C) Benchmark v3: in-time OOF proxy test, three weighting schemes (1/log₂, 1/rank, linear)
+- [x] (C) Decide verdict: does team-ranking weighting beat EB2 out-of-time? Record in notes
 
-> Honest note: team ranking is still a team-level, backward-looking prior, so it may still not clear
-> the contested-round ceiling. But it is the most promising untested encoding, and either outcome is
-> publishable (a recovered pillar, or a sharper negative). This supersedes the earlier "no v3" stance.
+**Verdict (2026-08-02):** Negative. All three v3 weighting schemes score below EFB2 (raw sum)
+in-sample. EFB2 itself is already dominated by EB2 out-of-time. The failure is structural: HLTV
+rating already embeds opponent-quality implicitly; re-weighting by team rank double-penalises
+lower-ranked players and removes signal. No further firepower variants planned.
+See [notes_firepower_v3.md](notes_firepower_v3.md) for full analysis.
 
 ## Milestone 2 — Paper draft 1 complete (target Aug 14) · owner H + C
 
