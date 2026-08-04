@@ -79,7 +79,7 @@ def main():
     ax1.set_ylim(min(allv) - 0.004, eb2 + 0.004)
     ax1.set_xticks(x); ax1.set_xticklabels([NICE[m] for m in MODELS], fontsize=8, rotation=15)
     ax1.set_ylabel("2026 out-of-time AUC (set EFB2, with firepower)")
-    ax1.set_title("Firepower across three data constructions\n" + verdict, fontsize=10, loc="left")
+    ax1.set_title("EFB2 out-of-time AUC by skill-prior construction", fontsize=10, loc="left")
     ax1.legend(loc="lower right", frameon=False, fontsize=7.6)
 
     # ---- right: calibration intercept, 3 variants ----
@@ -89,9 +89,7 @@ def main():
     ax2.axhline(0, color=AXIS, lw=1)
     ax2.set_xticks(x); ax2.set_xticklabels([NICE[m] for m in MODELS], fontsize=8, rotation=15)
     ax2.set_ylabel("calibration intercept (negative = over-confident in CTs)")
-    ax2.set_title("Calibration: the coverage gap is the whole story\n"
-                  "only the broken build is miscalibrated; both fixes sit near 0",
-                  fontsize=10, loc="left")
+    ax2.set_title("EFB2 calibration intercept by skill-prior construction", fontsize=10, loc="left")
     ax2.legend(loc="lower right", frameon=False, fontsize=7.6)
 
     fig.tight_layout()

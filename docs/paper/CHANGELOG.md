@@ -130,6 +130,33 @@ COMPLETE.
 
 ---
 
+## v5 — 2026-07-29 — professionalization pass (part 1) + figure de-editorialization
+
+Tag: `paper-v5` · Zip: `CS2_winprob_overleaf_v5.zip` · Class: `article`
+
+**Changed.** Begins the professionalization pass toward submission register (formal, result-first,
+concise; no colloquialisms; no em-dash asides). Completed in this pass:
+- **Abstract** rewritten to formal register.
+- **Introduction** rewritten; removed the "A note on what this draft is" lab-notebook subsection.
+- **Evaluation → new "Uncertainty and significance testing" subsection** that states the method
+  precisely: match-level *paired* block bootstrap on the difference; a lift is significant when the
+  paired ΔAUC interval excludes zero; overlapping marginal CIs do NOT imply non-significance. This is
+  the rigorous basis for "pillars beat baseline (significant)" vs "architectures tie (not)".
+- **All paper figure titles de-editorialized** (F1, F2, F4, F6): titles now state what the figure
+  shows; the interpretive message lives in the caption, as in a published paper. Figures regenerated.
+
+**Deferred to part 2 (after firepower v3 lands):** results and discussion sections still carry the
+conversational register, and the "Chronology: how we actually got here" section should be cut or moved
+to an appendix. These are deferred deliberately because the firepower results subsection will change
+when v3 (team-ranking-weighted) is benchmarked, so finalizing its prose now would be premature.
+
+**Re-upload to Overleaf.** main.tex + regenerated figures F1, F2, F4, F6.
+
+**Still open.** refs.bib unverified; Leu's affiliation; PARCC acknowledgement; Appendix B tables;
+professionalization part 2 (results/discussion + cut Chronology); GAT out-of-time.
+
+---
+
 ## vNext — template (copy this block, don't edit v1)
 
 ```
