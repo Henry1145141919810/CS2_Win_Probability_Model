@@ -1,8 +1,8 @@
 # Notes — Firepower v3: team-ranking-weighted skill features
 
 **Date:** 2026-08-02 · **Owner:** Leu + Claude  
-**Commit:** `d8ba669`  
-**Status: Negative result — v3 does not improve over v2 or EB2 in-sample; abandoned.**
+**Commit:** `d8ba669` (initial) · code split 2026-08-04  
+**Status: Negative result (LogReg confirmed). Complex-model benchmark pending (see eval_firepower_v3.py).**
 
 ---
 
@@ -26,7 +26,9 @@ quality) should produce a more informative, less noisy skill prior.
 |---|---|
 | `configs/player_team_year.csv` | 507 rows: (steamid, year) → team_canonical, built from 298 tick parquets |
 | `configs/team_rankings.csv` | 141 rows: (team_canonical, year) → hltv_rank + weight, 3 HLTV snapshots |
-| `src/features/firepower.py` | v3 accumulators added alongside v2; 18 new `_v3` columns emitted |
+| `src/features/firepower.py` | v2 only (production). v3 code removed after code split (2026-08-04) |
+| `src/features/firepower_v3.py` | v3 standalone: imports shared LUTs from firepower.py, supports all 3 formulas |
+| `src/models/eval_firepower_v3.py` | Benchmark script: proxy v3 from existing parquet, 5 models × 3 formulas |
 
 ### Ranking snapshots used
 
@@ -65,8 +67,7 @@ Full re-assembly was not done. Instead, a **proxy evaluation** was run on the ex
 2. Determine CT/T team per snapshot using round number (rounds ≤ 12 = first half).
 3. Look up each team's rank weight for that year.
 4. Compute `ct_fp_v3 = ct_fp_v2 × ct_team_weight` for every firepower column.
-   *(Not per-player multiplication — that requires re-assembly — but an aggregate proxy.)*
-5. Replace the 20 v2 firepower columns with the 20 weighted versions; run GroupKFold LogReg.
+5. Replace the v2 firepower columns with the weighted versions; run GroupKFold.
 
 Three weighting formulas were tested:
 
@@ -92,21 +93,25 @@ The proxy test therefore computes the exact v3 feature — no re-assembly was ne
 
 ## Results
 
-**In-sample GroupKFold AUC (5 splits, LogisticRegression):**
+**In-sample GroupKFold AUC (5 splits, LogisticRegression — initial proxy test):**
 
 | Feature set | AUC | vs EFB2 |
 |---|---|---|
 | EB2 (no firepower) | 0.8509 ± 0.0099 | −0.0010 |
 | **EFB2 (v2 raw sum)** | **0.8519 ± 0.0098** | — |
-| EFB3 · 1/log₂ (original) | 0.8516 ± 0.0105 | −0.0003 |
-| EFB3 · 1/rank (steeper) | 0.8510 ± 0.0106 | −0.0009 |
+| EFB3 · 1/log₂ | 0.8516 ± 0.0105 | −0.0003 |
+| EFB3 · 1/rank | 0.8510 ± 0.0106 | −0.0009 |
 | EFB3 · linear | 0.8509 ± 0.0100 | −0.0010 |
 
 **EFB2 (raw sum, no weighting) is the best firepower encoding in-sample.
 All v3 variants sit below EFB2. The steeper the weighting, the worse the result.**
 
-Out-of-time holdout was not re-run for v3: the in-sample result already shows that weighting
-*hurts* v2, and EFB2 was already dominated by EB2 out-of-time in all prior runs.
+**Complex-model benchmark (xgb, lgbm, catboost, rf) — pending.**
+Run `python src/models/eval_firepower_v3.py` to fill this in.
+Results will be written to `outputs/firepower_v3_benchmark.csv`.
+
+Out-of-time holdout not re-run for v3: the in-sample result already shows weighting
+hurts v2, and EFB2 was already dominated by EB2 out-of-time in all prior runs.
 
 ---
 
@@ -132,7 +137,7 @@ function as a alive-player counter), but this does not transfer to new matches w
 **V3 is a negative result.** The team-ranking-weighted encoding is strictly worse than the raw sum
 in-sample, and the raw sum already fails out-of-time. No further firepower variants are planned.
 
-The infrastructure (player_team_year.csv, team_rankings.csv, v3 columns in firepower.py) is kept in
+The infrastructure (player_team_year.csv, team_rankings.csv, firepower_v3.py) is kept in
 the repository for reproducibility but is not used in any trained model.
 
 **For the paper:** this result strengthens the negative finding — even with opponent-quality adjustment
