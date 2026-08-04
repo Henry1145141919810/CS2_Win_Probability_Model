@@ -68,7 +68,25 @@ Full re-assembly was not done. Instead, a **proxy evaluation** was run on the ex
    *(Not per-player multiplication — that requires re-assembly — but an aggregate proxy.)*
 5. Replace the 20 v2 firepower columns with the 20 weighted versions; run GroupKFold LogReg.
 
-Three weighting formulas were tested: `1/log₂(rank+1)`, `1/rank` (steeper), and linear `(31−rank)/30`.
+Three weighting formulas were tested:
+
+| Formula | rank 1 | rank 5 | rank 10 | rank 20 | rank 30 |
+|---|---|---|---|---|---|
+| `1/log₂(rank+1)` | 1.000 | 0.431 | 0.301 | 0.228 | 0.201 |
+| `1/rank` | 1.000 | 0.200 | 0.100 | 0.050 | 0.033 |
+| `(31−rank)/30` linear | 1.000 | 0.867 | 0.700 | 0.367 | 0.033 |
+
+**Note on implementation:** since all 5 alive players on CT are from the same team, multiplying
+each player's stats individually by their team weight is mathematically identical to multiplying
+the summed total once:
+
+```
+ct_rating_v3 = Σ (player.rating × team_weight)
+             = team_weight × Σ player.rating
+             = team_weight × ct_rating_sum
+```
+
+The proxy test therefore computes the exact v3 feature — no re-assembly was needed.
 
 ---
 
@@ -82,7 +100,7 @@ Three weighting formulas were tested: `1/log₂(rank+1)`, `1/rank` (steeper), an
 | **EFB2 (v2 raw sum)** | **0.8519 ± 0.0098** | — |
 | EFB3 · 1/log₂ (original) | 0.8516 ± 0.0105 | −0.0003 |
 | EFB3 · 1/rank (steeper) | 0.8510 ± 0.0106 | −0.0009 |
-| EFB3 · linear | 0.509 ± 0.0100 | −0.0010 |
+| EFB3 · linear | 0.8509 ± 0.0100 | −0.0010 |
 
 **EFB2 (raw sum, no weighting) is the best firepower encoding in-sample.
 All v3 variants sit below EFB2. The steeper the weighting, the worse the result.**
