@@ -47,7 +47,7 @@
 % regenerated.  The version is stamped on the title page so that a
 % printed or emailed PDF is never ambiguous about which draft it is.
 % ---------------------------------------------------------------------
-\newcommand{\draftversion}{v5}
+\newcommand{\draftversion}{v6}
 
 \title{\textbf{Where Win Probability Comes From --- and Where It Breaks}\\[2mm]
 \large Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check
@@ -581,11 +581,109 @@ measure of \emph{how often the game is lopsided}, and reporting it alone invites
 to over-estimate what the model knows.
 
 The spatial pillars provide a consistent lift throughout, slightly larger in the contested
-regime. Their aggregate contribution is modest ($\approx +0.003$--$0.005$ AUC) but robust:
-significant across all five classical architectures. \emph{We resist the temptation} to
-claim the spatial features are \emph{especially} valuable in contested rounds --- the
-contested lift ($+0.006$) is not reliably larger than the pooled lift ($+0.005$). The honest
-statement is that the pillars help uniformly while the \emph{baseline} collapses.
+regime. Their aggregate contribution is modest ($\approx +0.003$--$0.005$ AUC) but robust and
+significant across all classical architectures. We do not claim the spatial features are
+especially valuable in contested rounds, because the contested lift is not reliably larger than
+the pooled lift. The next two subsections examine the beyond-economy signal and the contested
+ceiling directly.
+
+\subsection{Beyond economy: a residual analysis}
+\label{sec:residual}
+
+The nested ablation reports the AUC gained by adding a pillar, but it does not separate information
+that is genuinely new from information that re-encodes economy. We isolate the orthogonal component
+with a residual analysis. For each model we fit economy alone out-of-fold, form the economy logit
+$z = \operatorname{logit}(p_A)$, and compare a model on $z$ alone (which recovers economy) against a
+model on $[z, X_{\text{spatial}}]$, where $X_{\text{spatial}}$ is the map-control, tactical, and bomb
+block (55 columns, no economy and no firepower). The added features can only act through the residual
+that economy leaves, so their contribution is the beyond-economy signal.
+
+The contribution is significant and, importantly, transfers out-of-time. The paired match-level
+bootstrap interval of the AUC difference excludes zero for all four models both in cross-validation
+(range $+0.0035$ to $+0.0061$) and on the 2026 holdout (range $+0.0024$ to $+0.0048$)
+(Fig.~\ref{fig:residual}, left; Table~\ref{tab:residual}). The contested-AUC difference, in contrast,
+is not significant (for logistic regression, $+0.005$ with a 95\% interval of $-0.015$ to $+0.025$):
+the beyond-economy signal helps in partially decided rounds, not in even ones, consistent with the
+ceiling analysis in Sect.~\ref{sec:ceiling}.
+
+\begin{table}[t]
+\centering
+\caption{Beyond-economy contribution: AUC gain from adding the spatial/bomb block on top of the economy
+logit, with paired match-level bootstrap 95\% intervals. All intervals exclude zero, in-time and
+out-of-time.}
+\label{tab:residual}
+\begin{tabular}{lrr}
+\toprule
+Model & in-time $\Delta$AUC (95\% CI) & out-of-time $\Delta$AUC (95\% CI) \\
+\midrule
+Logistic     & $+0.0035$ $(+0.0018, +0.0053)$ & $+0.0048$ $(+0.0009, +0.0087)$ \\
+XGBoost      & $+0.0056$ $(+0.0038, +0.0076)$ & $+0.0033$ $(+0.0011, +0.0058)$ \\
+LightGBM     & $+0.0061$ $(+0.0045, +0.0078)$ & $+0.0033$ $(+0.0010, +0.0053)$ \\
+CatBoost     & $+0.0051$ $(+0.0035, +0.0067)$ & $+0.0024$ $(+0.0001, +0.0046)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A Frisch-Waugh-Lovell orthogonalisation identifies which features carry that signal. Partialling
+economy out of both the outcome and each feature and ranking by the partial correlation of the residuals
+places the two defuse-race margins at the top, and these have the lowest economy $R^2$ (approximately
+$0.15$), meaning they are largely orthogonal to economy and carry genuinely new information
+(Fig.~\ref{fig:residual}, right). Features such as the nearest counter-terrorist's distance to the bomb
+rank high in raw importance but have a high economy $R^2$ (approximately $0.69$), indicating that much
+of their apparent value is economy re-encoded. This mirrors the firepower count confound of
+Sect.~\ref{sec:firepower} and confirms the defuse-race feature as a source of orthogonal, transferable
+signal.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{F7_residual.png}
+\caption{Residual analysis. \textbf{Left:} AUC gained by adding the spatial/bomb block on top of the
+economy logit, per model, in-time and out-of-time, with paired bootstrap intervals; all exclude zero.
+\textbf{Right:} beyond-economy feature importance (partial correlation with the outcome after removing
+economy), shaded by orthogonality to economy. The defuse-race margins are both the strongest and the
+most orthogonal.}
+\label{fig:residual}
+\end{figure}
+
+\subsection{The contested-round ceiling}
+\label{sec:ceiling}
+
+The contested-AUC of approximately $0.58$ raises a question the pooled number cannot answer: is it low
+because the features are weak, or because even-round outcomes are close to irreducibly random? We
+address it three ways, all at the snapshot level, since the round-level contested slice is
+underpowered.
+
+First, contested-AUC does not improve with representation richness. Across economy, $+$spatial, $+$bomb,
+and $+$firepower it remains near $0.585$, and the causal sequence models are slightly lower
+(Fig.~\ref{fig:ceiling}, left). Adding information does not break the ceiling.
+
+Second, the ceiling is concentrated in one state. Decomposing the contested set by headcount, the
+5-versus-5 even state has an AUC of $0.525$ with a counter-terrorist win rate of $0.483$, close to a
+coin flip, and it constitutes 71\% of contested snapshots (41{,}338 of 58{,}368). Smaller even states,
+where positional and bomb information has accumulated, are more predictable (1-versus-1 to 3-versus-3
+reach $0.69$ to $0.73$). The pooled contested-AUC is therefore dominated by the symmetric,
+pre-engagement phase of the round.
+
+Third, a model-free matching estimate confirms that this is a property of the game rather than of the
+model. For each even snapshot we locate its nearest neighbours in a 60-dimensional observable-state
+space, drawn from different matches so that they do not share the round label, and measure how often
+near-identical states end differently. For 5-versus-5 even states the disagreement rate is $0.495$,
+indistinguishable from a fair coin, and a predictor with perfect knowledge of the local outcome
+frequency reaches an AUC of only $0.511$ (Fig.~\ref{fig:ceiling}, right). On a one-player
+man-advantage control the same estimator returns a disagreement rate of $0.314$ and an oracle AUC of
+$0.828$, confirming that it detects strong signal where the state genuinely determines the outcome.
+The near-coin-flip verdict for the symmetric opening is thus a characterisation of the game: at the
+start of an even round, the observable state does not determine who wins.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{F8_contested_ceiling.png}
+\caption{The contested-round ceiling. \textbf{Left:} contested-AUC is flat near $0.585$ across
+representations of increasing richness, including deep sequence models. \textbf{Right:} model AUC and a
+model-free matching-oracle ceiling by alive-state; both fall to a coin flip at 5-versus-5 even (71\% of
+contested snapshots), while the man-advantage control reaches $0.83$, validating the estimator.}
+\label{fig:ceiling}
+\end{figure}
 
 \subsection{Map control: realistic $\ne$ predictive (unless stabilised)}
 \label{sec:mapcontrol}
