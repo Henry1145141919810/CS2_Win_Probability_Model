@@ -47,7 +47,7 @@
 % regenerated.  The version is stamped on the title page so that a
 % printed or emailed PDF is never ambiguous about which draft it is.
 % ---------------------------------------------------------------------
-\newcommand{\draftversion}{v4}
+\newcommand{\draftversion}{v6}
 
 \title{\textbf{Where Win Probability Comes From --- and Where It Breaks}\\[2mm]
 \large Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check
@@ -65,49 +65,47 @@ University of Pennsylvania. \texttt{hyhuang@sas.upenn.edu}}
 
 \begin{abstract}
 \noindent
-Live win-probability models are now standard broadcast furniture in esports, yet
-the published Counter-Strike literature evaluates them almost exclusively on
-economy and combat state, pooled over all game situations, and validated only by
-cross-validation. We build a per-second win-probability model for
-Counter-Strike~2 (map: \textit{de\_inferno}) from 220 professional matches
-(476{,}595 per-second snapshots) and use it to ask three questions the pooled-AUC
-convention obscures: \emph{where} does the signal live, \emph{which} spatial
-representation is predictive, and \emph{does any of it survive deployment?}
+Live win-probability models are widely deployed in esports broadcasting, yet the
+published Counter-Strike literature evaluates them almost exclusively on economy and
+combat state, pooled across all game situations, and validated only by
+cross-validation. We build a per-second win-probability model for Counter-Strike~2
+on the map \textit{de\_inferno} from 220 professional matches (476{,}595 per-second
+snapshots) and use it to examine three questions that pooled AUC obscures: where the
+predictive signal is concentrated, which spatial representation is most predictive,
+and whether the model's performance survives temporal distribution shift.
 
-First, the conventional headline AUC ($\approx 0.85$) is carried almost entirely
-by lopsided game states; restricted to genuinely even rounds --- equal players
-alive and equal equipment --- every model falls to $\approx 0.58$, barely above a
-coin flip. We formalise this as \emph{contested-AUC} and argue it, not pooled AUC,
-is the metric a live model should be judged on. Second, adapting Voronoi pitch
-control from football, we compare three increasingly \emph{physically faithful}
-map-control representations and find that faithfulness and predictiveness diverge:
-an instantaneous line-of-sight / field-of-view / smoke model is the most realistic
-and the \emph{least} predictive, regaining parity with naive proximity control
-only once it is given temporal memory. Territorial control is predictive because it
-is \emph{stable}, not because it is \emph{correct}. Third, a physically-motivated
-\emph{defuse-race} feature --- fuse time remaining minus the nearest
-counter-terrorist's path time minus the defuse duration --- is the single strongest
-addition beyond economy, cutting post-plant log-loss by 7--8\,\%. Fourth, across
-nine architectures (logistic regression, random forest, XGBoost, LightGBM,
-CatBoost, a causal TCN, a causal Transformer, a player-graph attention network, and
-an ensemble), with match-level block-bootstrap confidence intervals, \emph{all} are
-statistically indistinguishable --- a dead heat that persists out-of-time, where the sequence
-models land exactly on the classical number.
+We report four findings. First, the conventional AUC of approximately $0.85$ is
+attributable predominantly to lopsided game states. Restricted to even rounds, defined
+as equal players alive and near-equal equipment, every model attains an AUC of
+approximately $0.58$. We term this conditional measure \emph{contested-AUC} and argue
+that it, rather than pooled AUC, is the appropriate criterion for a live model. Second,
+we adapt Voronoi pitch control from association football and compare three map-control
+representations of increasing physical fidelity. Fidelity and predictiveness diverge:
+an instantaneous line-of-sight, field-of-view, and smoke model is the most realistic
+representation and the least predictive, and it regains parity with proximity-based
+control only when augmented with temporal memory. Predictive value derives from the
+temporal stability of the representation rather than its instantaneous accuracy. Third,
+a physically motivated \emph{defuse-race} feature, defined as the fuse time remaining
+minus the nearest counter-terrorist's path time and defuse duration, is the strongest
+single addition beyond economy and reduces post-plant log-loss by 7--8\%. Fourth, across
+nine architectures (logistic regression, random forest, XGBoost, LightGBM, CatBoost, a
+causal temporal convolutional network, a causal Transformer, a player-graph attention
+network, and an ensemble), evaluated with match-level block-bootstrap confidence
+intervals, the models are statistically indistinguishable, both in cross-validation and
+out-of-time.
 
-Finally, we subject the model to a \textbf{touch-once out-of-time holdout} on 27
-unseen 2026 matches. The demo-derived pillars transfer essentially perfectly
-($0.8493 \to 0.8501$), but the best in-sample configuration becomes the
-\emph{worst} out-of-time ($0.8519 \to 0.8236$, ECE $0.016 \to 0.071$) because its
-player-skill pillar carries an \emph{inference-time data dependency}: it requires
-an external, per-era player database that the deployment era does not yet have. We
-argue this failure mode --- invisible to cross-validation by construction --- is a
-general hazard for any ``prior'' feature sourced outside the observation itself.
-Repairing the dependency across three constructions --- a leak-free \emph{lagged}
-prior, and even a leaky same-era \emph{oracle} at 100\,\% coverage --- restores
-calibration completely, yet the skill pillar \emph{still} fails to beat the
-demo-only model out-of-time under \emph{any} of them. This turns a plumbing bug
-into a rigorous negative result: even a correctly-constructed, coverage-complete
-external skill prior is not worth its cost here.
+We then evaluate the model once on a temporally held-out set of 27 unseen 2026 matches.
+The features derived from the match itself transfer with negligible degradation
+($0.8493 \to 0.8501$), whereas the best cross-validated configuration degrades most
+($0.8519 \to 0.8236$; expected calibration error $0.016 \to 0.071$) because its
+player-skill pillar depends on an external, per-era statistics database that is
+incomplete for the deployment period. This failure mode is invisible to
+cross-validation by construction. Reconstructing the prior under three data
+regimes, including a leak-free lagged prior and a leaky same-era prior at full
+coverage, restores calibration but does not enable the skill pillar to exceed the
+skill-free model out-of-time under any regime. The result is a controlled negative
+finding: a correctly constructed, coverage-complete external skill prior does not
+improve out-of-time performance in this setting.
 \end{abstract}
 
 \tableofcontents
@@ -119,62 +117,51 @@ external skill prior is not worth its cost here.
 \section{Introduction}
 \label{sec:intro}
 
-Win probability is the interpretive backbone of live sports coverage: it converts a
-complex state into one number a viewer can act on. In esports the state is unusually
-rich --- every player's position, velocity, view angle, health, equipment and utility
-are recorded at 64\,Hz --- and yet published Counter-Strike win-probability models
-remain dominated by \emph{economy} features (equipment value, players alive, bomb
-status). The spatial half of the game, which players and analysts talk about
-constantly (``we lost map control'', ``they're stacked B''), is largely unmodelled.
+Win probability converts a complex game state into a single interpretable quantity and
+is a standard component of live sports analytics. In esports the underlying state is
+unusually detailed: each player's position, velocity, view angle, health, equipment,
+and utility are recorded at 64\,Hz. Nonetheless, published Counter-Strike
+win-probability models remain dominated by economy features such as equipment value,
+players alive, and bomb status. The spatial component of the game, which is central to
+expert reasoning, is largely unmodelled.
 
-Three methodological habits in this literature obscure how good these models really
-are:
-
-\begin{enumerate}
-  \item \textbf{Pooled evaluation.} A single AUC over all snapshots mixes 5-v-1
-    blowouts with 5-v-5 stalemates. A model that only knows ``who has more players
-    and money'' scores well because most snapshots are easy.
-  \item \textbf{Faithfulness assumed to imply predictiveness.} Richer spatial models
-    (line-of-sight, vision cones, smoke occlusion) are assumed superior because they
-    are physically truer.
-  \item \textbf{Cross-validation as the final gate.} Random or grouped folds sample
-    from the same era as training; they cannot see failures that appear only when the
-    world moves on.
-\end{enumerate}
+We identify three methodological conventions in this literature that obscure how
+predictive these models actually are. First, evaluation is pooled: a single AUC computed
+over all snapshots aggregates decided situations (for example, five players against one)
+with genuinely uncertain ones (five against five on equal economy), and a model that
+captures only headcount and equipment scores well because most snapshots are easily
+classified. Second, physical fidelity is assumed to imply predictiveness: representations
+that model line of sight, field of view, and smoke occlusion are presumed superior
+because they more faithfully describe the game. Third, cross-validation is treated as the
+final validation step, even though random or grouped folds are drawn from the same period
+as the training data and cannot expose failures that arise under temporal distribution
+shift.
 
 \subsection{Contributions}
 
 \begin{itemize}
-  \item \textbf{C1 --- Contested-AUC} (Sect.~\ref{sec:contested}). A conditional
-    evaluation lens. Restricting to snapshots with equal players alive \emph{and}
-    near-equal equipment, the economy baseline falls from $0.846$ to
-    $\mathbf{0.580}$. Pooled AUC systematically flatters win-probability models.
-  \item \textbf{C2 --- Three map-control representations, and a negative result}
-    (Sect.~\ref{sec:mapcontrol}). The most physically faithful is the least
-    predictive; temporal memory restores it. \emph{Predictiveness comes from
-    stability, not fidelity.}
-  \item \textbf{C3 --- Defuse-race geometry} (Sect.~\ref{sec:bomb}). One
-    physically-derived feature is the strongest post-economy addition, cutting
-    post-plant log-loss 7--8\,\% while \emph{preserving} calibration.
-  \item \textbf{C4 --- Nine architectures, one dead heat, and an out-of-time reality
-    check} (Sects.~\ref{sec:deep}, \ref{sec:holdout}). Sequence and graph deep models
-    are statistically tied with a calibrated logistic regression; and on a touch-once
-    2026 holdout the skill-prior pillar collapses through an inference-time data
-    dependency while the demo-derived pillars transfer intact.
+  \item \textbf{Contested-AUC} (Sect.~\ref{sec:contested}). We introduce a conditional
+    evaluation measure restricted to snapshots with equal players alive and near-equal
+    equipment. Under this measure the economy baseline falls from $0.846$ to $0.580$,
+    demonstrating that pooled AUC substantially overstates model performance in the
+    situations that determine round outcomes.
+  \item \textbf{A map-control ablation} (Sect.~\ref{sec:mapcontrol}). We compare three
+    representations of increasing physical fidelity and find that the most faithful is
+    the least predictive, and that adding temporal memory restores its predictive value.
+    Predictiveness follows from temporal stability rather than instantaneous fidelity.
+  \item \textbf{Defuse-race geometry} (Sect.~\ref{sec:bomb}). A single physically
+    derived feature is the strongest addition beyond economy, reducing post-plant
+    log-loss by 7--8\% without degrading calibration.
+  \item \textbf{An out-of-time evaluation of nine architectures} (Sects.~\ref{sec:deep},
+    \ref{sec:holdout}). Sequence and graph neural models are statistically
+    indistinguishable from a calibrated logistic regression, in cross-validation and
+    out-of-time. On a temporally held-out 2026 set, the player-skill pillar degrades
+    sharply through a dependence on an external, per-era database, while the features
+    derived directly from the match transfer intact.
 \end{itemize}
 
-We believe C4 is the most transferable lesson: it is a statement about evaluation
-protocol, not about Counter-Strike.
-
-\subsection{A note on what this draft is}
-
-This is a \emph{working draft} and it documents the \textbf{process}, not only the
-conclusions. Where we built something that did not work --- an instantaneous vision
-model that under-performed a cruder one, two bomb features that added nothing, a
-skill pillar whose top-ranked feature turned out to be a re-encoding of the player
-count --- we report it, with the diagnostic figure that revealed it. Sect.~\ref{sec:chronology}
-gives the chronology explicitly. Negative results are the majority of the work and
-we treat them as first-class.
+The final contribution is the most general: it concerns evaluation protocol for models
+that incorporate externally sourced features, and is not specific to Counter-Strike.
 
 % =====================================================================
 \section{Related Work}
@@ -492,26 +479,37 @@ inflates AUC. All in-time numbers in this paper are out-of-fold (OOF) prediction
     to bin placement); and a comeback/tail diagnostic (Sect.~\ref{sec:calibration}).
 \end{description}
 
-\subsection{Uncertainty}
-\textbf{Match-level block bootstrap} ($B = 500$). \emph{Matches}, not snapshots, are the
-independent resampling unit; each iteration draws all matches with replacement and
-recomputes \emph{every} metric on the fixed OOF predictions. This yields 95\,\% CIs on
-AUC, log-loss, Brier, ECE, BSS and contested-AUC alike.
+\subsection{Uncertainty and significance testing}
+\label{sec:significance}
+We quantify uncertainty with a match-level block bootstrap ($B = 500$). Matches, rather
+than snapshots, are the independent resampling unit, because rounds within a match are
+strongly correlated; treating the $476{,}595$ snapshots as independent would understate
+every interval by more than an order of magnitude. Each bootstrap iteration draws the set
+of matches with replacement and recomputes the metric on the fixed out-of-fold
+predictions, yielding percentile 95\% confidence intervals.
 
-This choice is load-bearing. Treating the $\approx$476k snapshots as independent would
-shrink every interval by more than an order of magnitude and make all of our pillar
-effects look spuriously decisive --- and would, in particular, have let us claim the deep
-models beat the classical ones. They do not (Sect.~\ref{sec:deep}). DeLong's test
-corroborates the AUC differences; deep models additionally report a multi-seed mean $\pm$
-sd.
+Comparisons between two feature sets or two models use a \emph{paired} bootstrap: on each
+resample we evaluate both configurations on the same set of matches and record their
+difference, and we report the 95\% interval of that difference. A feature set is deemed to
+improve on the baseline when the paired interval of the AUC difference excludes zero. This
+paired construction is essential, because the two configurations produce strongly
+correlated errors, and the interval of the difference is therefore substantially narrower
+than a comparison of the two marginal intervals would suggest. Overlap of two marginal
+confidence intervals does not imply that their difference is non-significant; the paired
+difference is the correct test \cite{delong1988comparing}. Under this test the pillar
+contributions relative to the economy baseline are significant on AUC, whereas the nine
+architectures are mutually indistinguishable (Sects.~\ref{sec:contested}, \ref{sec:deep}).
+DeLong's test corroborates the AUC differences, and the deep models additionally report a
+multi-seed mean and standard deviation. Significance is established formally on AUC; the
+proper scoring rules (log-loss, Brier) improve monotonically with it but are reported as
+point estimates with marginal intervals.
 
-\subsection{Out-of-time}
-A \textbf{touch-once} 2026 holdout (Sect.~\ref{sec:holdout}). We ran it exactly once. No
-model, feature or hyperparameter decision in this paper was made after seeing it. We state
-this explicitly because the holdout is the source of our headline claim, and its
-evidential value is entirely contingent on that discipline. Any subsequent re-run (e.g.\
-after the 2026 skill scrape completes) must be reported as a separate, disclosed
-evaluation --- not folded silently into these numbers.
+\subsection{Out-of-time evaluation}
+The 2026 holdout is evaluated exactly once. No model, feature, or hyperparameter decision
+was made after observing it, because the evidential value of a held-out evaluation is
+contingent on that discipline. Any subsequent re-evaluation, such as after an updated
+skill database becomes available, is reported as a separate and explicitly disclosed
+result rather than combined with the original.
 
 % =====================================================================
 \section{Results}
@@ -583,11 +581,109 @@ measure of \emph{how often the game is lopsided}, and reporting it alone invites
 to over-estimate what the model knows.
 
 The spatial pillars provide a consistent lift throughout, slightly larger in the contested
-regime. Their aggregate contribution is modest ($\approx +0.003$--$0.005$ AUC) but robust:
-significant across all five classical architectures. \emph{We resist the temptation} to
-claim the spatial features are \emph{especially} valuable in contested rounds --- the
-contested lift ($+0.006$) is not reliably larger than the pooled lift ($+0.005$). The honest
-statement is that the pillars help uniformly while the \emph{baseline} collapses.
+regime. Their aggregate contribution is modest ($\approx +0.003$--$0.005$ AUC) but robust and
+significant across all classical architectures. We do not claim the spatial features are
+especially valuable in contested rounds, because the contested lift is not reliably larger than
+the pooled lift. The next two subsections examine the beyond-economy signal and the contested
+ceiling directly.
+
+\subsection{Beyond economy: a residual analysis}
+\label{sec:residual}
+
+The nested ablation reports the AUC gained by adding a pillar, but it does not separate information
+that is genuinely new from information that re-encodes economy. We isolate the orthogonal component
+with a residual analysis. For each model we fit economy alone out-of-fold, form the economy logit
+$z = \operatorname{logit}(p_A)$, and compare a model on $z$ alone (which recovers economy) against a
+model on $[z, X_{\text{spatial}}]$, where $X_{\text{spatial}}$ is the map-control, tactical, and bomb
+block (55 columns, no economy and no firepower). The added features can only act through the residual
+that economy leaves, so their contribution is the beyond-economy signal.
+
+The contribution is significant and, importantly, transfers out-of-time. The paired match-level
+bootstrap interval of the AUC difference excludes zero for all four models both in cross-validation
+(range $+0.0035$ to $+0.0061$) and on the 2026 holdout (range $+0.0024$ to $+0.0048$)
+(Fig.~\ref{fig:residual}, left; Table~\ref{tab:residual}). The contested-AUC difference, in contrast,
+is not significant (for logistic regression, $+0.005$ with a 95\% interval of $-0.015$ to $+0.025$):
+the beyond-economy signal helps in partially decided rounds, not in even ones, consistent with the
+ceiling analysis in Sect.~\ref{sec:ceiling}.
+
+\begin{table}[t]
+\centering
+\caption{Beyond-economy contribution: AUC gain from adding the spatial/bomb block on top of the economy
+logit, with paired match-level bootstrap 95\% intervals. All intervals exclude zero, in-time and
+out-of-time.}
+\label{tab:residual}
+\begin{tabular}{lrr}
+\toprule
+Model & in-time $\Delta$AUC (95\% CI) & out-of-time $\Delta$AUC (95\% CI) \\
+\midrule
+Logistic     & $+0.0035$ $(+0.0018, +0.0053)$ & $+0.0048$ $(+0.0009, +0.0087)$ \\
+XGBoost      & $+0.0056$ $(+0.0038, +0.0076)$ & $+0.0033$ $(+0.0011, +0.0058)$ \\
+LightGBM     & $+0.0061$ $(+0.0045, +0.0078)$ & $+0.0033$ $(+0.0010, +0.0053)$ \\
+CatBoost     & $+0.0051$ $(+0.0035, +0.0067)$ & $+0.0024$ $(+0.0001, +0.0046)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A Frisch-Waugh-Lovell orthogonalisation identifies which features carry that signal. Partialling
+economy out of both the outcome and each feature and ranking by the partial correlation of the residuals
+places the two defuse-race margins at the top, and these have the lowest economy $R^2$ (approximately
+$0.15$), meaning they are largely orthogonal to economy and carry genuinely new information
+(Fig.~\ref{fig:residual}, right). Features such as the nearest counter-terrorist's distance to the bomb
+rank high in raw importance but have a high economy $R^2$ (approximately $0.69$), indicating that much
+of their apparent value is economy re-encoded. This mirrors the firepower count confound of
+Sect.~\ref{sec:firepower} and confirms the defuse-race feature as a source of orthogonal, transferable
+signal.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{F7_residual.png}
+\caption{Residual analysis. \textbf{Left:} AUC gained by adding the spatial/bomb block on top of the
+economy logit, per model, in-time and out-of-time, with paired bootstrap intervals; all exclude zero.
+\textbf{Right:} beyond-economy feature importance (partial correlation with the outcome after removing
+economy), shaded by orthogonality to economy. The defuse-race margins are both the strongest and the
+most orthogonal.}
+\label{fig:residual}
+\end{figure}
+
+\subsection{The contested-round ceiling}
+\label{sec:ceiling}
+
+The contested-AUC of approximately $0.58$ raises a question the pooled number cannot answer: is it low
+because the features are weak, or because even-round outcomes are close to irreducibly random? We
+address it three ways, all at the snapshot level, since the round-level contested slice is
+underpowered.
+
+First, contested-AUC does not improve with representation richness. Across economy, $+$spatial, $+$bomb,
+and $+$firepower it remains near $0.585$, and the causal sequence models are slightly lower
+(Fig.~\ref{fig:ceiling}, left). Adding information does not break the ceiling.
+
+Second, the ceiling is concentrated in one state. Decomposing the contested set by headcount, the
+5-versus-5 even state has an AUC of $0.525$ with a counter-terrorist win rate of $0.483$, close to a
+coin flip, and it constitutes 71\% of contested snapshots (41{,}338 of 58{,}368). Smaller even states,
+where positional and bomb information has accumulated, are more predictable (1-versus-1 to 3-versus-3
+reach $0.69$ to $0.73$). The pooled contested-AUC is therefore dominated by the symmetric,
+pre-engagement phase of the round.
+
+Third, a model-free matching estimate confirms that this is a property of the game rather than of the
+model. For each even snapshot we locate its nearest neighbours in a 60-dimensional observable-state
+space, drawn from different matches so that they do not share the round label, and measure how often
+near-identical states end differently. For 5-versus-5 even states the disagreement rate is $0.495$,
+indistinguishable from a fair coin, and a predictor with perfect knowledge of the local outcome
+frequency reaches an AUC of only $0.511$ (Fig.~\ref{fig:ceiling}, right). On a one-player
+man-advantage control the same estimator returns a disagreement rate of $0.314$ and an oracle AUC of
+$0.828$, confirming that it detects strong signal where the state genuinely determines the outcome.
+The near-coin-flip verdict for the symmetric opening is thus a characterisation of the game: at the
+start of an even round, the observable state does not determine who wins.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{F8_contested_ceiling.png}
+\caption{The contested-round ceiling. \textbf{Left:} contested-AUC is flat near $0.585$ across
+representations of increasing richness, including deep sequence models. \textbf{Right:} model AUC and a
+model-free matching-oracle ceiling by alive-state; both fall to a coin flip at 5-versus-5 even (71\% of
+contested snapshots), while the man-advantage control reaches $0.83$, validating the estimator.}
+\label{fig:ceiling}
+\end{figure}
 
 \subsection{Map control: realistic $\ne$ predictive (unless stabilised)}
 \label{sec:mapcontrol}

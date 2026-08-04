@@ -129,3 +129,22 @@ Post **both**, as two different artifacts:
 This is standard and allowed: SSAC requires a public repo and is not double-blind, so an arXiv preprint
 does not conflict with it. Post the arXiv version once the content is frozen (Milestone 4), before or
 after the abstract; posting before Oct 1 stakes the contribution and lets the abstract cite it.
+
+---
+
+## Research extensions — beyond-economy signal (adds to the paper)
+
+Two studies planned in detail in [plan_beyond_economy.md](plan_beyond_economy.md). Both strengthen the
+Dec 4 full paper / arXiv extended version; neither blocks the Oct 1 abstract.
+
+- **Study 1 — Residual analysis (C).** Fit economy alone, then measure the signal the spatial/tactical
+  pillars add *orthogonally* (stacked-logit / FWL partialling-out). Small, high-rigor, reuses the
+  pipeline. Do first.
+  - [ ] `src/models/residual_analysis.py`; paired-bootstrap ΔAUC/Δlog-loss in-time + out-of-time
+  - [ ] beyond-economy feature-importance ranking; Results subsection
+- **Study 2 — Contested-round ceiling (C).** Model even rounds directly; decompose the 0.58 gap into
+  aleatoric vs recoverable via an information-saturation curve + a matching-based Bayes-error estimate.
+  **Must run at snapshot/duel level, not round level (round-level contested is underpowered, ±0.05 CI).**
+  - [ ] `src/models/contested_study.py`; graded-evenness curve; specialist vs generalist
+  - [ ] saturation curve + Bayes-error estimator; Results + Discussion
+  - [ ] (sub-study) duel dataset from the kills channel; duel-win-probability model (power-correct home)

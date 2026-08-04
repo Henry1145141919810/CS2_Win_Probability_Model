@@ -130,6 +130,64 @@ COMPLETE.
 
 ---
 
+## v5 — 2026-07-29 — professionalization pass (part 1) + figure de-editorialization
+
+Tag: `paper-v5` · Zip: `CS2_winprob_overleaf_v5.zip` · Class: `article`
+
+**Changed.** Begins the professionalization pass toward submission register (formal, result-first,
+concise; no colloquialisms; no em-dash asides). Completed in this pass:
+- **Abstract** rewritten to formal register.
+- **Introduction** rewritten; removed the "A note on what this draft is" lab-notebook subsection.
+- **Evaluation → new "Uncertainty and significance testing" subsection** that states the method
+  precisely: match-level *paired* block bootstrap on the difference; a lift is significant when the
+  paired ΔAUC interval excludes zero; overlapping marginal CIs do NOT imply non-significance. This is
+  the rigorous basis for "pillars beat baseline (significant)" vs "architectures tie (not)".
+- **All paper figure titles de-editorialized** (F1, F2, F4, F6): titles now state what the figure
+  shows; the interpretive message lives in the caption, as in a published paper. Figures regenerated.
+
+**Deferred to part 2 (after firepower v3 lands):** results and discussion sections still carry the
+conversational register, and the "Chronology: how we actually got here" section should be cut or moved
+to an appendix. These are deferred deliberately because the firepower results subsection will change
+when v3 (team-ranking-weighted) is benchmarked, so finalizing its prose now would be premature.
+
+**Re-upload to Overleaf.** main.tex + regenerated figures F1, F2, F4, F6.
+
+**Still open.** refs.bib unverified; Leu's affiliation; PARCC acknowledgement; Appendix B tables;
+professionalization part 2 (results/discussion + cut Chronology); GAT out-of-time.
+
+---
+
+## v6 — 2026-07-29 — two new studies: residual analysis + contested-round ceiling
+
+Tag: `paper-v6` · Zip: `CS2_winprob_overleaf_v6.zip` · Class: `article`
+
+**Changed.** Adds two Results subsections (both in submission register) that deepen the beyond-economy
+question, with two new figures.
+
+- **Sect. "Beyond economy: a residual analysis" (Study 1, Fig. F7, Table).** Partials economy out (a
+  stacked-logit / offset model) and measures the orthogonal signal the spatial/bomb block adds. It is
+  significant and transfers out-of-time on all four models (paired ΔAUC CI excludes zero in-time and
+  out-of-time). An FWL orthogonalization ranks the defuse-race margins as the strongest and most
+  economy-orthogonal features (economy R² ≈ 0.15), while nearest-CT-distance is largely economy
+  re-encoded (R² ≈ 0.69). Contested-AUC gain is NOT significant, dovetailing with the ceiling result.
+- **Sect. "The contested-round ceiling" (Study 2, Fig. F8).** Three converging analyses at snapshot
+  level: (i) contested-AUC is flat ~0.585 across all representations incl. deep; (ii) it is dominated
+  by 5v5-even snapshots (71% of contested), which sit at a coin flip (AUC 0.525); (iii) a model-free
+  matching estimator shows near-identical 5v5-even states disagree 49.5% of the time (oracle AUC 0.511),
+  while a man-advantage control returns oracle AUC 0.828, validating the method. Even-round outcomes are
+  largely aleatoric, and this is shown model-free.
+
+Full method + results + documented snapshot selection: `docs/study_beyond_economy_results.md`. Code:
+`src/models/residual_analysis.py`, `src/models/contested_study.py`. Result CSVs in `outputs/`.
+
+**Re-upload to Overleaf.** main.tex + two new figures: F7_residual.png, F8_contested_ceiling.png.
+
+**Still open.** refs.bib unverified; Leu's affiliation; PARCC acknowledgement; Appendix B tables;
+professionalization part 2 (results/discussion register + cut Chronology); GAT out-of-time; the
+contested-specialist/next-engagement and duel-level sub-studies (plan Study 2A / duel).
+
+---
+
 ## vNext — template (copy this block, don't edit v1)
 
 ```

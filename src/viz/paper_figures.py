@@ -80,8 +80,7 @@ def fig_forest():
     ax.axvline(0.8531, color=MUTED, ls=":", lw=1, zorder=1)
     ax.set_yticks(y); ax.set_yticklabels([r[0] for r in rows], fontsize=8.5)
     ax.set_xlabel("AUC  (5-fold GroupKFold OOF, 95% match-level bootstrap CI, B=500)")
-    ax.set_title("All nine architectures are statistically indistinguishable\n"
-                 "every point estimate lies inside the others' 95% CIs", fontsize=10.5, loc="left")
+    ax.set_title("Model AUC with 95% match-level bootstrap CIs", fontsize=10.5, loc="left")
     handles = [plt.Line2D([], [], color=c, marker=m, ls="-", lw=2, ms=7, label=k)
                for k, (c, m) in fam.items()]
     ax.legend(handles=handles, loc="lower right", frameon=False, fontsize=8.5)
@@ -121,9 +120,7 @@ def fig_collapse(df, y):
     ax.set_xticks(x); ax.set_xticklabels([s[0] for s in subsets], fontsize=8.5)
     ax.set_ylabel("AUC (out-of-fold, XGBoost)")
     ax.set_ylim(0.5, 0.90)
-    ax.set_title("The headline AUC is carried by lopsided snapshots\n"
-                 "in genuinely even rounds every model falls toward a coin-flip",
-                 fontsize=10.5, loc="left")
+    ax.set_title("AUC by round subset (XGBoost, out-of-fold)", fontsize=10.5, loc="left")
     ax.legend(frameon=False, fontsize=8.5, loc="upper right")
     ax.grid(axis="y", alpha=0.7, zorder=0); ax.set_axisbelow(True)
     fig.tight_layout(); fig.savefig(OUT / "F2_collapse.png", dpi=300); plt.close(fig)
@@ -183,8 +180,7 @@ def fig_datagap(tr, te):
                 arrowprops=dict(arrowstyle="->", color=RED, lw=1.2))
     ax.set_xlabel("team skill sum  (Σ HLTV rating of the 5 alive CT players)")
     ax.set_ylabel("density")
-    ax.set_title("The firepower pillar breaks out-of-time — because its data does\n"
-                 "the same feature means something different in 2026", fontsize=10.5, loc="left")
+    ax.set_title("Team skill-sum at 5v5: training vs 2026 holdout", fontsize=10.5, loc="left")
     ax.legend(frameon=False, fontsize=8.5)
     ax.grid(axis="y", alpha=0.7, zorder=0); ax.set_axisbelow(True)
     fig.tight_layout(); fig.savefig(OUT / "F4_datagap.png", dpi=300); plt.close(fig)
