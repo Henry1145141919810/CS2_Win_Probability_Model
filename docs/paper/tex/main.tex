@@ -41,15 +41,11 @@
 \newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
 \newcommand{\note}[1]{\textcolor{blue}{\textsf{\small [#1]}}}
 
-% ---------------------------------------------------------------------
-% DRAFT VERSION.  Bump this on every substantive revision, and add a row
-% to docs/paper/CHANGELOG.md saying what changed and which figures were
-% regenerated.  The version is stamped on the title page so that a
-% printed or emailed PDF is never ambiguous about which draft it is.
-% ---------------------------------------------------------------------
+% DRAFT VERSION. Bump this on every substantive revision, add a CHANGELOG row,
+% git-tag it, and rebuild the zip. The version is stamped on the title page.
 \newcommand{\draftversion}{v6}
 
-\title{\textbf{Where Win Probability Comes From --- and Where It Breaks}\\[2mm]
+\title{\textbf{Where Win Probability Comes From, and Where It Breaks}\\[2mm]
 \large Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check
 for Live Win Probability in Counter-Strike~2}
 
@@ -58,7 +54,7 @@ University of Pennsylvania. \texttt{hyhuang@sas.upenn.edu}}
 \and Leu\thanks{\todo{affiliation}}
 \and Abraham J. Wyner\footnotemark[1]}
 
-\date{Working draft \textbf{\draftversion} --- \today}
+\date{Working draft \textbf{\draftversion}, \today}
 
 \begin{document}
 \maketitle
@@ -168,39 +164,43 @@ that incorporate externally sourced features, and is not specific to Counter-Str
 \label{sec:related}
 
 \paragraph{Counter-Strike win probability.}
-Xenopoulos et al.\ introduce ESTA and a per-round win-probability baseline built on
-economy and combat state, establishing the convention we adopt as our Model~A and
-extend. Community models predict at round granularity from a frozen post-buy
-snapshot; we instead predict at \emph{every second} of the round, which is what a
-live broadcast overlay requires --- and which changes the evaluation problem, because
-most per-second snapshots are near-deterministic. That observation is what motivates
-contested-AUC (Sect.~\ref{sec:contested}).
-\todo{full citations; check for 2025--26 CS2-era follow-ups}
+Xenopoulos et al.\ introduce a per-round win-probability model and action-valuation
+framework for Counter-Strike built on economy and combat state
+\cite{xenopoulos2020valuing}, together with the ESTA trajectory-and-action dataset
+\cite{xenopoulos2022esta}; this establishes the convention we adopt as our Model~A and
+extend. Such models predict at round granularity from a frozen post-buy snapshot. We
+instead predict at every second of the round, as a live overlay requires, which changes
+the evaluation problem: most per-second snapshots are near-deterministic, motivating the
+contested-AUC measure of Sect.~\ref{sec:contested}. All demos are parsed with the
+\texttt{awpy} library \cite{awpy}.
 
 \paragraph{Spatial control in team sports.}
-Voronoi-based \emph{pitch control} is well established in football tracking analytics,
-where a player's ``dominant region'' is the set of points he can reach before anyone
-else. Its transfer to a tactical shooter is not obvious. Football pitch control is
-governed by \emph{reachability under a motion model}; in CS2, control is mediated by
-sightlines, weapon range, utility (smokes blocking vision) and --- as we show ---
-\emph{memory} of previously cleared space. A player does not need to be able to
-\emph{reach} a corridor to control it; he needs to be able to \emph{shoot down} it.
-This asymmetry is why the naive Voronoi transfer is a non-trivial baseline rather
-than an obviously correct one.
-\todo{pitch-control lineage: Taki \& Hasegawa; Fern\'andez \& Bornn; Spearman}
+Voronoi-based dominant-region and pitch-control models are well established in team-sport
+tracking analytics, originating with the dominant-region formulation of Taki and Hasegawa
+\cite{taki2000quantitative} and developed for football by Fern\'andez and Bornn
+\cite{fernandez2018wide} and Spearman \cite{spearman2018pitchcontrol}. Their transfer to a
+tactical shooter is not obvious. Football pitch control is governed by reachability under a
+motion model; in Counter-Strike, control is mediated by sightlines, weapon range, utility
+that blocks vision, and, as we show, memory of previously cleared space. A player need not
+be able to reach a corridor to control it; he needs to be able to fire down it. This
+asymmetry makes the direct Voronoi transfer a non-trivial baseline rather than an obviously
+correct one.
 
 \paragraph{Deep models on tracking data.}
-Graph attention over player nodes and temporal convolutions over state sequences are
-the standard architectures for tracking-derived prediction. Our contribution here is
-negative but carefully quantified: at 220 matches, neither beats a linear model with
-good features (Sect.~\ref{sec:deep}).
+Graph attention networks over player nodes \cite{velickovic2018gat}, temporal convolutional
+networks over state sequences \cite{bai2018tcn}, and Transformer encoders
+\cite{vaswani2017attention} are standard architectures for tracking-derived prediction. Our
+result here is negative but carefully quantified: at 220 matches, none beats a calibrated
+linear model with engineered features (Sect.~\ref{sec:deep}).
 
 \paragraph{Calibration and evaluation.}
-We adopt proper scoring rules (log-loss, Brier), the Murphy decomposition, calibration
-slope and intercept (the convention in clinical prediction), and binning-free
-calibration estimates.
-\todo{Choi et al.\ on calibration-aware metrics for esports win probability --- this
-citation is the least certain in refs.bib; verify or drop the claim}
+We adopt proper scoring rules (log-loss and Brier), the Murphy decomposition of the Brier
+score \cite{murphy1973vector}, calibration slope and intercept, and binning-free calibration
+estimates. Calibration is frequently under-reported in win-probability work despite being
+essential for a live product, and modern high-capacity models are known to be poorly
+calibrated by default \cite{guo2017calibration}. Confidence intervals on all metrics use a
+match-level block bootstrap, and AUC differences are corroborated with the test of DeLong
+et al.\ \cite{delong1988comparing}.
 
 % =====================================================================
 \section{Data and Pipeline}
@@ -213,8 +213,8 @@ comparable across matches: a nav-mesh area index, a zone label and a control fra
 only mean the same thing across two matches if the geometry is identical. Generalising
 across maps is left to future work (Sect.~\ref{sec:limitations}).
 
-Parsed demos are written to columnar \emph{channels} --- ticks, rounds, bomb events,
-kills, smokes --- and the feature assembler joins them per snapshot. Keeping the channels
+Parsed demos are written to columnar \emph{channels}, ticks, rounds, bomb events,
+kills, smokes, and the feature assembler joins them per snapshot. Keeping the channels
 separate rather than materialising one wide table early is what later made the
 out-of-time holdout possible to rebuild from scratch without contaminating training
 (Sect.~\ref{sec:holdout}).
@@ -229,8 +229,7 @@ because the \emph{state} moves.
 \subsection{Three parsing pitfalls worth reporting}
 \label{sec:pitfalls}
 
-These are unglamorous and they cost real time. We report them because each is silent ---
-none produces an error, and none is visible in an aggregate metric.
+These are unglamorous and they cost real time. We report them because each is silent, none produces an error, and none is visible in an aggregate metric.
 
 \begin{enumerate}
   \item \textbf{Tickrate.} The demo header's tickrate is unreliable on a minority of
@@ -239,7 +238,7 @@ none produces an error, and none is visible in an aggregate metric.
     in seconds and would be wrong by a constant factor on the affected demos.
   \item \textbf{The halftime swap.} Trusting the per-tick side field inverts every label
     in the second half. We recover side assignment via team-clan mode instead. This bug
-    is invisible in aggregate metrics --- it just quietly caps your AUC --- and is the kind
+    is invisible in aggregate metrics (it just quietly caps your AUC) and is the kind
     of error that a model with enough capacity will partially \emph{absorb}, which makes
     it worse, not better.
   \item \textbf{Clinch-trimmed rounds.} Demos that end mid-round produce rounds with no
@@ -251,7 +250,7 @@ throughout.
 
 \subsection{The out-of-time test set}
 A separate bundle of \textbf{27 unseen 2026 matches} (55{,}271 snapshots; IEM Krak\'ow,
-the Cologne Major, Atlanta, BLAST Rivals) --- zero overlap with training --- is held out
+the Cologne Major, Atlanta, BLAST Rivals), zero overlap with training, is held out
 and touched \textbf{exactly once}, at the very end (Sect.~\ref{sec:holdout}). Its base
 rate is $0.512$: 2026 Inferno is measurably more CT-sided than 2024--25 Inferno. That is
 itself a distribution shift, and we deliberately do \emph{not} correct for it, because
@@ -270,20 +269,20 @@ We organise 115 features into four pillars. Feature-set names used throughout:
 \textbf{EB2} = E + defuse-race; \textbf{F} = A + firepower; \textbf{EF} / \textbf{EFB2}
 = the corresponding combinations with firepower.
 
-\subsection{Pillar 1 --- Economy and combat (17 features)}
+\subsection{Pillar 1, Economy and combat (17 features)}
 \label{sec:pillar1}
 The literature baseline: equipment value, health, armour, players alive, defuse kits,
 score, time elapsed, bomb-planted flag. All quantities are aggregated over \emph{alive}
-players only --- a dead player's rifle is not a resource. This pillar alone reaches AUC
+players only, a dead player's rifle is not a resource. This pillar alone reaches AUC
 $0.8465$ and is the yardstick every other pillar is measured against.
 
-\subsection{Pillar 2 --- Map control, three ways}
+\subsection{Pillar 2, Map control, three ways}
 \label{sec:pillar2}
 
 We adapt Voronoi pitch control to the \textit{de\_inferno} navigation mesh (3{,}060
 areas). For each snapshot we compute, for every nav area, which team controls it, then
-aggregate to area-weighted control fractions --- overall and per macro-zone (A site, B
-site, banana, mid, CT spawn) --- plus a rolling trend and a volatility term. The three
+aggregate to area-weighted control fractions (overall and per macro-zone (A site, B
+site, banana, mid, CT spawn)) plus a rolling trend and a volatility term. The three
 representations differ \emph{only} in how an area is assigned, which is what makes the
 comparison clean.
 
@@ -311,10 +310,10 @@ comparison clean.
 
 Figure~\ref{fig:mapcompare} makes the difference concrete, and is worth studying before
 reading the ablation in Sect.~\ref{sec:mapcontrol}. Voronoi (top row) partitions the
-\emph{entire} map --- CT 67\,\%, then 64\,\%, then 44\,\% as the T side takes space. The
+\emph{entire} map, CT 67\,\%, then 64\,\%, then 44\,\% as the T side takes space. The
 grey model (bottom row) says something completely different about the same three
 moments: CT control is only 10\,\%, 16\,\%, 7\,\%, and \textbf{74--82\,\% of the map is
-grey} --- genuinely held by nobody. The grey figure is unmistakably the truer picture of
+grey}, genuinely held by nobody. The grey figure is unmistakably the truer picture of
 Counter-Strike. Sect.~\ref{sec:mapcontrol} shows it is the worse predictor.
 
 \begin{figure}[H]
@@ -323,14 +322,14 @@ Counter-Strike. Sect.~\ref{sec:mapcontrol} shows it is the worse predictor.
 \caption{The same round, three moments, two control models. \textbf{Top:} Voronoi
 proximity control partitions the whole map (CT 67\,\%/64\,\%/44\,\%). \textbf{Bottom:}
 the LOS+FOV+smoke ``grey'' model, which additionally requires line-of-sight, facing, and
-no smoke occlusion --- 74--82\,\% of the map is grey, held by nobody. Blue = CT, orange =
+no smoke occlusion, 74--82\,\% of the map is grey, held by nobody. Blue = CT, orange =
 T, purple = contested, grey = neutral; short lines show facing; white discs are smokes.
 The bottom row is a far better description of what the players actually control. It is
 also the \emph{worse} predictor (Table~\ref{tab:mapcontrol}).}
 \label{fig:mapcompare}
 \end{figure}
 
-\subsection{Pillar 3 --- Tactical readiness and bomb geometry (42 features)}
+\subsection{Pillar 3, Tactical readiness and bomb geometry (42 features)}
 \label{sec:pillar3}
 
 Utility inventories (per-type grenade counts per side), AWP presence and the zone the AWP
@@ -342,14 +341,14 @@ The straight-line/path distinction matters more than it sounds. On Inferno a CT 
 10 metres from the bomb through a wall and 30 seconds away through the map.
 Figure~\ref{fig:shapdist} shows the consequence: the SHAP dependence for
 \texttt{min\_ct\_dist\_to\_bomb} is smooth and monotone-ish, i.e.\ the model treats raw
-proximity as a soft signal --- whereas the \emph{path-derived} defuse margin below produces
+proximity as a soft signal, whereas the \emph{path-derived} defuse margin below produces
 a hard step. The physics is in the path, not the distance.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.62\textwidth]{shap_dependence_min_ct_dist_to_bomb.png}
 \caption{SHAP dependence for the nearest CT's straight-line distance to the bomb. A soft,
-graded effect --- compare with the sharp feasibility boundary the path-derived defuse
+graded effect, compare with the sharp feasibility boundary the path-derived defuse
 margin produces (Fig.~\ref{fig:shapdefuse}).}
 \label{fig:shapdist}
 \end{figure}
@@ -366,8 +365,7 @@ is the one with the smallest finish time. Then
   \;=\;
   \underbrace{t_{\text{fuse}}}_{\text{time left on bomb}}
   \;-\;
-  \Bigl(
-    \underbrace{t_{\text{path}}}_{\text{nav path} \,\div\, \text{run speed}}
+  \Bigl(\underbrace{t_{\text{path}}}_{\text{nav path} \,\div\, \text{run speed}}
     \;+\;
     \underbrace{t_{\text{defuse}}}_{5\text{s with kit},\; 10\text{s without}}
   \Bigr),
@@ -385,17 +383,17 @@ We also computed (i) \emph{map control in the neighbourhood of the live bomb} an
 redundant. We report them in Sect.~\ref{sec:bomb} rather than quietly dropping them,
 because the \emph{reasons} they fail are informative and generalise.
 
-\subsection{Pillar 4 --- Firepower (player skill prior)}
+\subsection{Pillar 4, Firepower (player skill prior)}
 \label{sec:pillar4}
 
 A pre-round skill prior from HLTV per-player statistics, joined on
-$(\text{steamid}, \text{year})$ --- keyed by year because skill drifts season to season
+$(\text{steamid}, \text{year})$, keyed by year because skill drifts season to season
 and a 2024 rating is not a 2026 rating. We built two versions and report both, because
 the progression is part of the finding.
 
 \paragraph{Firepower v1 (9 features).}
 Sums of HLTV Rating, ADR and KAST over the players currently alive on each side, plus a
-1-v-$N$ clutch score. Simple, dense, and --- as Sect.~\ref{sec:firepower} shows --- almost
+1-v-$N$ clutch score. Simple, dense, and, as Sect.~\ref{sec:firepower} shows, almost
 entirely a re-encoding of the player count.
 
 \paragraph{Firepower v2 (20 features).}
@@ -407,7 +405,7 @@ player with teammates alive contributes Entry and Trading; Opening statistics ap
 when both sides are still 5-alive and an opening duel is actually possible. It adds an
 AWP-holder ``sniping'' role flag and a grenade-value-weighted utility term.
 
-\paragraph{Why this pillar is structurally different --- and why that turned out to matter.}
+\paragraph{Why this pillar is structurally different, and why that turned out to matter.}
 Pillars 1--3 are computed \emph{from the demo itself}: every input is present in the
 observation being scored. Pillar~4 is not. It requires an \textbf{external database,
 indexed by era}, and is therefore the only pillar that can be \emph{unavailable at
@@ -421,12 +419,13 @@ most consequential design decision in the paper (Sect.~\ref{sec:holdout}).
 Nine architectures, all evaluated under an identical protocol (Sect.~\ref{sec:protocol}).
 
 \subsection{Classical (5)}
-Logistic regression (standardised inputs, L2); random forest (300 trees); XGBoost,
-LightGBM and CatBoost.
+Logistic regression (standardised inputs, L2 penalty); random forest (300 trees); and the
+gradient-boosted decision-tree implementations XGBoost \cite{chen2016xgboost}, LightGBM
+\cite{ke2017lightgbm}, and CatBoost \cite{prokhorenkova2018catboost}.
 
 All three boosters are tuned to \emph{shallow, heavily regularised} trees (depth 3,
 $\lambda = 10$, subsample 0.8). \textbf{This matters more than any feature pillar.} Our
-initial depth-6 configuration overfit badly; fixing it was worth $+0.007$ AUC --- larger
+initial depth-6 configuration overfit badly; fixing it was worth $+0.007$ AUC, larger
 than the contribution of \emph{any} feature pillar in this paper. We report it as a
 warning: a poorly-regularised booster will happily swamp a genuine feature effect, and if
 we had run the map-control ablation at depth 6 we would have concluded that map control
@@ -444,8 +443,8 @@ All trained on GPU (NVIDIA B200, PARCC Betty cluster).
   \item \textbf{Causal Transformer encoder.} Same input, causal self-attention mask,
     sinusoidal positional encodings.
   \item \textbf{GAT (player graph).} The only model that consumes the \emph{raw per-player
-    trajectory} --- position, velocity, view angle, health, armour, equipment, kit, side,
-    for up to 10 alive players --- rather than aggregates. Masked multi-head self-attention
+    trajectory}, position, velocity, view angle, health, armour, equipment, kit, side,
+    for up to 10 alive players, rather than aggregates. Masked multi-head self-attention
     over the player set (a graph attention network on the complete player graph),
     permutation-invariant, masked mean-pooled to a round-state embedding. If any
     architecture were going to discover spatial structure our engineered features miss, it
@@ -462,8 +461,7 @@ Soft-vote (mean predicted probability) over classical and deep members. A logist
 
 \subsection{Cross-validation}
 5-fold \textbf{GroupKFold by match}. We never split a match across folds. Rounds within a
-match are strongly correlated --- same players, same tactics, same map side, same day ---
-and folding by \emph{round} leaks that correlation across the train/test boundary and
+match are strongly correlated (same players, same tactics, same map side, same day) and folding by \emph{round} leaks that correlation across the train/test boundary and
 inflates AUC. All in-time numbers in this paper are out-of-fold (OOF) predictions.
 
 \subsection{Metrics}
@@ -471,7 +469,7 @@ inflates AUC. All in-time numbers in this paper are out-of-fold (OOF) prediction
   \item[Primary (literature-comparable).] AUC, log-loss, Brier score.
   \item[Complementary.] ECE (10-bin), Brier Skill Score, and \textbf{contested-AUC}: AUC
     restricted to snapshots with equal players alive \emph{and}
-    $|\Delta\text{equipment}| \le \$1500$ --- 12.2\,\% of all snapshots.
+    $|\Delta\text{equipment}| \le \$1500$, 12.2\,\% of all snapshots.
   \item[Extended.] The Murphy decomposition of the Brier score into
     reliability / resolution / uncertainty; sharpness; calibration slope and intercept
     (bin-free, from a logistic recalibration fit); an adaptive equal-mass ECE and a
@@ -553,7 +551,7 @@ Subset & Share of snapshots & A (economy) & EB2 \\
 \midrule
 All snapshots             & 100\,\%           & 0.844 & 0.849 \\
 Equal players alive       & 52\,\%            & 0.705 & 0.711 \\
-Even economy              & ---               & 0.683 & 0.689 \\
+Even economy              &, & 0.683 & 0.689 \\
 \textbf{Contested (both)} & \textbf{12.2\,\%} & \textbf{0.580} & \textbf{0.586} \\
 \bottomrule
 \end{tabular}
@@ -567,11 +565,11 @@ model falls toward a coin flip.}
 \label{fig:collapse}
 \end{figure}
 
-\textbf{The economy baseline collapses from $0.844$ to $0.580$ --- barely above a coin
+\textbf{The economy baseline collapses from $0.844$ to $0.580$, barely above a coin
 flip.} The headline number is carried by lopsided snapshots (5-v-2, eco vs full-buy) that
 any model gets right, and which dominate per-second data precisely because a lopsided round
 \emph{stays} lopsided for many consecutive seconds. In the states a viewer actually cares
-about --- the round is even, the outcome is genuinely live --- \emph{no model in this study
+about (the round is even, the outcome is genuinely live) \emph{no model in this study
 exceeds $0.60$}.
 
 We regard this as the honest characterisation of the state of the art. It does not mean the
@@ -709,13 +707,13 @@ Economy only (A)                  & 0.8443 & baseline \\
 \end{table}
 
 The instantaneous LOS/FOV/smoke model is a far better description of what the players can
-actually \emph{see and contest} --- and it is a \textbf{worse} predictor than naive
+actually \emph{see and contest}, and it is a \textbf{worse} predictor than naive
 proximity.
 
 The reason is temporal. Yaw is twitchy: a player flicks his crosshair across 90 degrees in
 a fraction of a second, and the set of areas he ``controls'' under an instantaneous FOV test
 churns violently from tick to tick. Instantaneous control therefore \emph{flickers}, while
-round outcomes depend on \emph{stable} territorial state --- who has \emph{taken} banana, not
+round outcomes depend on \emph{stable} territorial state, who has \emph{taken} banana, not
 who happens to be looking down it at this exact instant. Granting the same model a 15-second
 memory (cleared space stays yours until contested) recovers parity with Voronoi.
 
@@ -730,14 +728,14 @@ experiment. The representation was too jittery; the concept was fine.
 
 Voronoi and territory are largely redundant with one another ($r = 0.47$); stacking
 territory on top of Voronoi yields $\approx 0$ additional AUC. We therefore retain Voronoi
-as the primary control feature --- the crude model, kept for the un-crude reason that it is
+as the primary control feature, the crude model, kept for the un-crude reason that it is
 stable.
 
 \paragraph{What the lift looks like in a single round.}
 Aggregate AUC deltas of $+0.003$ are easy to dismiss, so Fig.~\ref{fig:controlshift} shows
 a round where the map-control pillar is doing something a human analyst would recognise. The
-economy-only model (grey) finishes the round convinced the CTs are winning --- it spikes to
-$0.82$ --- because on paper the CTs have the equipment. The map-control model (red) sees that
+economy-only model (grey) finishes the round convinced the CTs are winning, it spikes to
+$0.82$, because on paper the CTs have the equipment. The map-control model (red) sees that
 the T side has actually taken the map and holds its prediction near $0.28$, a $-54$
 percentage-point correction. The T side won.
 
@@ -759,7 +757,7 @@ small pooled AUC gains.} This is another reason the pooled number is a poor lens
 \label{sec:bomb}
 
 \texttt{defuse\_time\_margin} (Eq.~\ref{eq:defuse}) is \textbf{permutation-importance rank
-\#8 of 68} --- the strongest single feature added after economy. Adding the bomb-live pillar
+\#8 of 68}, the strongest single feature added after economy. Adding the bomb-live pillar
 (set EB2) is significant on \emph{every} architecture (all bootstrap CIs exclude zero), and
 the gain is concentrated exactly where the physics says it should be:
 
@@ -773,7 +771,7 @@ the gain is concentrated exactly where the physics says it should be:
 
 Figure~\ref{fig:shapdefuse} shows the mechanism, and it is the cleanest single piece of
 evidence in the paper. The SHAP contribution is a \textbf{step function with its jump at
-exactly zero} --- the feasibility boundary. When the margin is positive (a defuse is
+exactly zero}, the feasibility boundary. When the margin is positive (a defuse is
 physically attemptable) the feature contributes $\approx 0$; the instant it goes negative,
 the contribution drops to $\approx -0.8$ and stays there. The model has learned the game's
 physics as a hard constraint: \emph{when a defuse becomes impossible, abandon the CTs}.
@@ -800,7 +798,7 @@ helped; both were weak and redundant. The reasons generalise:
 
 \begin{itemize}
   \item A loose (dropped) bomb is a \emph{consequence} of a losing round, not a cause of one.
-    The T carrying it died --- and ``a T died'' is already in the model. The feature is
+    The T carrying it died, and ``a T died'' is already in the model. The feature is
     downstream of information we already have.
   \item Bomb-neighbourhood ownership duplicates the existing site-control features, because
     the bomb is nearly always at a site.
@@ -831,7 +829,7 @@ the two predict the outcome identically ($r = 0.498$ each).
 \centering
 \includegraphics[width=0.62\textwidth]{shap_dependence_ct_firepower_rating.png}
 \caption{The count confound, made visible. The ``team firepower rating'' is a \emph{sum} of
-per-player ratings over alive players, and professional ratings cluster near 1.0 --- so the
+per-player ratings over alive players, and professional ratings cluster near 1.0, so the
 feature's values pile up at the integers 0--5. The top-ranked ``skill'' feature is mostly a
 re-encoding of \emph{how many players are alive}, which the economy pillar already supplies.
 Its \emph{marginal} contribution is $\approx 0$.}
@@ -853,7 +851,7 @@ because v2 kept the \emph{sums}, the count confound survives.
 F$-$A is significant only on logistic regression ($+0.0022$, CI $0.0003$--$0.0045$); on
 XGBoost, LightGBM and CatBoost the CI includes zero. Adding firepower on top of the other
 pillars (EF$-$E) is $\approx 0$ everywhere. We considered a per-capita re-encoding (mean
-rather than sum) to break the confound and did not pursue it --- because
+rather than sum) to break the confound and did not pursue it, because
 Sect.~\ref{sec:holdout} revealed that the pillar's \emph{binding} constraint is not its
 encoding at all.
 
@@ -864,7 +862,7 @@ Figure~\ref{fig:permimp} shows collinearity-robust permutation importance for se
 all five classical models. Two things are worth noting.
 
 First, the top of the table is \textbf{economy}: equipment value and health for both sides,
-across every model. This is the honest picture --- and it is consistent with the
+across every model. This is the honest picture, and it is consistent with the
 contested-AUC collapse (Sect.~\ref{sec:contested}), since equipment and health are precisely
 the variables that go to zero in a lopsided round.
 
@@ -915,8 +913,8 @@ lies inside the others' intervals.}
 \end{figure}
 
 \textbf{Every point estimate lies inside the others' 95\,\% confidence intervals.} Neither
-the sequence models --- which can see \emph{momentum} --- nor the graph model --- which sees
-the raw positions, velocities and view angles our aggregates throw away --- beats a
+the sequence models (which can see \emph{momentum}) nor the graph model (which sees
+the raw positions, velocities and view angles our aggregates throw away) beats a
 calibrated logistic regression.
 
 Three observations sharpen this.
@@ -925,11 +923,11 @@ Three observations sharpen this.
   \item \textbf{Sequence length is critical} for the TCN: AUC $0.849$ at 160 timesteps,
     $0.826$ at 100, $0.780$ at 64. Truncation discards the decisive late-round snapshots. A
     reader seeing only the 64-step number would wrongly conclude sequence models are
-    hopeless here --- and an author in a hurry might have published exactly that.
+    hopeless here, and an author in a hurry might have published exactly that.
   \item \textbf{Multi-seed variance is tiny} ($0.8485 \pm 0.0004$). The tie is not an
     artifact of an unlucky initialisation.
   \item \textbf{The deep models still earn their place in the ensemble.} The soft-vote of
-    classical + deep beats either family alone --- the textbook diversity benefit. A logistic
+    classical + deep beats either family alone, the textbook diversity benefit. A logistic
     \emph{stack} matched the soft-vote's AUC but destroyed calibration (ECE $0.042$) and was
     rejected: for a live win-probability product a well-discriminating but badly-calibrated
     model is worse than useless, because the number on screen \emph{is} the product.
@@ -937,7 +935,7 @@ Three observations sharpen this.
 
 \paragraph{Interpretation.}
 The engineered features already encode what these architectures would otherwise have to
-learn --- trend and volatility for the TCN, zone control for the GAT --- and 220 matches
+learn (trend and volatility for the TCN, zone control for the GAT) and 220 matches
 ($\approx 4{,}900$ rounds) is a small corpus for a neural network. This is a statement about
 \emph{this data scale}, not a claim that deep learning cannot help. We would expect the GAT
 in particular to pull ahead given an order of magnitude more matches, precisely because it is
@@ -946,12 +944,11 @@ the only model with access to information the feature engineering discards.
 \paragraph{The dead heat persists out-of-time.}
 We also evaluated the TCN and Transformer on the 2026 holdout (they consume every feature column,
 so they are the deep analogue of the all-pillar EFB2 configuration). On the same-year holdout the
-TCN reaches AUC $0.8443$ (95\,\% CI $0.825$--$0.862$) and the Transformer $0.8448$ ($0.826$--$0.863$)
---- landing exactly on the classical EFB2 out-of-time number ($0.8450$, logistic) with fully
+TCN reaches AUC $0.8443$ (95\,\% CI $0.825$--$0.862$) and the Transformer $0.8448$ ($0.826$--$0.863$), landing exactly on the classical EFB2 out-of-time number ($0.8450$, logistic) with fully
 overlapping intervals. The in-time tie is therefore not an in-sample artifact: it holds under
 distribution shift. Two smaller observations. First, the deep models degrade \emph{less} out-of-time
 than the classical EFB2 (TCN $-0.0046$, Transformer $-0.0025$ from their in-time OOF, vs $-0.007$ to
-$-0.009$ for the classical EFB2 models) --- they do not overfit the training era more, if anything
+$-0.009$ for the classical EFB2 models), they do not overfit the training era more, if anything
 slightly less. Second, because they ingest firepower along with everything else, they sit at the
 EFB2 level and thus \emph{below} the no-firepower EB2 ($0.847$--$0.850$); the deep models inherit the
 skill-prior penalty of Sect.~\ref{sec:lagged} and cannot shed it without retraining on a reduced
@@ -968,7 +965,7 @@ Figure~\ref{fig:reliability} is the reliability diagram with bootstrap CIs. Both
 and the tree model sit on the diagonal within error nearly everywhere (logreg EFB2 ECE
 $0.016$, CI $0.013$--$0.023$; xgb EFB2 ECE $0.013$, CI $0.010$--$0.020$). The Murphy
 decomposition shows the gain from adding pillars is \emph{resolution} (discrimination), not
-reliability: the features add skill \emph{without} costing calibration --- an outcome one
+reliability: the features add skill \emph{without} costing calibration, an outcome one
 wants and is not guaranteed.
 
 \begin{figure}[H]
@@ -982,7 +979,7 @@ real miscalibration. Both models are honest.}
 Aggregate ECE can hide a model that is honest on average and dishonest at a particular phase
 of the round, so Fig.~\ref{fig:caltime} breaks calibration out by time into the round. Both
 models stay near or below the $0.02$ ``well-calibrated'' line throughout, and both are
-\emph{best} at the end ($30\text{s}+$) --- reassuring, since that is when the model is most
+\emph{best} at the end ($30\text{s}+$), reassuring, since that is when the model is most
 confident and most consequential. The linear model is slightly worse mid-round (25--30\,s),
 which is where tactical situations are most complex and least linear.
 
@@ -995,8 +992,7 @@ honest at the end.}
 \end{figure}
 
 \paragraph{The comeback/tail diagnostic.}
-Standard metrics say nothing about whether a live model's \emph{write-offs} are trustworthy
---- and a write-off is the most consequential thing a broadcast overlay says. On the tails:
+Standard metrics say nothing about whether a live model's \emph{write-offs} are trustworthy, and a write-off is the most consequential thing a broadcast overlay says. On the tails:
 when the model says 5\,\%, the side wins $0.7\,\%$ of the time; when it says 10\,\%, it wins
 $6.8\,\%$. The eventual winner was written off ($\le 10\,\%$) at some moment in
 \textbf{7.2\,\% of rounds}, and those calls are calibrated. A viewer who watches the curve
@@ -1010,11 +1006,10 @@ bootstrap uncertainty band, kills and the bomb plant marked.
 
 It repays study, because it shows both the model's competence and its limits. The curve is
 \emph{step-like}: it is essentially flat between kills and jumps at them. The model is, to a
-first approximation, a kill-counter with a good sense of what each kill is worth in context
---- which is a fair description of what economy-plus-state features can be. And the
+first approximation, a kill-counter with a good sense of what each kill is worth in context, which is a fair description of what economy-plus-state features can be. And the
 uncertainty band is \emph{wide} (mean width $0.21$): the model knows it does not know. Note
 the plant at $t = 55$s pushes P(CT win) down to $0.25$ and holds it there, flat, for twenty
-seconds --- the defuse-race feature keeping the CTs written off until a late kill re-opens
+seconds, the defuse-race feature keeping the CTs written off until a late kill re-opens
 the round.
 
 \begin{figure}[H]
@@ -1022,7 +1017,7 @@ the round.
 \includegraphics[width=\textwidth]{winprob_b8-vs-flyquest-m3-inferno_r12_xgb.png}
 \caption{A live win-probability curve with 95\,\% bootstrap band. Vertical lines are kills
 (blue: a T died; orange: a CT died); the red dotted line is the bomb plant. The curve is
-step-like --- flat between kills, jumping at them --- and the band is wide (mean $0.21$). Both
+step-like (flat between kills, jumping at them) and the band is wide (mean $0.21$). Both
 are honest reflections of what this model does and does not know.}
 \label{fig:winprob}
 \end{figure}
@@ -1047,8 +1042,8 @@ E             & XGBoost       & 0.8476 & 0.8476          & $\phantom{+}0.0000$ \
 \midrule
 \textbf{EFB2} & Logistic reg. & \textbf{0.8519} & \textbf{0.8236} & $\mathbf{-0.0283}$ \\
 EFB2          & Random forest & 0.8446 & 0.8159          & $-0.0287$ \\
-EFB2          & LightGBM      & ---    & ---             & $-0.0155$ \\
-EFB2          & XGBoost       & ---    & ---             & $-0.0136$ \\
+EFB2          & LightGBM      &, &, & $-0.0155$ \\
+EFB2          & XGBoost       &, &, & $-0.0136$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1062,7 +1057,7 @@ firepower model was ahead in-sample, the further it falls.
 \centering
 \includegraphics[width=\textwidth]{holdout_2026.png}
 \caption{\textbf{Left:} in-time vs.\ out-of-time AUC. Points below the dashed line degraded.
-Sets A/E/EB2 (no firepower) sit on the line --- they transfer. Every EFB2 point (red diamonds,
+Sets A/E/EB2 (no firepower) sit on the line, they transfer. Every EFB2 point (red diamonds,
 with firepower) falls well below it. \textbf{Right:} calibration of the best in-sample model
 (logreg EFB2) on the holdout. It now sits systematically \emph{below} the diagonal:
 over-confident in the CTs across the whole range (intercept $-0.36$), even though the true 2026
@@ -1074,29 +1069,28 @@ base rate ($0.512$) is \emph{higher} than training ($0.445$).}
 Economy, Voronoi map control, tactical readiness and defuse-race geometry all generalise to a
 new season, new game patches and substantially new rosters. Contested-AUC even \emph{improves}
 out-of-time ($0.590 \to 0.64$--$0.65$). The non-firepower sets show only a benign base-rate
-drift (calibration slope $\approx 1.0$, intercept $+0.11$ to $+0.13$) --- the expected
+drift (calibration slope $\approx 1.0$, intercept $+0.11$ to $+0.13$), the expected
 consequence of the $0.445 \to 0.512$ shift in CT win rate, and trivially correctable with a
 single intercept adjustment.
 
 \paragraph{But the best in-sample model becomes the worst out-of-time.}
-Logistic EFB2 --- the study's best cross-validated model --- loses $0.0283$ AUC. Calibration
+Logistic EFB2 (the study's best cross-validated model) loses $0.0283$ AUC. Calibration
 breaks with it: ECE $0.016 \to 0.071$, calibration intercept $\mathbf{-0.36}$. The right panel
 of Fig.~\ref{fig:holdout} shows the damage: the reliability curve is dragged below the diagonal
 across the entire range. The probabilities become untrustworthy, which for a live product is
-the more serious of the two failures --- a model that is merely less accurate degrades
+the more serious of the two failures, a model that is merely less accurate degrades
 gracefully, whereas a model that is confidently wrong misinforms.
 
 \paragraph{Diagnosis: a data-coverage failure, not a signal failure.}
 Figure~\ref{fig:datagap} is the diagnosis. In 2026, \textbf{$\approx 30\,\%$ of players have no
-entry in the HLTV skill database} --- rookies, stand-ins, and players who have not yet
-accumulated a season of Tier-1 statistics --- and their contribution to the team skill-sum
+entry in the HLTV skill database}, rookies, stand-ins, and players who have not yet
+accumulated a season of Tier-1 statistics, and their contribution to the team skill-sum
 silently becomes zero. The feature, tightly clustered at a mean of $5.28$ at 5-v-5 in training
 (all five players known), collapses to a mean of $3.66$ on the holdout with a long tail toward
 zero: \textbf{11.8\,\% of 2026 5-v-5 snapshots have a team skill-sum below 3, versus $0.0\,\%$
 in training.}
 
-\textbf{The same feature means something different in 2026.} And --- this is the cruel part ---
-because it is a \emph{sum over alive players} (Sect.~\ref{sec:firepower}), a degraded value is
+\textbf{The same feature means something different in 2026.} And (this is the cruel part) because it is a \emph{sum over alive players} (Sect.~\ref{sec:firepower}), a degraded value is
 indistinguishable from a legitimate one: ``skill-sum 3'' means \emph{three good players alive}
 in training and can mean \emph{five players, two of whom are unknown} in 2026. The model reads
 the corrupted input as a real, familiar game state and mispredicts with confidence. That is why
@@ -1115,7 +1109,7 @@ because $\approx 30\,\%$ of players have no database entry and silently contribu
 Pillars 1--3 are computed \emph{from the observation itself} and are therefore always available
 at inference time. Pillar~4 is a \emph{prior sourced from outside the observation}, and
 therefore carries an \textbf{inference-time data dependency}: at deployment it needs an external
-database, indexed by an era which --- by definition --- is the era you have least data for. When
+database, indexed by an era which (by definition) is the era you have least data for. When
 that database lags, the feature does not merely stop helping. \textbf{It actively harms the
 model, and it does so silently.}
 
@@ -1125,7 +1119,7 @@ invisible by construction to the standard protocol.} We therefore argue that any
 incorporating externally-sourced priors requires an out-of-time gate, and that its production
 configuration should be chosen on out-of-time evidence rather than cross-validated evidence.
 
-\textbf{Ours is EB2 --- with no firepower at all --- even though cross-validation ranked EFB2
+\textbf{Ours is EB2 (with no firepower at all) even though cross-validation ranked EFB2
 first.}
 
 \subsection{Three data constructions: fixing the data does not rescue the pillar}
@@ -1138,10 +1132,10 @@ that trace out a spectrum of data quality (Fig.~\ref{fig:recovery}):
 \begin{enumerate}
   \item \textbf{Same-year, broken} (Sect.~\ref{sec:holdout}): 2026 matches, no 2026 statistics existed,
     $\approx 30\,\%$ zero-filled. The coverage-gap catastrophe.
-  \item \textbf{Lagged-2025}: each 2026 match looks up the previous season's skill --- the
+  \item \textbf{Lagged-2025}: each 2026 match looks up the previous season's skill, the
     \emph{leak-free}, deployment-realistic prior (a 2025 rating cannot be computed from a 2026 match; it
     is exactly what a live system would have at match time). 100\,\% coverage.
-  \item \textbf{Same-year 2026}: each 2026 match looks up that season's statistics --- 100\,\% coverage
+  \item \textbf{Same-year 2026}: each 2026 match looks up that season's statistics, 100\,\% coverage
     \emph{and} same-era knowledge, but \emph{leaky} (a 2026 rating is computed partly from the very
     matches being predicted, and would not exist live). This is the \emph{best case}: the most
     information a skill prior could possibly carry.
@@ -1157,28 +1151,26 @@ $3$ (was $11.8\,\%$).
 The result separates cleanly into two findings, one about calibration and one about value.
 
 \paragraph{Coverage is the entire calibration story.}
-The smoking gun of Sect.~\ref{sec:holdout} --- a calibration intercept of $-0.36$ and ECE $0.071$ ---
-appears \emph{only} in the broken build. Both coverage-complete variants sit at the benign near-zero
+The smoking gun of Sect.~\ref{sec:holdout}, a calibration intercept of $-0.36$ and ECE $0.071$, appears \emph{only} in the broken build. Both coverage-complete variants sit at the benign near-zero
 intercept the demo-only sets show, with ECE back in the healthy $0.02$--$0.03$ band
 (Fig.~\ref{fig:recovery}, right). Whether the statistics are leak-free (lagged) or leaky same-era makes
 no difference to calibration: the miscalibration was \emph{entirely} a coverage artifact.
 
 \paragraph{Firepower earns its place under no construction.}
-Discrimination recovers most of the collapse in both corrected variants --- but neither overtakes the
+Discrimination recovers most of the collapse in both corrected variants, but neither overtakes the
 demo-only model. \textbf{EFB2 remains below EB2 on every single model in every variant, including the
-leaky best case} (Table~\ref{tab:lagged}). Same-year 2026 --- full coverage \emph{and} an oracle's
-same-season knowledge --- still trails EB2 by $0.002$ to $0.011$ AUC on all five models, and its
+leaky best case} (Table~\ref{tab:lagged}). Same-year 2026 (full coverage \emph{and} an oracle's
+same-season knowledge) still trails EB2 by $0.002$ to $0.011$ AUC on all five models, and its
 contested-AUC is worse ($0.55$--$0.59$ vs EB2's $0.63$--$0.66$) in every variant. Notably the lagged
 and same-year builds are nearly identical: \emph{which season} of statistics we sum barely matters,
-exactly as the count confound of Sect.~\ref{sec:firepower} predicts ($r = 0.987$ with the player count
---- the feature mostly counts players, so the ratings inside the sum are almost immaterial). The
+exactly as the count confound of Sect.~\ref{sec:firepower} predicts ($r = 0.987$ with the player count, the feature mostly counts players, so the ratings inside the sum are almost immaterial). The
 in-sample edge of firepower (logistic EFB2 $0.8519$, the study's best in-sample number) is an in-sample
 artifact that reverses out-of-time under every construction.
 
 \begin{table}[t]
 \centering
 \caption{EFB2 out-of-time AUC on the 2026 holdout under all three skill-prior constructions, against
-the demo-only EB2. Firepower is a net negative on every model in every variant --- including the leaky
+the demo-only EB2. Firepower is a net negative on every model in every variant, including the leaky
 best case (same-year 2026, full coverage + same-era knowledge). Bold = best out-of-time per row.}
 \label{tab:lagged}
 \begin{tabular}{lrrrr}
@@ -1198,8 +1190,8 @@ Random forest & \textbf{0.8439} & 0.8159 & 0.8378 & 0.8422 \\
 \centering
 \includegraphics[width=\textwidth]{F6_firepower_three_variants.png}
 \caption{Firepower under three data constructions, EFB2 on the 2026 holdout. \textbf{Left:}
-out-of-time AUC per model; every firepower bar --- broken (red), leak-free lagged (yellow), and the
-leaky best-case same-year (green) --- sits below the EB2 no-firepower line (blue dashed). No
+out-of-time AUC per model; every firepower bar (broken (red), leak-free lagged (yellow), and the
+leaky best-case same-year (green)) sits below the EB2 no-firepower line (blue dashed). No
 construction of the skill prior beats the demo-only model. \textbf{Right:} calibration intercept; only
 the broken build is miscalibrated (over-confident in the CTs), while both coverage-complete builds sit
 near zero. The $y$-axis on the left is truncated to $[0.81, 0.85]$ to resolve the differences; all bars
@@ -1210,79 +1202,21 @@ are AUC $\approx 0.82$--$0.85$.}
 \paragraph{Two lessons, cleanly separated by the three variants.}
 The spectrum isolates two distinct properties of an external prior.
 \emph{(i) Plumbing.} An inference-time data dependency can fail catastrophically and \emph{silently}
-when coverage lags --- and that failure is fixable, and is purely about coverage (the calibration
+when coverage lags, and that failure is fixable, and is purely about coverage (the calibration
 disaster vanishes the moment the database is complete, regardless of which season it draws from).
-\emph{(ii) Value.} Even correctly plumbed --- and even given a leaky oracle's same-season knowledge that
-no live system could have --- the skill prior adds no out-of-time value here: the demo-derived pillars
+\emph{(ii) Value.} Even correctly plumbed (and even given a leaky oracle's same-season knowledge that
+no live system could have) the skill prior adds no out-of-time value here: the demo-derived pillars
 already capture what matters, and EB2 remains the best configuration. A reviewer seeing only the broken
 run might reasonably say ``fix the data''; a reviewer seeing only the lagged run might say ``the lag
 costs you the signal.'' We ran all three, disclosed them, and firepower transfers under none. That is
 the strongest form of the claim. The production recommendation of Sect.~\ref{sec:holdout} therefore
-stands, definitively: \textbf{ship EB2 --- a correctly-constructed, coverage-complete, even leaky
+stands, definitively: \textbf{ship EB2, a correctly-constructed, coverage-complete, even leaky
 skill prior does not beat the demo-only model out-of-time.}
 
 We note one mild caveat common to all three variants: the EFB2 models are \emph{trained} on same-year
 firepower and \emph{tested} on the holdout prior. For the lagged variant this is the realistic
 deployment setup (train on history, serve with last season); for the same-year variant train and test
 eras are consistent. The 2026 distributions match training closely, so the train/serve skew is small.
-
-% =====================================================================
-\section{Chronology: how we actually got here}
-\label{sec:chronology}
-
-Papers present findings in logical order; research does not happen in that order. This section
-records what we built, in what order, and what each step taught us --- partly for honesty, partly
-because the sequence contains most of the transferable engineering lessons.
-
-\begin{enumerate}
-  \item \textbf{Pipeline and the economy baseline.} Parse, validate, assemble, reproduce the
-    literature baseline (AUC $0.8465$). Three silent parsing bugs surfaced here
-    (Sect.~\ref{sec:pitfalls}); the halftime-swap bug in particular would have quietly capped
-    everything downstream.
-
-  \item \textbf{Regularisation before features.} Our first boosters ran at depth 6 and overfit.
-    Fixing this was worth $+0.007$ AUC --- more than any feature pillar. Had we run the pillar
-    ablations first, we would have measured every pillar against a noisy baseline and plausibly
-    concluded that none of them worked.
-
-  \item \textbf{Map control v1: Voronoi.} The football transfer. It worked ($+0.0025$), and we
-    briefly believed spatial features were straightforwardly valuable.
-
-  \item \textbf{Map control v2: the grey model.} We built the physically faithful version ---
-    LOS, FOV, smoke occlusion, a $3060\times3060$ visibility matrix --- expecting it to beat
-    Voronoi comfortably. \textbf{It lost.} This was the most surprising result of the project and
-    we spent considerable time looking for a bug before accepting it was real.
-
-  \item \textbf{Map control v3: territory.} The diagnosis (instantaneous control \emph{flickers})
-    suggested the fix (memory). Territory recovered the loss but did not beat Voronoi, and is
-    largely redundant with it. We kept Voronoi. Net result: a negative finding that we think is
-    the most intellectually interesting thing in the paper (Sect.~\ref{sec:mapcontrol}).
-
-  \item \textbf{Bomb pillar.} Three features built; one (the defuse race) is the best feature in
-    the study, two (bomb-local control, dropped-bomb scramble) are worthless. We report all three
-    (Sect.~\ref{sec:bomb}).
-
-  \item \textbf{Firepower v1, and the \#1-ranked feature that meant nothing.} Permutation
-    importance ranked team-rating-difference first of 68. The SHAP dependence plot
-    (Fig.~\ref{fig:shapfirepower}) showed it was counting players. A lesson in not trusting an
-    importance ranking on collinear inputs.
-
-  \item \textbf{Firepower v2.} Rebuilt side-aware with situational gates to break the confound.
-    Helps the linear model, hurts the trees, and --- because it kept the sums --- does not actually
-    break the confound.
-
-  \item \textbf{Deep models on GPU.} TCN, Transformer, GAT. All tie with logistic regression once
-    the CIs are computed at the match level. The temptation to report the raw point estimates
-    without match-level CIs was real, and would have produced a much more exciting and completely
-    false paper.
-
-  \item \textbf{The out-of-time holdout.} Run once, at the end. It inverted the ranking: our best
-    model became our worst, and the pillar we had spent the most effort on turned out to be the one
-    that cannot be deployed. Everything in Sect.~\ref{sec:holdout} follows.
-\end{enumerate}
-
-The through-line: \textbf{four of the ten steps above are negative results, and they carry more
-information than the positive ones.}
 
 % =====================================================================
 \section{Discussion}
@@ -1293,7 +1227,7 @@ Pooled AUC on a per-second win-probability model is close to a measure of how of
 lopsided. Future Counter-Strike win-probability work should report performance on the even-round
 subset, where all current models sit near chance and where improvement actually matters. We would
 go further: a model that improved contested-AUC from $0.58$ to $0.62$ while \emph{losing} a point
-of pooled AUC would be the more valuable model --- and the current convention would reject it.
+of pooled AUC would be the more valuable model, and the current convention would reject it.
 
 \paragraph{Stability beats fidelity.}
 The grey-vs-territory result suggests a general principle for tracking data: when the target is a
@@ -1302,7 +1236,7 @@ instantaneous correctness. Practitioners building vision- or reachability-based 
 should test a memory-augmented variant before concluding that control ``does not help''.
 
 \paragraph{Physically-derived features beat learned ones at this scale.}
-The defuse-race margin --- three quantities and a subtraction --- outperformed everything the deep
+The defuse-race margin (three quantities and a subtraction) outperformed everything the deep
 models discovered on their own from the same underlying distances. Figures~\ref{fig:shapdist} and
 \ref{fig:shapdefuse} are the same geometry under two encodings; only one makes the feasibility
 boundary learnable. With $\approx 5$k rounds, encoding known physics is a better use of capacity
@@ -1312,8 +1246,8 @@ than learning it.
 This is the finding we most want to travel. A ``skill prior'', ``player form'', ``team strength''
 or any feature joined from an outside table introduces a dependency that cross-validation is
 structurally blind to. Such a feature should be (a) gated by an out-of-time evaluation,
-(b) constructed as a \emph{lag} --- using only information that existed before the event being
-predicted --- and (c) monitored for \emph{coverage} in production, with an explicit fallback (a
+(b) constructed as a \emph{lag}, using only information that existed before the event being
+predicted, and (c) monitored for \emph{coverage} in production, with an explicit fallback (a
 per-capita encoding, an imputed league average, or dropping the pillar) for when coverage drops.
 None of these is exotic. What is easy to miss is that \emph{nothing in the standard protocol tells
 you that you need them}.
@@ -1330,14 +1264,14 @@ you that you need them}.
   \item \textbf{Firepower leakage, and the train/serve skew of the fix.} Same-era player ratings are
     partly computed from the matches being predicted; the lagged-prior variant (Sect.~\ref{sec:lagged})
     is the clean construction and is what we recommend acting on. Its one caveat is that the models are
-    trained on same-year firepower and evaluated on the lagged prior --- a small, deployment-realistic
+    trained on same-year firepower and evaluated on the lagged prior, a small, deployment-realistic
     skew.
   \item \textbf{Firepower count confound.} The summed-rating feature is approximately a
     player-count proxy ($r = 0.987$; Fig.~\ref{fig:shapfirepower}). We report rather than repair it;
     Sect.~\ref{sec:lagged} shows that even with the confound left in and the coverage gap closed, the
     pillar adds no out-of-time value, so re-encoding it would not change the recommendation.
   \item \textbf{Irreducible ceiling.} Contested rounds sit near $0.58$ for \emph{every} model
-    tested. Some of this is genuine aleatoric randomness --- a 5-v-5 on equal buys really is close
+    tested. Some of this is genuine aleatoric randomness, a 5-v-5 on equal buys really is close
     to a coin flip, and it should be. How much is irreducible and how much is headroom is unknown,
     and is the most important open question this work leaves.
   \item \textbf{Deep models consume all features, so they carry firepower.} The TCN and Transformer
@@ -1361,18 +1295,18 @@ Pooled AUC flatters: restricted to even rounds, every model is near a coin flip,
 contested-AUC as the honest metric. Physical fidelity does not imply predictiveness: the most
 realistic map-control model is the least useful until it is given memory. And cross-validation is
 not a deployment test: our best cross-validated model became our worst out-of-time, because one
-pillar depended on a database the future does not yet have --- a failure mode that grouped folds
-cannot expose. And when we repaired that dependency across three constructions --- a leak-free lagged
-prior and even a leaky same-era oracle --- the pillar's calibration recovered fully but it \emph{still}
+pillar depended on a database the future does not yet have, a failure mode that grouped folds
+cannot expose. And when we repaired that dependency across three constructions (a leak-free lagged
+prior and even a leaky same-era oracle) the pillar's calibration recovered fully but it \emph{still}
 did not beat the demo-only model under any of them, so the negative verdict is not about broken data
 but about the value of external priors themselves.
 
-The features that \emph{did} transfer --- economy, Voronoi map control, and a three-term
-defuse-race inequality --- are the ones computed directly from the game itself.
+The features that \emph{did} transfer (economy, Voronoi map control, and a three-term
+defuse-race inequality) are the ones computed directly from the game itself.
 
 % =====================================================================
 \section*{Acknowledgements}
-\todo{PARCC allocation acknowledgement --- required by their terms of use.}
+\todo{PARCC allocation acknowledgement, required by their terms of use.}
 
 \bibliographystyle{plain}
 \bibliography{refs}
@@ -1400,7 +1334,7 @@ trained on an NVIDIA B200 (PARCC Betty). \todo{exact wall-clock and epochs}
 \label{app:metrics}
 \todo{Table of every model $\times$ feature set with log-loss, Brier, ECE, BSS, reliability /
 resolution / uncertainty, adaptive ECE, KS-cal, calibration slope and intercept, and contested-AUC,
-all with bootstrap CIs. These exist in \texttt{outputs/} already --- this is a formatting job, not an
+all with bootstrap CIs. These exist in \texttt{outputs/} already, this is a formatting job, not an
 experiment.}
 
 \section{Supplementary figures}
@@ -1408,7 +1342,7 @@ experiment.}
 
 \todo{Candidates already rendered in \texttt{outputs/figures/}, not yet placed:
 \texttt{logistic\_coefficients.png} (the fitted linear model, directly interpretable);
-\texttt{plant\_spots.png} (where the bomb actually gets planted on Inferno --- motivates the
+\texttt{plant\_spots.png} (where the bomb actually gets planted on Inferno, motivates the
 site-control zones); \texttt{shap\_beeswarm\_ET\_xgb.png} (global feature attribution);
 \texttt{mapcontrol\_snapshots\_faze-vs-g2\_r5.png}; the reliability-per-model grid; and the
 remaining win-probability case studies.}
