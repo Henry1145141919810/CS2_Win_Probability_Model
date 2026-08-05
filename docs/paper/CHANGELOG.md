@@ -216,6 +216,24 @@ sub-study.
 
 ---
 
+## v8 — 2026-08-05 — Appendix B full metric battery (real numbers)
+
+Tag: `paper-v8` · Zip: `CS2_winprob_overleaf_v8.zip`
+
+**Changed.** Replaced the Appendix B \todo with two populated tables from freshly computed results:
+Table B1 (in-time 5-fold OOF battery: AUC, log-loss, Brier, ECE, BSS, contested-AUC for all 5 classical
+models x 4 feature sets, plus TCN/Transformer/ensemble) and Table B2 (out-of-time 2026 same-year
+battery for EB2 vs EFB2 with calibration slope/intercept). Numbers from
+`src/models/appendix_metrics.py` (in-time), `outputs/extended_metrics.csv` (deep/ensemble), and
+`outputs/holdout_2026_sameyr2026.csv` (out-of-time). No fabricated values.
+
+**Re-upload to Overleaf.** main.tex only.
+
+**Still open (4 \todo).** Leu's affiliation; PARCC acknowledgement; exact deep wall-clock/epochs;
+Appendix C supplementary-figure placement (optional).
+
+---
+
 ## vNext — template (copy this block, don't edit v1)
 
 ```

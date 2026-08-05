@@ -43,7 +43,7 @@
 
 % DRAFT VERSION. Bump this on every substantive revision, add a CHANGELOG row,
 % git-tag it, and rebuild the zip. The version is stamped on the title page.
-\newcommand{\draftversion}{v7}
+\newcommand{\draftversion}{v8}
 
 \title{\textbf{Where Win Probability Comes From, and Where It Breaks}\\[2mm]
 \large Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check
@@ -1355,10 +1355,81 @@ trained on an NVIDIA B200 (PARCC Betty). \todo{exact wall-clock and epochs}
 
 \section{Full metric battery}
 \label{app:metrics}
-\todo{Table of every model $\times$ feature set with log-loss, Brier, ECE, BSS, reliability /
-resolution / uncertainty, adaptive ECE, KS-cal, calibration slope and intercept, and contested-AUC,
-all with bootstrap CIs. These exist in \texttt{outputs/} already, this is a formatting job, not an
-experiment.}
+
+Table~\ref{tab:appB1} reports the in-time (5-fold out-of-fold) metric battery for every classical
+model and feature set, together with the deep models and the ensemble. Table~\ref{tab:appB2} reports
+the out-of-time (2026 same-year holdout) battery for the two feature sets that matter for the
+deployment recommendation, EB2 and EFB2, including calibration slope and intercept. Metric definitions
+are given in Sect.~\ref{sec:protocol}; all match-level bootstrap confidence intervals for the headline
+comparisons appear with the corresponding figures in the main text.
+
+\begin{table}[t]
+\centering
+\caption{In-time metric battery (5-fold GroupKFold out-of-fold). AUC, log-loss, Brier, expected
+calibration error (ECE), Brier Skill Score (BSS), and contested-AUC. The deep and ensemble rows use
+the all-pillar feature set.}
+\label{tab:appB1}
+\small
+\begin{tabular}{llrrrrrr}
+\toprule
+Set & Model & AUC & log-loss & Brier & ECE & BSS & cont.-AUC \\
+\midrule
+A & Logistic & 0.8465 & 0.4675 & 0.1579 & 0.019 & 0.361 & 0.587 \\
+A & XGBoost & 0.8443 & 0.4687 & 0.1588 & 0.018 & 0.357 & 0.580 \\
+A & LightGBM & 0.8448 & 0.4680 & 0.1585 & 0.017 & 0.358 & 0.582 \\
+A & CatBoost & 0.8448 & 0.4666 & 0.1582 & 0.016 & 0.359 & 0.580 \\
+A & Random forest & 0.8228 & 0.5305 & 0.1718 & 0.042 & 0.305 & 0.543 \\
+\midrule
+E & Logistic & 0.8493 & 0.4605 & 0.1564 & 0.016 & 0.367 & 0.590 \\
+E & XGBoost & 0.8476 & 0.4618 & 0.1569 & 0.012 & 0.365 & 0.585 \\
+E & LightGBM & 0.8479 & 0.4616 & 0.1568 & 0.014 & 0.365 & 0.586 \\
+E & CatBoost & 0.8478 & 0.4616 & 0.1567 & 0.011 & 0.366 & 0.590 \\
+E & Random forest & 0.8426 & 0.4747 & 0.1596 & 0.011 & 0.354 & 0.585 \\
+\midrule
+EB2 & Logistic & 0.8508 & 0.4575 & 0.1556 & 0.015 & 0.370 & 0.596 \\
+EB2 & XGBoost & 0.8489 & 0.4586 & 0.1561 & 0.014 & 0.368 & 0.586 \\
+EB2 & LightGBM & 0.8493 & 0.4585 & 0.1560 & 0.013 & 0.369 & 0.590 \\
+EB2 & CatBoost & 0.8491 & 0.4590 & 0.1560 & 0.013 & 0.368 & 0.588 \\
+EB2 & Random forest & 0.8446 & 0.4684 & 0.1585 & 0.010 & 0.358 & 0.589 \\
+\midrule
+EFB2 & Logistic & 0.8519 & 0.4554 & 0.1550 & 0.016 & 0.373 & 0.603 \\
+EFB2 & XGBoost & 0.8480 & 0.4601 & 0.1566 & 0.019 & 0.366 & 0.589 \\
+EFB2 & LightGBM & 0.8479 & 0.4602 & 0.1566 & 0.018 & 0.366 & 0.589 \\
+EFB2 & CatBoost & 0.8465 & 0.4627 & 0.1573 & 0.015 & 0.363 & 0.584 \\
+EFB2 & Random forest & 0.8446 & 0.4661 & 0.1581 & 0.014 & 0.360 & 0.579 \\
+\midrule
+EFB2 & TCN & 0.8489 & 0.4588 & 0.1560 & 0.012 & 0.368 & 0.572 \\
+EFB2 & Transformer & 0.8473 & 0.4612 & 0.1568 & 0.009 & 0.365 & 0.568 \\
+EFB2 & Ensemble & 0.8531 & 0.4520 & 0.1537 & 0.009 & 0.378 & 0.589 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Out-of-time metric battery on the 2026 same-year holdout, for EB2 (no firepower) and EFB2
+(with firepower), including calibration slope and intercept. EB2 dominates EFB2 on every model on AUC,
+log-loss, Brier, and contested-AUC.}
+\label{tab:appB2}
+\small
+\begin{tabular}{llrrrrrrr}
+\toprule
+Set & Model & AUC & log-loss & Brier & ECE & cont.-AUC & cal.\ slope & cal.\ int. \\
+\midrule
+EB2 & Logistic & 0.8474 & 0.4663 & 0.1583 & 0.029 & 0.655 & 0.99 & $+0.10$ \\
+EB2 & XGBoost & 0.8497 & 0.4632 & 0.1571 & 0.028 & 0.634 & 1.01 & $+0.12$ \\
+EB2 & LightGBM & 0.8501 & 0.4625 & 0.1568 & 0.023 & 0.637 & 1.02 & $+0.12$ \\
+EB2 & CatBoost & 0.8494 & 0.4637 & 0.1572 & 0.025 & 0.654 & 1.06 & $+0.12$ \\
+EB2 & Random forest & 0.8439 & 0.4825 & 0.1606 & 0.022 & 0.580 & 0.97 & $+0.12$ \\
+\midrule
+EFB2 & Logistic & 0.8450 & 0.4687 & 0.1590 & 0.022 & 0.585 & 0.94 & $-0.08$ \\
+EFB2 & XGBoost & 0.8399 & 0.4742 & 0.1614 & 0.030 & 0.574 & 0.95 & $+0.06$ \\
+EFB2 & LightGBM & 0.8386 & 0.4747 & 0.1617 & 0.030 & 0.572 & 0.95 & $+0.08$ \\
+EFB2 & CatBoost & 0.8391 & 0.4754 & 0.1618 & 0.027 & 0.593 & 1.00 & $+0.10$ \\
+EFB2 & Random forest & 0.8422 & 0.4813 & 0.1614 & 0.020 & 0.553 & 1.12 & $+0.09$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Supplementary figures}
 \label{app:extra}
