@@ -43,7 +43,7 @@
 
 % DRAFT VERSION. Bump this on every substantive revision, add a CHANGELOG row,
 % git-tag it, and rebuild the zip. The version is stamped on the title page.
-\newcommand{\draftversion}{v6}
+\newcommand{\draftversion}{v7}
 
 \title{\textbf{Where Win Probability Comes From, and Where It Breaks}\\[2mm]
 \large Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check
@@ -847,13 +847,36 @@ situationally-gated, frequently-\texttt{NaN} features are exactly what a gradien
 model overfits: EF $<$ E on every booster, significantly so on CatBoost ($-0.0026$). And
 because v2 kept the \emph{sums}, the count confound survives.
 
+\paragraph{v3: opponent-quality weighting does not help either.}
+The natural repair for the confound is to re-encode the prior so that it measures skill rather than
+headcount. We tested the strongest such candidate: weighting each player's statistics by their team's
+HLTV world ranking (weight $1/\log_2(\text{rank}+1)$, with $1/\text{rank}$ and a linear scheme as
+alternatives), on the reasoning that a rating earned on a top team should count for more than the same
+rating on a weaker team. It does not help. On a common EB2 base, no firepower encoding, neither the v2
+raw sum nor any of the three v3 weightings, produces an AUC gain over the skill-free model whose paired
+bootstrap interval excludes zero, for any of the five models (Fig.~\ref{fig:fpenc}); the v3 variants are
+statistically indistinguishable from v2. The result is intuitive in hindsight: HLTV rating already
+adjusts for opponent quality when it is computed, so re-weighting by team rank adds no independent
+information and, with steeper weightings, discards some.
+
 \paragraph{Summary.}
-F$-$A is significant only on logistic regression ($+0.0022$, CI $0.0003$--$0.0045$); on
-XGBoost, LightGBM and CatBoost the CI includes zero. Adding firepower on top of the other
-pillars (EF$-$E) is $\approx 0$ everywhere. We considered a per-capita re-encoding (mean
-rather than sum) to break the confound and did not pursue it, because
-Sect.~\ref{sec:holdout} revealed that the pillar's \emph{binding} constraint is not its
-encoding at all.
+Firepower carries a marginal signal over bare economy (the F versus A comparison is significant for
+logistic regression, $+0.0022$, 95\% CI $0.0003$ to $0.0045$), but that signal vanishes once the
+demo-derived pillars are present: on the EB2 base, no encoding of the prior improves on the skill-free
+model in-sample (Fig.~\ref{fig:fpenc}), and Sect.~\ref{sec:lagged} shows that every encoding degrades
+the model out-of-time. The pillar's binding constraint is therefore not its encoding but its content:
+the observable match state already absorbs whatever team-quality signal an external skill prior can
+provide.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.82\textwidth]{F9_firepower_encodings.png}
+\caption{AUC gain over EB2 (no firepower) for every firepower encoding and model, in-sample, with
+paired match-level bootstrap 95\% intervals. The v2 raw sum and the three team-ranking-weighted v3
+variants all produce intervals that cross zero on every model: no encoding of the skill prior
+significantly improves on the demo-only model.}
+\label{fig:fpenc}
+\end{figure}
 
 \subsection{What the models actually use}
 \label{sec:importance}

@@ -188,6 +188,34 @@ contested-specialist/next-engagement and duel-level sub-studies (plan Study 2A /
 
 ---
 
+## v7 — 2026-07-29 — arXiv candidate: firepower v3, verified citations, professionalization
+
+Tag: `paper-v7` · Zip: `CS2_winprob_overleaf_v7.zip` · Class: `article`
+
+**This is the first arXiv-candidate draft.** Combines several strands:
+
+- **Firepower v3 (team-ranking-weighted), full benchmark, Fig. F9.** Leu added a v3 encoding that
+  weights each player's stats by their team's HLTV world ranking. The full paired-CI benchmark
+  (`src/models/firepower_v3_full.py`, all 5 models x 5 encodings on a common EB2 base) shows **no
+  firepower encoding (v2 or any v3 weighting) beats the skill-free EB2 model in-sample** — every paired
+  ΔAUC-vs-EB2 interval crosses zero — and v3 is indistinguishable from v2. Firepower section updated;
+  the negative verdict is now comprehensive (no encoding helps in-sample, all degrade out-of-time).
+- **All citations verified** against arXiv/DBLP/publisher; fabricated `choi2023esports` removed and the
+  claim re-cited to Guo et al.; LightGBM/CatBoost added; `\cite` wired through related work, models,
+  evaluation.
+- **Professionalization:** cut the "Chronology" lab-notebook section; removed all 156 em-dashes to
+  submission register (LaTeX environments verified balanced).
+- Studies 1 & 2 (residual analysis, contested ceiling) integrated in v6 remain (Figs F7, F8).
+
+**Re-upload to Overleaf.** main.tex + refs.bib + one new figure F9_firepower_encodings.png (F7/F8
+already present since v6). Or upload the fresh zip.
+
+**Still open before submission.** Leu's affiliation + author order; PARCC acknowledgement; Appendix B
+full metric tables (currently a \todo); a final read-through. Optional: GAT out-of-time; duel-level
+sub-study.
+
+---
+
 ## vNext — template (copy this block, don't edit v1)
 
 ```

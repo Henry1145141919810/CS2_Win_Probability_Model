@@ -132,10 +132,26 @@ function as a alive-player counter), but this does not transfer to new matches w
 
 ---
 
+## Full benchmark (2026-07-29, supersedes the proxy comparison above)
+
+`src/models/firepower_v3_full.py`: all 5 models x 5 firepower encodings on a **common EB2 base**
+(so the comparison isolates the firepower encoding, not territory), full metric battery + **paired
+match-level bootstrap CIs** vs EB2 and vs v2. `outputs/firepower_v3_full.csv`, Fig. F9.
+
+**Result: no firepower encoding beats EB2 on any model.** Every paired ΔAUC-vs-EB2 interval includes
+zero, for v2 and all three v3 weightings, on all five models. Example (logreg): EB2 0.8508; EB2+v2
+0.8519 (+0.0011, CI −0.0006..+0.0029, ns); EB2+v3-log2 0.8516 (+0.0008, ns); v3-linear 0.8525 (+0.0017,
+CI −0.0002..+0.0035, ns). v3 is statistically **indistinguishable from v2** (all vs-v2 CIs include
+zero); on the clean EB2 base the earlier "v3 strictly worse" reading (which compared v3 against EFB2,
+i.e. v2 *plus territory*) does not hold. Either way the conclusion is the same and stronger: firepower
+does not significantly improve the model in **any** encoding in-sample, and it degrades it out-of-time.
+
 ## Verdict
 
-**V3 is a negative result.** The team-ranking-weighted encoding is strictly worse than the raw sum
-in-sample, and the raw sum already fails out-of-time. No further firepower variants are planned.
+**V3 is a negative result, and the full paired-CI benchmark makes it comprehensive:** no encoding of
+the skill prior (v2 raw sum, or v3 team-ranking-weighted with any of three weightings) significantly
+beats the demo-only EB2 model in-sample, and all degrade it out-of-time. No further firepower variants
+are planned.
 
 The infrastructure (player_team_year.csv, team_rankings.csv, firepower_v3.py) is kept in
 the repository for reproducibility but is not used in any trained model.
