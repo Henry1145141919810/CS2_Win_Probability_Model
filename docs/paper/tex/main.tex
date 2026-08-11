@@ -43,7 +43,7 @@
 
 % DRAFT VERSION. Bump this on every substantive revision, add a CHANGELOG row,
 % git-tag it, and rebuild the zip. The version is stamped on the title page.
-\newcommand{\draftversion}{v8}
+\newcommand{\draftversion}{v9}
 
 \title{\textbf{Where Win Probability Comes From, and Where It Breaks}\\[2mm]
 \large Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check
@@ -213,6 +213,22 @@ comparable across matches: a nav-mesh area index, a zone label and a control fra
 only mean the same thing across two matches if the geometry is identical. Generalising
 across maps is left to future work (Sect.~\ref{sec:limitations}).
 
+\subsection{Match selection (inclusion criteria)}
+\label{sec:selection}
+The selection rule is fixed in advance and applied uniformly, so the corpus is reproducible
+rather than curated. We include every \textit{de\_inferno} map played at a defined set of
+\textbf{Tier-1 events} from 2024--2025: the four Valve Majors of the period (PGL Major
+Copenhagen 2024, Perfect World Shanghai Major 2024, BLAST Austin Major 2025, StarLadder
+Budapest Major 2025) together with the top-tier IEM, ESL Pro League, BLAST Premier, and PGL
+circuit stops (IEM Katowice, Cologne, Dallas, Chengdu; ESL Pro League Seasons 20--21; BLAST
+Premier Spring/Fall/World Finals; PGL Cluj-Napoca 2025). We take \emph{every} Inferno map
+from these events, including both mirror demos of a match where both were recorded, and apply
+no filtering on team strength, round count, or outcome. A demo is dropped only if it fails
+the mechanical validation below, never for its content. Under this rule 264 Inferno demos are
+collected and 44 are removed by validation, leaving the 220 used throughout. The full list,
+with event, stage, and result for each demo, is released with the code so the corpus can be
+reconstructed exactly.
+
 Parsed demos are written to columnar \emph{channels}, ticks, rounds, bomb events,
 kills, smokes, and the feature assembler joins them per snapshot. Keeping the channels
 separate rather than materialising one wide table early is what later made the
@@ -265,16 +281,21 @@ them in. This sounds paranoid; it took one near-miss to justify.
 \label{sec:features}
 
 We organise 115 features into four pillars. Feature-set names used throughout:
-\textbf{A} = economy; \textbf{E} = A + map control + tactical/bomb;
+\textbf{A} = economy and combat state; \textbf{E} = A + map control + tactical/bomb;
 \textbf{EB2} = E + defuse-race; \textbf{F} = A + firepower; \textbf{EF} / \textbf{EFB2}
 = the corresponding combinations with firepower.
 
-\subsection{Pillar 1, Economy and combat (17 features)}
+\subsection{Pillar 1, Economy and combat state (17 features)}
 \label{sec:pillar1}
-The literature baseline: equipment value, health, armour, players alive, defuse kits,
-score, time elapsed, bomb-planted flag. All quantities are aggregated over \emph{alive}
-players only, a dead player's rifle is not a resource. This pillar alone reaches AUC
-$0.8465$ and is the yardstick every other pillar is measured against.
+The literature baseline. Despite the conventional name ``economy'', this pillar covers the
+full basic game state, not only money: equipment value, health, armour, players alive,
+defuse kits, score, time elapsed, and the bomb-planted flag. We keep the name ``economy''
+(abbreviated \textbf{A}) for continuity with prior work, but the reader should note that
+combat-state variables such as players alive, team health, and round time live here, and
+they are what most of the pillar's predictive power comes from. All quantities are
+aggregated over \emph{alive} players only, since a dead player's rifle is not a resource.
+This pillar alone reaches AUC $0.8465$ and is the yardstick every other pillar is measured
+against.
 
 \subsection{Pillar 2, Map control, three ways}
 \label{sec:pillar2}
@@ -305,27 +326,39 @@ comparison clean.
     window of 15\,s without needing re-checking; the FOV test then only gates
     \emph{re-acquiring} neglected space, not \emph{holding} space already taken; and a
     player always holds his immediate surroundings regardless of where he is looking.
-    Stateful within a round.
+    Stateful within a round. The 15\,s window is motivated by the map's geometry: an
+    opponent cannot teleport across cleared ground, so a corridor a team has just held
+    remains effectively theirs for the time it would take an enemy to physically traverse
+    and re-contest it. A short memory therefore encodes control that persists between
+    glances, whereas the instantaneous grey model discards it the moment a player looks
+    away. We fixed the window at 15\,s, near the lower end of the range over which the
+    territory features are most predictive, so that the memory reflects realistic
+    traversal times on \textit{de\_inferno} rather than an arbitrary long horizon.
 \end{description}
 
 Figure~\ref{fig:mapcompare} makes the difference concrete, and is worth studying before
 reading the ablation in Sect.~\ref{sec:mapcontrol}. Voronoi (top row) partitions the
 \emph{entire} map, CT 67\,\%, then 64\,\%, then 44\,\% as the T side takes space. The
-grey model (bottom row) says something completely different about the same three
-moments: CT control is only 10\,\%, 16\,\%, 7\,\%, and \textbf{74--82\,\% of the map is
-grey}, genuinely held by nobody. The grey figure is unmistakably the truer picture of
-Counter-Strike. Sect.~\ref{sec:mapcontrol} shows it is the worse predictor.
+grey model (middle row) says something completely different about the same three
+moments: instantaneous CT control is only 15\,\%, 20\,\%, 11\,\%, and most of the map is
+grey, genuinely held by nobody. The grey surface is unmistakably the truer picture of
+Counter-Strike, yet Sect.~\ref{sec:mapcontrol} shows it is the worse predictor. The
+territory model (bottom row) restores stability: with a short memory of cleared space,
+CT control recovers to 24\,\%, 44\,\%, 27\,\%, tracking the Voronoi trend without
+Voronoi's physical implausibility.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{mapcontrol_compare_faze-vs-g2-m1-inferno_r5.png}
-\caption{The same round, three moments, two control models. \textbf{Top:} Voronoi
-proximity control partitions the whole map (CT 67\,\%/64\,\%/44\,\%). \textbf{Bottom:}
-the LOS+FOV+smoke ``grey'' model, which additionally requires line-of-sight, facing, and
-no smoke occlusion, 74--82\,\% of the map is grey, held by nobody. Blue = CT, orange =
-T, purple = contested, grey = neutral; short lines show facing; white discs are smokes.
-The bottom row is a far better description of what the players actually control. It is
-also the \emph{worse} predictor (Table~\ref{tab:mapcontrol}).}
+\caption{The same round (FaZe vs G2, round 5) at three moments, under the three control
+models. \textbf{Top:} Voronoi proximity control partitions the whole map. \textbf{Middle:}
+the instantaneous LOS+FOV+smoke ``grey'' model, which additionally requires line-of-sight,
+facing, and no smoke occlusion; most of the map is grey, held by nobody. \textbf{Bottom:}
+the territory model (grey plus a 15\,s memory of cleared space), which recovers a stable,
+Voronoi-like reading without awarding unseen ground. Blue = CT, orange = T, purple =
+contested, grey = neutral; short lines show facing; white discs are smokes. The grey row is
+the most faithful description of what players can contest at an instant, but the territory
+row is what predicts the round (Table~\ref{tab:mapcontrol}).}
 \label{fig:mapcompare}
 \end{figure}
 
@@ -388,8 +421,8 @@ because the \emph{reasons} they fail are informative and generalise.
 
 A pre-round skill prior from HLTV per-player statistics, joined on
 $(\text{steamid}, \text{year})$, keyed by year because skill drifts season to season
-and a 2024 rating is not a 2026 rating. We built two versions and report both, because
-the progression is part of the finding.
+and a 2024 rating is not a 2026 rating. We built three versions and report all of them,
+because the progression is part of the finding.
 
 \paragraph{Firepower v1 (9 features).}
 Sums of HLTV Rating, ADR and KAST over the players currently alive on each side, plus a
@@ -404,6 +437,19 @@ lone survivor contributes his Clutching statistic and has Entry/Trading suppress
 player with teammates alive contributes Entry and Trading; Opening statistics apply only
 when both sides are still 5-alive and an opening duel is actually possible. It adds an
 AWP-holder ``sniping'' role flag and a grenade-value-weighted utility term.
+
+\paragraph{Firepower v3 (18 features), opponent-quality weighting.}
+The individual HLTV rating does not distinguish the calibre of the team a player performs
+against: a 1.05 rating earned on the top-ranked team means more than the same figure on the
+thirtieth. v3 addresses this by re-computing every v2 statistic with a per-player
+\emph{team-ranking weight}, $w = 1/\log_2(\text{rank}+1)$, so that a player on the
+top-ranked team contributes at full weight ($w=1$) and one on a rank-30 team at roughly a
+fifth ($w \approx 0.20$). Team rank is resolved through a player-to-team-per-year table and
+an HLTV team-ranking table; players with no team record receive a rank-35-equivalent weight.
+We also test two alternative weightings, $1/\text{rank}$ and a linear $(31-\text{rank})/30$.
+Sect.~\ref{sec:firepower} reports the benchmark: no weighting scheme, and no version (v1, v2,
+or v3), significantly improves on the skill-free model, on any architecture. The team-ranking
+idea is sound, but the data does not support it.
 
 \paragraph{Why this pillar is structurally different, and why that turned out to matter.}
 Pillars 1--3 are computed \emph{from the demo itself}: every input is present in the
@@ -435,20 +481,24 @@ does nothing.
 All trained on GPU (NVIDIA B200, PARCC Betty cluster).
 
 \begin{itemize}
-  \item \textbf{Causal TCN.} The round is a sequence of per-second feature vectors.
-    Dilated causal convolutions (dilations 1/2/4) ensure the prediction at second $t$
-    attends only to $t' \le t$: no within-round look-ahead. Sequence-to-sequence, one
-    probability per second. This model can in principle learn \emph{momentum}, which the
-    per-snapshot models can only see through our hand-built trend and volatility features.
+  \item \textbf{Causal TCN} (Temporal Convolutional Network \cite{bai2018tcn}), a
+    convolutional sequence model. The round is a sequence of per-second feature vectors, and
+    dilated causal convolutions (dilations 1/2/4) ensure the prediction at second $t$ attends
+    only to $t' \le t$: no within-round look-ahead. Sequence-to-sequence, one probability per
+    second. This model can in principle learn \emph{momentum}, which the per-snapshot models can
+    only see through our hand-built trend and volatility features.
   \item \textbf{Causal Transformer encoder.} Same input, causal self-attention mask,
     sinusoidal positional encodings.
-  \item \textbf{GAT (player graph).} The only model that consumes the \emph{raw per-player
-    trajectory}, position, velocity, view angle, health, armour, equipment, kit, side,
-    for up to 10 alive players, rather than aggregates. Masked multi-head self-attention
-    over the player set (a graph attention network on the complete player graph),
-    permutation-invariant, masked mean-pooled to a round-state embedding. If any
-    architecture were going to discover spatial structure our engineered features miss, it
-    is this one.
+  \item \textbf{GAT (player graph)} \cite{velickovic2018gat}. A graph attention network that
+    consumes the \emph{raw per-player} state, one node per player carrying position, velocity,
+    view angle, health, armour, equipment, kit, and side, for up to 10 alive players. The other
+    models are not blind to health or equipment; the economy pillar already gives them
+    \emph{team-aggregated} totals (team health, total equipment value, players alive). The
+    distinction is that the GAT sees these quantities \emph{per player and with spatial
+    position}, rather than as team sums, so it alone could in principle exploit which specific
+    player, in which location, holds what. Masked multi-head self-attention over the player set,
+    permutation-invariant, is masked mean-pooled to a round-state embedding. If any architecture
+    were going to discover spatial structure our engineered features miss, it is this one.
 \end{itemize}
 
 \subsection{Ensemble (1)}
@@ -628,7 +678,14 @@ places the two defuse-race margins at the top, and these have the lowest economy
 $0.15$), meaning they are largely orthogonal to economy and carry genuinely new information
 (Fig.~\ref{fig:residual}, right). Features such as the nearest counter-terrorist's distance to the bomb
 rank high in raw importance but have a high economy $R^2$ (approximately $0.69$), indicating that much
-of their apparent value is economy re-encoded. This mirrors the firepower count confound of
+of their apparent value is economy re-encoded.\footnote{This is not because money predicts distance.
+Recall (Sect.~\ref{sec:pillar1}) that the ``economy'' pillar includes combat-state variables such as
+players alive, team health, and round time. Those strongly constrain the nearest-CT distance: with five
+counter-terrorists spread across the map the closest one is usually near the bomb, whereas with one
+alive it can be anywhere, and once the bomb is planted the distance is measured to a fixed site.
+Fig.~\ref{fig:shapdist} shows this directly, its points coloured by the number of counter-terrorists
+alive. The distance is therefore largely a function of headcount and round phase, which the economy
+pillar already carries.} This mirrors the firepower count confound of
 Sect.~\ref{sec:firepower} and confirms the defuse-race feature as a source of orthogonal, transferable
 signal.
 
@@ -756,10 +813,20 @@ small pooled AUC gains.} This is another reason the pooled number is a poor lens
 \subsection{Bomb geometry: the defuse race}
 \label{sec:bomb}
 
-\texttt{defuse\_time\_margin} (Eq.~\ref{eq:defuse}) is \textbf{permutation-importance rank
-\#8 of 68}, the strongest single feature added after economy. Adding the bomb-live pillar
-(set EB2) is significant on \emph{every} architecture (all bootstrap CIs exclude zero), and
-the gain is concentrated exactly where the physics says it should be:
+Recall the defuse-race feature \texttt{defuse\_time\_margin} from Eq.~\ref{eq:defuse}: the fuse
+time remaining minus the time the nearest counter-terrorist needs to reach the bomb and defuse
+it. It is positive when a defuse is still physically possible and negative when it is not, so it
+encodes, in one number, whether the counter-terrorists can still win the post-plant. We measure
+each feature's importance by \emph{permutation importance}: we randomly shuffle that feature's
+column, breaking its link to the outcome, and record how much out-of-fold AUC drops; a large drop
+means the model relied on it. By this measure \texttt{defuse\_time\_margin} is \textbf{rank \#8 of
+68}. The seven features above it are all part of the economy and combat-state baseline (both
+sides' equipment value, both sides' team health, players alive, armour), so the defuse margin is
+the strongest single feature \emph{added on top of} that baseline. The residual analysis of
+Sect.~\ref{sec:residual} independently confirms it is also the most economy-orthogonal feature,
+i.e.\ the one carrying the most genuinely new information. Adding the bomb-live pillar (set EB2)
+is significant on \emph{every} architecture (all bootstrap CIs exclude zero), and the gain is
+concentrated exactly where the physics says it should be:
 
 \begin{itemize}
   \item \textbf{post-plant log-loss falls 7--8\,\%} (XGBoost: $0.187 \to 0.172$; post-plant
@@ -905,7 +972,7 @@ model, not of the game.}
 \label{fig:permimp}
 \end{figure}
 
-\subsection{Deep models: a statistical dead heat}
+\subsection{Deep models are statistically indistinguishable from the classical baseline}
 \label{sec:deep}
 
 \begin{table}[H]
@@ -964,7 +1031,7 @@ learn (trend and volatility for the TCN, zone control for the GAT) and 220 match
 in particular to pull ahead given an order of magnitude more matches, precisely because it is
 the only model with access to information the feature engineering discards.
 
-\paragraph{The dead heat persists out-of-time.}
+\paragraph{The equivalence persists out-of-time.}
 We also evaluated the TCN and Transformer on the 2026 holdout (they consume every feature column,
 so they are the deep analogue of the all-pillar EFB2 configuration). On the same-year holdout the
 TCN reaches AUC $0.8443$ (95\,\% CI $0.825$--$0.862$) and the Transformer $0.8448$ ($0.826$--$0.863$), landing exactly on the classical EFB2 out-of-time number ($0.8450$, logistic) with fully
@@ -1282,8 +1349,9 @@ you that you need them}.
 \begin{enumerate}
   \item \textbf{Single map.} All results are \textit{de\_inferno}. Spatial features are
     map-specific by construction; multi-map generalisation is untested.
-  \item \textbf{Scale.} 220 matches, $\approx 4{,}900$ rounds. The deep-model dead heat is a
-    statement about this regime and should not be read as a general claim.
+  \item \textbf{Scale.} 220 matches, $\approx 4{,}900$ rounds. The statistical equivalence of the
+    deep and classical models is a statement about this regime and should not be read as a general
+    claim.
   \item \textbf{Firepower leakage, and the train/serve skew of the fix.} Same-era player ratings are
     partly computed from the matches being predicted; the lagged-prior variant (Sect.~\ref{sec:lagged})
     is the clean construction and is what we recommend acting on. Its one caveat is that the models are
@@ -1329,7 +1397,12 @@ defuse-race inequality) are the ones computed directly from the game itself.
 
 % =====================================================================
 \section*{Acknowledgements}
-\todo{PARCC allocation acknowledgement, required by their terms of use.}
+The deep-learning experiments were performed on the Betty cluster of the Performant Advanced Research
+Computing Center (PARCC) at the University of Pennsylvania, and we gratefully acknowledge the computing
+allocation and support that made them possible. We thank the awpy maintainers for the demo-parsing
+library and HLTV for the publicly available player statistics used to construct the firepower pillar.
+\todo{Confirm the exact PARCC/Betty acknowledgement wording against their current code-of-conduct /
+acceptable-use page before submission; adjust the centre's official name if needed.}
 
 \bibliographystyle{plain}
 \bibliography{refs}
@@ -1351,7 +1424,10 @@ metrics on fixed out-of-fold predictions. For the holdout, the 27 test matches a
 unit.
 
 \paragraph{Compute.} Classical models train on a laptop CPU in minutes. The three deep models were
-trained on an NVIDIA B200 (PARCC Betty). \todo{exact wall-clock and epochs}
+trained on a single NVIDIA B200 GPU (PARCC Betty). Each was trained for up to 40 epochs with early
+stopping (patience 6) on an inner validation split, which in practice halted near epoch 15. At roughly
+0.3--0.4\,s per epoch, a full 5-fold cross-validation completes in a few minutes of GPU time per model,
+so the deep-model cost is modest despite the GPU requirement.
 
 \section{Full metric battery}
 \label{app:metrics}
@@ -1434,11 +1510,29 @@ EFB2 & Random forest & 0.8422 & 0.4813 & 0.1614 & 0.020 & 0.553 & 1.12 & $+0.09$
 \section{Supplementary figures}
 \label{app:extra}
 
-\todo{Candidates already rendered in \texttt{outputs/figures/}, not yet placed:
-\texttt{logistic\_coefficients.png} (the fitted linear model, directly interpretable);
-\texttt{plant\_spots.png} (where the bomb actually gets planted on Inferno, motivates the
-site-control zones); \texttt{shap\_beeswarm\_ET\_xgb.png} (global feature attribution);
-\texttt{mapcontrol\_snapshots\_faze-vs-g2\_r5.png}; the reliability-per-model grid; and the
-remaining win-probability case studies.}
+We include two model-interpretation figures that support the main-text claims but are not essential
+to follow the argument.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{logistic_coefficients.png}
+\caption{Standardised coefficients of the logistic regression (top 25 features, inputs $z$-scored so
+bar length is effect size per standard deviation; positive favours a CT win), coloured by pillar. The
+firepower features carry the largest in-sample coefficients, which superficially suggests a dominant
+skill effect; Sect.~\ref{sec:firepower} and the out-of-time holdout show these are the count-confounded
+features whose apparent importance does not transfer. The economy, defuse-race, and map-control features
+below them are the ones that generalise.}
+\label{fig:logcoef}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{shap_beeswarm_ET_xgb.png}
+\caption{Global SHAP attribution for the gradient-boosted model (set ET). Each point is one snapshot;
+horizontal position is the feature's SHAP contribution to $P(\text{CT win})$ and colour is the feature
+value. The ordering agrees with the permutation-importance analysis: the economy and combat-state
+variables dominate, with the defuse-race margin the strongest bomb-geometry contributor.}
+\label{fig:beeswarm}
+\end{figure}
 
 \end{document}

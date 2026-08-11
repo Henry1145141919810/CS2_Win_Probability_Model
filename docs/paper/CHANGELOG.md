@@ -234,6 +234,40 @@ Appendix C supplementary-figure placement (optional).
 
 ---
 
+## v9 — 2026-08-05 — proofreading pass (clarity, firepower v3, acknowledgements)
+
+Tag: `paper-v9` · Zip: `CS2_winprob_overleaf_v9.zip`
+
+**Changed (from Henry's proofread).**
+- Map-control figure regenerated to the 3-row Voronoi/grey/territory version (`mapcontrol_viz.py`);
+  caption and surrounding text updated to describe the territory row.
+- Added the rationale for the 15 s territory memory (map geometry: opponents cannot traverse cleared
+  ground instantly).
+- Renamed Pillar 1 "economy and combat state" and clarified it carries players-alive/health/time, not
+  only money; added a footnote at the residual analysis explaining why nearest-CT-distance has high
+  economy R² (headcount/phase, shown by Fig. 2's colouring).
+- Added Firepower v3 (team-ranking-weighted) to Sect. 4.4, with the benchmark verdict (no encoding
+  beats the skill-free model).
+- Tightened the GAT description so it no longer implies the other models lack HP/equipment (they have
+  team-aggregated totals; the GAT adds per-player + position).
+- Explained `defuse_time_margin` and permutation importance in plain words before the "rank #8 of 68"
+  claim; clarified that the seven features above it are the economy/combat baseline.
+- Added a "Match selection (inclusion criteria)" subsection: the fixed Tier-1 event list, take-every-
+  Inferno-map rule, 264→220 via validation, released list. A reproducible standard.
+- De-colloquialised the "dead heat" section title and phrases; glossed TCN (and LightGBM/XGBoost/
+  CatBoost already glossed).
+- Filled Appendix B \todo earlier (v8); now filled acknowledgements (PARCC allocation), deep-model
+  wall-clock/epochs, and placed two supplementary figures (logistic coefficients, SHAP beeswarm) in
+  Appendix C.
+
+**Re-upload to Overleaf.** main.tex + regenerated `mapcontrol_compare_faze-vs-g2-m1-inferno_r5.png`
+(+ `logistic_coefficients.png`, `shap_beeswarm_ET_xgb.png` if not already uploaded).
+
+**Still open (2 \todo, both need Henry).** Leu's affiliation/email; confirm exact PARCC/Betty
+acknowledgement wording against their code-of-conduct page.
+
+---
+
 ## vNext — template (copy this block, don't edit v1)
 
 ```
