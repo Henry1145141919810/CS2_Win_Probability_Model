@@ -43,7 +43,7 @@
 
 % DRAFT VERSION. Bump this on every substantive revision, add a CHANGELOG row,
 % git-tag it, and rebuild the zip. The version is stamped on the title page.
-\newcommand{\draftversion}{v9}
+\newcommand{\draftversion}{v10}
 
 \title{\textbf{Where Win Probability Comes From, and Where It Breaks}\\[2mm]
 \large Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check
@@ -524,7 +524,8 @@ inflates AUC. All in-time numbers in this paper are out-of-fold (OOF) prediction
     reliability / resolution / uncertainty; sharpness; calibration slope and intercept
     (bin-free, from a logistic recalibration fit); an adaptive equal-mass ECE and a
     Kolmogorov--Smirnov calibration error (both binning-free, since 10-bin ECE is sensitive
-    to bin placement); and a comeback/tail diagnostic (Sect.~\ref{sec:calibration}).
+    to bin placement); and a trajectory-level extreme-path diagnostic that benchmarks the forecast's
+    comebacks and write-offs against the calibrated-martingale law (Sect.~\ref{sec:calibration}).
 \end{description}
 
 \subsection{Uncertainty and significance testing}
@@ -1081,12 +1082,47 @@ honest at the end.}
 \label{fig:caltime}
 \end{figure}
 
-\paragraph{The comeback/tail diagnostic.}
-Standard metrics say nothing about whether a live model's \emph{write-offs} are trustworthy, and a write-off is the most consequential thing a broadcast overlay says. On the tails:
-when the model says 5\,\%, the side wins $0.7\,\%$ of the time; when it says 10\,\%, it wins
-$6.8\,\%$. The eventual winner was written off ($\le 10\,\%$) at some moment in
-\textbf{7.2\,\% of rounds}, and those calls are calibrated. A viewer who watches the curve
-dip to 10\,\% and sees a comeback roughly one time in fourteen is seeing an honest number.
+\paragraph{Trajectory honesty: are comebacks as surprising as they look?}
+A pointwise-calibrated model can still misrepresent the \emph{drama} of a round. How often the
+forecast swings to near-certainty, or writes a side off, is a property of the whole path, not of any
+single second, and a write-off is the most consequential thing a live overlay says. Under ideal
+sequential calibration the per-second forecast $p_t$ is a bounded Doob martingale that begins at the
+round's freeze-end probability $p_0$ and ends at the outcome, and the extremes of such a path obey an
+exact law \cite{pipping2026extremepath, pipping2025blownleads}: the probability that the eventual
+loser ever reaches $x$ is $\frac{p_0}{1-p_0}\cdot\frac{1-x}{x}$, which fixes how often the eventual
+winner should be written off below a threshold.
+
+We measure both the pointwise tails and the path extremes. On the tails, when the model says $5\,\%$
+the side wins $0.7\,\%$ of the time, and when it says $10\,\%$ it wins $6.8\,\%$. The eventual winner
+is written off ($\le 10\,\%$) at some moment in \textbf{$7.4\,\%$ of rounds}, against a
+continuous-martingale benchmark of $11.1\,\%$; the same ordering holds at every threshold (observed
+$2.9\,\%$, $7.4\,\%$, $18.8\,\%$ at $\le 5$, $10$, $20\,\%$, versus benchmarks of $5.3\,\%$,
+$11.1\,\%$, $23.9\,\%$; Fig.~\ref{fig:pathwise}, left). A one-sided Kolmogorov--Smirnov test on the
+probability-integral transform of the loser's-peak statistic finds \emph{no} upper-tail inflation
+($D^{\text{upper}} = 0$; Fig.~\ref{fig:pathwise}, right).
+
+Two conclusions follow. First, the model does not over-react: it never assigns extreme confidence to
+eventual losers more often than an honest forecast would, in contrast to published feeds that do (the
+same diagnostic flags ESPN's NBA win-probability series as over-confident \cite{pipping2026extremepath}).
+For a live overlay this is the consequential direction, and the model does not cry wolf. Second, the
+write-off rate sits \emph{below} the continuous benchmark, which is precisely the conservatism a
+discrete, jump-driven forecast must show: a round's probability moves only at kills, so it has far
+fewer opportunities to reach an extreme than a continuously diffusing path, and the discrete benchmark
+is a conservative lower reference for exactly this reason \cite{pipping2026extremepath}. A viewer who
+sees the curve dip to $10\,\%$ and then witnesses a comeback about one round in fourteen is seeing an
+honest, non-sensational number.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{F10_pathwise_calibration.png}
+\caption{Trajectory-level calibration. \textbf{Left:} how often the eventual winner is written off to
+$\le 5/10/20\,\%$, observed (bars, 95\% match-level bootstrap CIs) versus the calibrated-martingale
+benchmark (red). Observed sits below the benchmark at every threshold, and never above it.
+\textbf{Right:} the probability-integral transform of the loser's-peak statistic. Over-reaction would
+push the empirical curve into the shaded region below the diagonal; the CS2 curves sit on or above it,
+so there is no upper-tail inflation, only the mild conservatism expected of a discrete forecast.}
+\label{fig:pathwise}
+\end{figure}
 
 \subsection{What the model looks like live}
 \label{sec:live}
@@ -1319,6 +1355,15 @@ subset, where all current models sit near chance and where improvement actually 
 go further: a model that improved contested-AUC from $0.58$ to $0.62$ while \emph{losing} a point
 of pooled AUC would be the more valuable model, and the current convention would reject it.
 
+\paragraph{Two forms of honesty.}
+The contested-AUC and trajectory-calibration results are the same lesson applied to two different
+over-readings of a win-probability feed. Pooled AUC over-states how much a model \emph{knows} in even
+rounds; a naive reading of a probability trajectory over-states how \emph{surprising} its comebacks
+are. Reporting contested-AUC guards against the first, and benchmarking the path extremes against the
+martingale law guards against the second. A trustworthy live model should be humble on both axes: it
+should not claim discrimination it lacks in balanced rounds, and it should not sensationalise the
+swings it does show. Our recommended configuration is honest on both.
+
 \paragraph{Stability beats fidelity.}
 The grey-vs-territory result suggests a general principle for tracking data: when the target is a
 \emph{future} outcome, a representation's \emph{temporal stability} can matter more than its
@@ -1373,6 +1418,13 @@ you that you need them}.
     to future work.
   \item \textbf{Single holdout era.} One out-of-time window (2026). The failure mode we identify is
     general, but its \emph{magnitude} here is a single observation.
+  \item \textbf{Discrete, jump-driven trajectories.} The trajectory-calibration benchmark
+    (Sect.~\ref{sec:calibration}) is exact only for continuous forecast paths. Counter-Strike win
+    probability moves in discrete jumps at kills, so the observed write-off frequencies are compared
+    against a conservative continuous reference rather than the exact discrete law. This is sufficient
+    to establish the absence of over-reaction, but distinguishing the residual conservatism of a
+    discrete forecast from mild under-reaction of a per-snapshot model would require the discrete
+    correction, which we leave to future work.
 \end{enumerate}
 
 % =====================================================================

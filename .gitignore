@@ -125,3 +125,4 @@ cs2_share_bundle.zip
 
 # --- 2026 out-of-time holdout raw channels (isolated from training; regenerable from the bundle) ---
 data/holdout2026/
+outputs/pathwise_perround_*.parquet

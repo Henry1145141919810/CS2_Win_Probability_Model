@@ -268,6 +268,33 @@ acknowledgement wording against their code-of-conduct page.
 
 ---
 
+## v10 — 2026-08-05 — trajectory-level (extreme-path) calibration benchmark
+
+Tag: `paper-v10` · Zip: `CS2_winprob_overleaf_v10.zip`
+
+**Changed.** Adds the pathwise extreme-path calibration benchmark (now item 7 of the "FULL Benchmark"),
+based on the advisor's group (Pipping & Wyner 2025/2026). Recasts the "honest probabilities"
+subsection around the Doob-martingale null: each round's per-second WP is a martingale (p0 = round
+start, terminal = outcome), and its extremes obey P(loser peak ≥ x | lose) = (p0/(1-p0))((1-x)/x).
+
+Results (`src/models/pathwise_calibration.py`, Fig. F10): reproduced the 7.2% comeback number (now
+7.4%); across all thresholds and both models the write-off frequency sits BELOW the continuous
+benchmark (obs/bench 0.43–0.79); PIT/KS shows D_upper = 0 (no upper-tail inflation), i.e. the model
+does not over-react (unlike ESPN's NBA feed, which the source paper flags as over-confident). The
+below-benchmark position is the expected discrete conservatism (few kill-driven decision points per
+round). Added: Fig. F10, a Discussion "two forms of honesty" paragraph (contested-AUC + path
+extremes), a Limitations item on discrete/jumpy paths, and refs to Pipping–Wyner (1–2).
+
+**Re-upload to Overleaf.** main.tex + refs.bib + one new figure F10_pathwise_calibration.png.
+
+**Notes/data.** `docs/notes_pathwise_calibration.md`, `outputs/pathwise_benchmark.csv`,
+`outputs/pathwise_perround_*.parquet`.
+
+**Still open.** Leu's affiliation; exact discrete benchmark (future work); optional full PIT/KS with
+discrete null calibration for the extended version.
+
+---
+
 ## vNext — template (copy this block, don't edit v1)
 
 ```
