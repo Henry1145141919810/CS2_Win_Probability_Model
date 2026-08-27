@@ -184,7 +184,10 @@ def parse_one(dem_path: Path, out: Path, stride: int, overwrite: bool) -> str:
 
     stem = dem_path.stem
     targets = {ch: out / ch / f"{stem}.parquet" for ch in CHANNELS + DERIVED_CHANNELS}
-    if not overwrite and all(p.exists() for p in targets.values()):
+    # Skip-check on CHANNELS only: a match where nobody ever touched the bomb writes no
+    # `defuse` file at all (1 of the 32 2026 demos), and including it here would re-parse
+    # those demos on every run.
+    if not overwrite and all(targets[ch].exists() for ch in CHANNELS):
         return "skip"
 
     # CS2 GOTV is 64-tick; awpy's Demo() default of 128 is wrong (header carries no
