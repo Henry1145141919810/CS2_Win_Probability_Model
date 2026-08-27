@@ -64,9 +64,11 @@ def main():
         print(f"  n={i.height}  median progress={i['frac'].median():.2f}  max={i['frac'].max():.2f}")
         print(i.select(["match", "round_num", "dur", "had_kit", "frac"]).sort("frac", descending=True).head(10))
 
-    rows = n * 7.16  # avg attempt length; the rows where the feature is non-zero
-    print(f"\nsnapshots where the feature fires: ~{rows:.0f} "
-          f"({df['match'].n_unique()} demos)")
+    # snapshots the feature touches = total attempt seconds (ticks are sampled at 1 Hz)
+    tot = df["dur"].sum()
+    interrupted_secs = df.filter(pl.col("completed") == 0)["dur"].sum()
+    print(f"\nsnapshots where the feature fires: ~{tot:.0f} over {df['match'].n_unique()} demos"
+          f"  ({interrupted_secs:.0f} of them from INTERRUPTED attempts)")
 
 
 if __name__ == "__main__":
