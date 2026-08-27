@@ -342,3 +342,61 @@ Three things follow.
 The overfitting signature is visible directly: every FP set scores *higher* than EB2 on CV
 (0.8519–0.8520 vs 0.8508 for logreg) and *lower* out-of-time. That gap is the pillar's
 whole story.
+
+---
+
+## The whole exploration on one table — v1 / v2 / v3 / v4
+
+`src/models/eval_firepower_versions.py` → `outputs/firepower_versions.csv`.
+
+The four versions had never been compared to each other. Each was measured against a
+different baseline, on a table of a different vintage, and two of them have no out-of-time
+number at all:
+
+| version | recorded baseline | recorded metrics |
+|---|---|---|
+| v1 (`firepower_pillar.md` §5) | **A** (economy only, 17 cols) | CV AUC only |
+| v2 / v3 (`outputs/firepower_v3_full.csv`) | EB2 | CV AUC only |
+| v4 (§五 above) | EB2 | CV + OOT, **but trained on the holdout** |
+
+So "v1 gave +0.0019" and "v3 gave −0.0011" were never the same measurement. This run puts
+all four on one training table (clean220), one test set, one baseline (EB2), with CV *and*
+out-of-time. v1 is recomputed (`features/firepower_v1.py`, vectorised, verified row-for-row
+against the original per-snapshot function); v3 is derived as v2 × team weight, exact
+because every alive player on a side shares one team.
+
+**Δ vs EB2 (no firepower):**
+
+| | cols | ΔCV AUC | ΔCV cAUC | ΔOOT AUC | ΔOOT cAUC |
+|---|---|---|---|---|---|
+| **logreg** | | | | | |
+| +v1 raw sums | 81 | +0.0008 | +0.0031 | **−0.0000** | **−0.0042** |
+| +v2 sided sums | 92 | +0.0011 | +0.0091 | −0.0022 | −0.0658 |
+| +v3 rank-weighted | 90 | +0.0007 | +0.0049 | −0.0026 | −0.0449 |
+| +v4 means | 92 | +0.0012 | +0.0087 | −0.0016 | −0.0635 |
+| **xgb** | | | | | |
+| +v1 raw sums | 81 | +0.0001 | +0.0053 | −0.0228 | **−0.0076** |
+| +v2 sided sums | 92 | −0.0007 | +0.0066 | −0.0085 | −0.0392 |
+| +v3 rank-weighted | 90 | +0.0001 | +0.0122 | −0.0029 | **−0.0215** |
+| +v4 means | 92 | −0.0006 | +0.0026 | −0.0127 | −0.0313 |
+
+Three things this makes visible that no single-version run could.
+
+**1. Cross-validation endorsed all four; out-of-time rejected all four.** Every version
+improves CV cAUC (+0.003 to +0.012) and every version costs out-of-time cAUC (−0.004 to
+−0.066). The pillar's entire history is a sequence of redesigns validated on the metric
+that could not see the problem.
+
+**2. The crudest encoding does the least damage.** v1 — 9 columns, no side split, no gates,
+no weights — ties the baseline out-of-time on logreg (ΔAUC −0.0000, ΔcAUC −0.0042). v2's
+gating, v3's weighting and v4's normalisation each added columns and each made out-of-time
+worse than v1 did. The exploration moved away from the best-behaving version at step one.
+
+**3. v3 is the best of the elaborate encodings out-of-time**, not the negative result it was
+recorded as: ΔOOT cAUC −0.0215 (xgb) and −0.0449 (logreg), against v2's −0.0392 / −0.0658
+and v4's −0.0313 / −0.0635. Its CV cAUC gain is also the largest of any version on xgb
+(+0.0122). The team-ranking weight is doing real work; it is the sum encoding underneath it
+that is not.
+
+Caveat: 10 of 220 training matches could not have a team weight resolved and fall back to
+`DEFAULT_RANK = 35`, so v3's rows for those matches carry a flat weight.
