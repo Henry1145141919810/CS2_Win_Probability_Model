@@ -55,7 +55,45 @@ def set_parquet_root(root: Path) -> None:
     DEFUSE_DIR = root / "defuse"
 
 
+TEST_LIST = ROOT / "configs" / "demo_list_2026_test.csv"
 SMOKE_DUR_TICKS = 18 * 64  # CS2 smoke ~18s of vision block
+
+
+def _guard_test_demos(demos: list[str], parquet_root: Path | None) -> None:
+    """Refuse to fold out-of-time test demos into the TRAINING table.
+
+    This has already happened once: the 2026 demos were parsed into data/parquet/ (the
+    default --out of batch_parse.py), assemble.py globbed them like any other demo, and
+    the training table silently grew from 220 to 247 matches -- all 27 of them the 2026
+    holdout. Nothing in the pipeline errors on that path: the assemble runs, training
+    runs, evaluation runs, and the scores go UP. The only visible symptom was an
+    out-of-time AUC above the cross-validated one, which reads like good generalisation
+    unless you know to distrust it. On XGB it inflated contested-AUC by up to +0.176.
+
+    Only fires when assembling the default (training) tree; pointing --parquet-root at
+    data/holdout2026/parquet is exactly how the test set is built and must stay allowed.
+    """
+    if parquet_root is not None or not TEST_LIST.exists():
+        return
+    # The test list stores bare demo names; parsed files carry the collision-safe
+    # '<series_id>__<demname>' form (extract_demos.series_id), so compare on the suffix.
+    # A plain set intersection silently matches nothing -- which is one reason the real
+    # leak went unnoticed.
+    def _bare(name: str) -> str:
+        return name.split("__", 1)[1] if "__" in name else name
+
+    test_ids = {_bare(d) for d in pl.read_csv(TEST_LIST)["demo_id"].to_list()}
+    overlap = sorted(d for d in demos if _bare(d) in test_ids)
+    if not overlap:
+        return
+    listed = "\n  ".join(overlap[:10])
+    more = f"\n  ... and {len(overlap) - 10} more" if len(overlap) > 10 else ""
+    raise SystemExit(
+        f"\nREFUSING TO ASSEMBLE: {len(overlap)} out-of-time test demos are sitting in the "
+        f"training tree\n  {listed}{more}\n\n"
+        f"They are listed in {TEST_LIST.name}, so putting them in the training table would "
+        f"leak the holdout.\nMove them out of {ROUNDS_DIR.parent} (they belong under "
+        f"data/holdout2026/parquet), or pass --allow-test-demos if this is deliberate.\n")
 INTERACTION_COLS = ["ctrl_x_eveneco", "terr_x_eveneco",
                     "ctrl_x_equalalive", "terr_x_equalalive"]
 
@@ -150,6 +188,9 @@ def main():
     ap.add_argument("--parquet-root", type=Path, default=None,
                     help="parsed-parquet tree to assemble from (default: data/parquet). "
                          "Use data/holdout2026/parquet to rebuild the 2026 out-of-time test set.")
+    ap.add_argument("--allow-test-demos", action="store_true",
+                    help="assemble even if 2026 holdout demos are in the training tree "
+                         "(they leak the out-of-time test set; see _guard_test_demos)")
     ap.add_argument("--no-exclude", action="store_true",
                     help="skip configs/excluded_offlist.txt filtering (that list is training-only)")
     args = ap.parse_args()
@@ -165,6 +206,8 @@ def main():
         before = len(demos)
         demos = [d for d in demos if d not in excl]
         print(f"excluded {before - len(demos)} demos via {exclude_file.name}")
+    if not args.allow_test_demos:
+        _guard_test_demos(demos, args.parquet_root)
     if args.limit:
         demos = demos[: args.limit]
 
