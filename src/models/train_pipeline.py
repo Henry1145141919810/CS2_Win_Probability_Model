@@ -35,7 +35,8 @@ from features.mapcontrol import (MAPCONTROL_COLS, MAPCONTROL_LOS_COLS,  # noqa: 
 from features.positional import TACTICAL_COLS  # noqa: E402
 from features.bomb import (BOMB_COLS, BOMB_LIVE_COLS, BOMB_DEFUSE_COLS,  # noqa: E402
                            BOMB_PROGRESS_COLS)
-from features.firepower import FIREPOWER_COLS  # noqa: E402
+from features.firepower import (FIREPOWER_COLS,  # noqa: E402
+                                FIREPOWER_MEAN_COLS)
 from features.assemble import INTERACTION_COLS  # noqa: E402
 
 TACTICAL = TACTICAL_COLS + BOMB_COLS
@@ -66,11 +67,21 @@ FEATURE_SETS = {
     # --- defuse PROGRESS (in-flight defuse timer). Quarantined on purpose: a defuse that
     # completes IS the CT win, so these sets are an ablation ("how much of the endgame is
     # already implied by geometry?"), never the source of a headline map-control number.
-    "EB3": (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL
-            + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS + BOMB_PROGRESS_COLS),   # EB2 + defuse progress
+    # Named *D (not EB3/EFB3) because firepower v4 claims EFB3 for its mean-encoded variant;
+    # duplicate keys in a dict literal overwrite silently, with no error to notice.
+    # --- firepower v4: mean-encoded pillar (docs/notes_firepower_v4.md). Same 20 columns
+    # as FIREPOWER_COLS but divided by n_with_stats, removing the headcount confound that
+    # made the summed encoding largely a restatement of ct_players_alive.
+    "EB2_FPmean": (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + BOMB_LIVE_COLS
+                   + BOMB_DEFUSE_COLS + FIREPOWER_MEAN_COLS),          # EB2 + mean FP
     "EFB3": (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + TERRITORY_COLS
-             + FIREPOWER_COLS + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS
-             + BOMB_PROGRESS_COLS),                                      # EFB2 + defuse progress
+             + FIREPOWER_MEAN_COLS + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS),  # EFB2 w/ mean FP
+
+    "EB2D": (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL
+             + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS + BOMB_PROGRESS_COLS),  # EB2 + defuse progress
+    "EFB2D": (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + TERRITORY_COLS
+              + FIREPOWER_COLS + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS
+              + BOMB_PROGRESS_COLS),                                     # EFB2 + defuse progress
 }
 WINDOWS = [5, 10, 15, 20, 25]
 

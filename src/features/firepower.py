@@ -97,6 +97,7 @@ def firepower_features(snap: pl.DataFrame, match_id: str) -> dict:
 
         rating_sum = adr_sum = kast_sum = kast_n = fp_sum = 0.0
         entry_sum = trading_sum = opening_sum = weighted_util = 0.0
+        n_with_stats = 0   # alive players actually found in the HLTV table (the mean divisor)
         clutch_score = nan
         awp_skill = nan
 
@@ -104,6 +105,7 @@ def firepower_features(snap: pl.DataFrame, match_id: str) -> dict:
             stats = lookup.get((int(sid), year))
             if stats is None:
                 continue
+            n_with_stats += 1
 
             teammates_alive = n - 1
 
@@ -146,8 +148,44 @@ def firepower_features(snap: pl.DataFrame, match_id: str) -> dict:
         out[f"{pfx}_awp_sniping_skill"] = awp_skill
         out[f"{pfx}_weighted_utility"] = weighted_util
 
+        # --- v4: mean-normalised variants (see docs/notes_firepower_v4.md) --------------
+        # The sums are confounded with headcount: every pro rating is ~1.0, so a sum over
+        # n alive players re-encodes n, which the model already sees as ct_players_alive.
+        # The divisor is n_with_stats, NOT n: players missing from the HLTV table never
+        # entered the sums, so dividing by n would penalise their teammates for their
+        # absence. That distinction is not cosmetic -- on the 2026 set 8.4% of snapshots
+        # have alive players and a rating_sum of 0 (nobody on that side is in the table),
+        # which n_with_stats correctly reports as NaN and n would report as 0.0.
+        d = n_with_stats
+        out[f"{pfx}_rating_mean"] = rating_sum / d if d else nan
+        out[f"{pfx}_adr_mean"] = adr_sum / d if d else nan
+        out[f"{pfx}_fp_mean"] = fp_sum / d if d else nan
+        out[f"{pfx}_entry_mean"] = entry_sum / d if d else nan
+        out[f"{pfx}_trading_mean"] = trading_sum / d if d else nan
+        out[f"{pfx}_opening_mean"] = (opening_sum / d) if (is_opening and d) else nan
+        out[f"{pfx}_utility_mean"] = weighted_util / d if d else nan
+        out[f"{pfx}_n_with_stats"] = d   # HLTV coverage of this side, for diagnostics
+
     return out
 
+
+# v4 mean-encoded pillar: 14 means + 6 columns that are already per-player values.
+# kast_mean / clutch_score / awp_sniping_skill are shared with FIREPOWER_COLS unchanged.
+FIREPOWER_MEAN_COLS = [
+    "ct_rating_mean", "t_rating_mean",
+    "ct_adr_mean", "t_adr_mean",
+    "ct_kast_mean", "t_kast_mean",                    # already a mean in v2
+    "ct_fp_mean", "t_fp_mean",
+    "ct_entry_mean", "t_entry_mean",
+    "ct_trading_mean", "t_trading_mean",
+    "ct_opening_mean", "t_opening_mean",
+    "ct_clutch_score", "t_clutch_score",              # lone-survivor individual value
+    "ct_awp_sniping_skill", "t_awp_sniping_skill",    # individual value
+    "ct_utility_mean", "t_utility_mean",
+]
+# HLTV coverage per side. Not a skill feature -- kept out of FIREPOWER_MEAN_COLS so it can
+# be inspected without entering a model by accident.
+FIREPOWER_COVERAGE_COLS = ["ct_n_with_stats", "t_n_with_stats"]
 
 FIREPOWER_COLS = [
     "ct_rating_sum", "t_rating_sum",
