@@ -29,25 +29,30 @@ from features.mapcontrol import (control_features, control_trend,  # noqa: E402
                                  control_volatility, contest_control, TerritoryControl)
 from features.positional import tactical_features  # noqa: E402
 from features.bomb import (plant_info, bomb_features,  # noqa: E402
-                          BombTracker, bomb_live_features, defuse_race_features,
-                          DefuseTracker, defuse_progress_features)
+                          BombTracker, bomb_live_features, defuse_race_features)
+from features.defuse import (DefuseTracker, defuse_progress_features,  # noqa: E402
+                            attempts_by_round)
 from features.firepower import firepower_features  # noqa: E402
 
 ROUNDS_DIR = ROOT / "data" / "parquet" / "rounds"
 TICKS_DIR = ROOT / "data" / "parquet" / "ticks"
 BOMB_DIR = ROOT / "data" / "parquet" / "bomb"
 SMOKES_DIR = ROOT / "data" / "parquet" / "smokes"
+# derived channel: one row per defuse ATTEMPT (tick-exact start). Absent from older parsed
+# trees -> the defuse-progress columns stay 0 there instead of silently losing precision.
+DEFUSE_DIR = ROOT / "data" / "parquet" / "defuse"
 OUT = ROOT / "data" / "training_dataset.parquet"
 
 
 def set_parquet_root(root: Path) -> None:
     """Point the assembler at a DIFFERENT parsed-parquet tree (e.g. the isolated 2026 holdout at
     data/holdout2026/parquet). Keeps the out-of-time test set strictly separate from training."""
-    global ROUNDS_DIR, TICKS_DIR, BOMB_DIR, SMOKES_DIR
+    global ROUNDS_DIR, TICKS_DIR, BOMB_DIR, SMOKES_DIR, DEFUSE_DIR
     ROUNDS_DIR = root / "rounds"
     TICKS_DIR = root / "ticks"
     BOMB_DIR = root / "bomb"
     SMOKES_DIR = root / "smokes"
+    DEFUSE_DIR = root / "defuse"
 
 
 SMOKE_DUR_TICKS = 18 * 64  # CS2 smoke ~18s of vision block
@@ -77,6 +82,9 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
     bomb_raw = pl.read_parquet(BOMB_DIR / f"{match_id}.parquet")
     bomb_plants = plant_info(bomb_raw)
     smokes_by_round = _smokes_by_round(match_id)
+    defuse_f = DEFUSE_DIR / f"{match_id}.parquet"
+    defuse_by_round = attempts_by_round(
+        pl.read_parquet(defuse_f) if defuse_f.exists() else None)
 
     rows = []
     ct_score = t_score = 0  # cumulative side wins BEFORE current round
@@ -89,8 +97,7 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
         terr = TerritoryControl()  # stateful map control w/ memory+decay (per round)
         bomb_round = bomb_raw.filter(pl.col("round_num") == rn)
         bomb_track = BombTracker(bomb_round)
-        # defuse ATTEMPTS of this round (bomb events preferred; per-tick is_defusing fallback)
-        defuse_track = DefuseTracker(bomb_round, rt)
+        defuse_track = DefuseTracker(defuse_by_round.get(rn))
         for tick in sorted(rt["tick"].unique().to_list()):
             snap = rt.filter(pl.col("tick") == tick)
             if snap.height < 2:
@@ -112,7 +119,7 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
             bmb = bomb_features(snap, bomb_plants.get(rn), tick)
             bmb_live = bomb_live_features(snap, bomb_track, bomb_plants.get(rn), tick)
             bmb_def = defuse_race_features(snap, bomb_plants.get(rn), tick)
-            bmb_prog = defuse_progress_features(snap, defuse_track, bomb_plants.get(rn), tick)
+            bmb_prog = defuse_progress_features(defuse_track, bomb_plants.get(rn), tick)
             fp = firepower_features(snap, match_id)
             # interactions: control matters MORE when the round is even (else economy decides)
             even_eco = 1.0 - min(1.0, abs(feats["ct_equipment_value"]

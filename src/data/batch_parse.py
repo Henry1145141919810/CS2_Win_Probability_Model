@@ -39,6 +39,10 @@ FAIL_LOG = ROOT / "failed_demos.txt"
 # smokes/infernos (tiny: position + start/end tick per nade) enable smoke-aware LOS.
 # grenades (per-tick trajectories, ~446MB, unused) is dropped to keep parsed data lean.
 CHANNELS = ["ticks", "kills", "rounds", "bomb", "smokes", "infernos"]
+# Channels we DERIVE rather than read off awpy. `defuse` is one row per defuse ATTEMPT,
+# computed from the full-resolution tick stream before downsampling (see _defuse_attempts).
+DERIVED_CHANNELS = ["defuse"]
+DEFUSE_PROP = "is_defusing"
 
 # Focused player props (subset of awpy DEFAULT_PLAYER_PROPS) — enough for all 4 pillars.
 # team_clan_name is needed to track each TEAM through the halftime side-swap (labels are
@@ -47,6 +51,12 @@ PLAYER_PROPS = [
     "team_name", "team_clan_name", "X", "Y", "Z", "health", "armor_value",
     "inventory", "current_equip_value", "has_defuser", "has_helmet",
     "last_place_name", "flash_duration",
+    # is_defusing: per-tick "this player is holding the defuse right now"
+    # (engine field CCSPlayerPawn.m_bIsDefusing). The bomb event stream carries only
+    # bomb_defused -- awpy's parse_bomb() hardcodes 5 events and bomb_begindefuse comes
+    # back EMPTY even when requested explicitly -- so this prop is the ONLY source for
+    # when a defuse STARTS, and the only way to see attempts that FAILED.
+    "is_defusing",
     # facing + movement (added for FOV/grey control + influence model)
     "yaw", "pitch", "velocity_X", "velocity_Y", "velocity_Z",
 ]
@@ -111,6 +121,59 @@ def _downsample_ticks(ticks, stride: int):
     return ticks.filter(((pl.col(col) - t0) % stride) == 0)
 
 
+def _defuse_attempts(ticks, bomb_df):
+    """One row per defuse ATTEMPT, derived from the FULL-RESOLUTION tick stream.
+
+    MUST run before _downsample_ticks. The project's time convention is uniform --
+    every time feature is `(snapshot_tick - reference_tick) / 64` against a reference
+    that lives in a NON-downsampled table (rounds.freeze_end in economy.py,
+    bomb.plant tick in bomb.py). At 1 Hz the exact defuse start is gone forever, so
+    this channel IS that reference table for the defuse timer: it keeps the tick-exact
+    start so `defuse_elapsed_sec` has the same 1/64 s precision as `time_elapsed_sec`
+    and `defuse_time_margin`.
+
+    An attempt = a maximal run of consecutive ticks where one player has is_defusing
+    set. Verified on a real demo: runs are perfectly contiguous (no flicker) and a
+    kit defuse is exactly 320 ticks = 5.000 s.
+
+    Columns: round_num, steamid, start_tick, end_tick, n_ticks, had_kit, completed.
+    `completed` = a bomb 'defuse' event lands on the attempt's end (it fires at
+    end_tick + 1); everything else is an attempt the Ts interrupted.
+    """
+    import polars as pl
+
+    if ticks is None or len(ticks) == 0 or DEFUSE_PROP not in ticks.columns:
+        return None
+    cols = [c for c in ("tick", "steamid", "round_num", "has_defuser") if c in ticks.columns]
+    t = (ticks.filter(pl.col(DEFUSE_PROP).cast(pl.Boolean, strict=False))
+              .select(cols).sort(["steamid", "tick"]))
+    if t.is_empty():
+        return None
+    # run-length encode: a new attempt starts when the player changes or the ticks break
+    t = t.with_columns([
+        (pl.col("steamid") != pl.col("steamid").shift(1)).fill_null(value=True).alias("_newp"),
+        ((pl.col("tick") - pl.col("tick").shift(1)) > 1).fill_null(value=True).alias("_gap"),
+    ])
+    t = t.with_columns((pl.col("_newp") | pl.col("_gap")).cast(pl.Int32).cum_sum().alias("_run"))
+    agg = [pl.col("steamid").first(), pl.col("tick").min().alias("start_tick"),
+           pl.col("tick").max().alias("end_tick"), pl.len().alias("n_ticks")]
+    if "round_num" in cols:
+        agg.append(pl.col("round_num").first())
+    if "has_defuser" in cols:
+        agg.append(pl.col("has_defuser").first().alias("had_kit"))
+    g = t.group_by("_run").agg(agg).sort("start_tick").drop("_run")
+
+    # completed? the bomb 'defuse' event fires one tick after the last defusing tick
+    done = set()
+    if bomb_df is not None and len(bomb_df) and "event" in bomb_df.columns:
+        done = set(bomb_df.filter(pl.col("event") == "defuse")["tick"].to_list())
+    return g.with_columns(
+        pl.col("end_tick")
+          .map_elements(lambda e: int(any(abs(x - e) <= 2 for x in done)),
+                        return_dtype=pl.Int32)
+          .alias("completed"))
+
+
 def parse_one(dem_path: Path, out: Path, stride: int, overwrite: bool) -> str:
     from awpy import Demo
     try:
@@ -120,7 +183,7 @@ def parse_one(dem_path: Path, out: Path, stride: int, overwrite: bool) -> str:
     awpy_patch.apply()  # fixes int-encoded winner column on some demos
 
     stem = dem_path.stem
-    targets = {ch: out / ch / f"{stem}.parquet" for ch in CHANNELS}
+    targets = {ch: out / ch / f"{stem}.parquet" for ch in CHANNELS + DERIVED_CHANNELS}
     if not overwrite and all(p.exists() for p in targets.values()):
         return "skip"
 
@@ -129,7 +192,19 @@ def parse_one(dem_path: Path, out: Path, stride: int, overwrite: bool) -> str:
     dem = Demo(dem_path, tickrate=64)
     dem.parse(player_props=PLAYER_PROPS, other_props=WORLD_PROPS)
 
+    # DERIVED first: needs the tick stream at full 64 Hz, before downsampling below.
     written = 0
+    att = _defuse_attempts(_table(dem, "ticks"), _table(dem, "bomb"))
+    if att is not None and len(att):
+        targets["defuse"].parent.mkdir(parents=True, exist_ok=True)
+        att.write_parquet(targets["defuse"])
+        written += 1
+        n_done = int(att["completed"].sum())
+        print(f"    defuse: {len(att)} attempts ({n_done} completed, "
+              f"{len(att) - n_done} interrupted)")
+    else:
+        print(f"    [warn] {stem}: no defuse attempts found", file=sys.stderr)
+
     for ch in CHANNELS:
         df = _table(dem, ch)
         if df is None or len(df) == 0:
