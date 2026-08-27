@@ -30,27 +30,42 @@ _NEAR = 500.0
 CT_SPEED = 250.0         # ~run speed (u/s) for a rough defuse-race time
 BOMB_LOCAL_RADIUS = 600.0  # "around the bomb" neighbourhood
 
-# area-id lookup structures (built once)
-_nav = load_nav()
-_area_ids = list(_nav.areas.keys())
-_cents, _sizes, _ = nav_grid()
-_tree = cKDTree(_cents[:, :2])
-_id_centroid = {aid: np.array([a.centroid.x, a.centroid.y]) for aid, a in _nav.areas.items()}
+# Area-id lookup structures, built once on FIRST USE rather than at import.
+# Deferred deliberately: these need ~/.awpy/navs/de_inferno.json, and awpy's data mirror is
+# gone, so on a machine without that file an import-time build made every module that merely
+# imports a column list from here -- train_pipeline, calibration, the viz scripts -- fail on
+# import, including runs that touch no nav-derived feature at all. Now only the functions
+# that actually need the mesh pay for it.
+@lru_cache(maxsize=1)
+def _nav_state():
+    nav = load_nav()
+    cents, sizes, _ = nav_grid()
+    return {
+        "nav": nav,
+        "area_ids": list(nav.areas.keys()),
+        "cents": cents,
+        "sizes": sizes,
+        "tree": cKDTree(cents[:, :2]),
+        "id_centroid": {aid: np.array([a.centroid.x, a.centroid.y])
+                        for aid, a in nav.areas.items()},
+    }
 
 
 def _area_of(x: float, y: float) -> int:
-    return _area_ids[_tree.query([x, y])[1]]
+    st = _nav_state()
+    return st["area_ids"][st["tree"].query([x, y])[1]]
 
 
 @lru_cache(maxsize=200_000)
 def _path_dist(a_id: int, b_id: int) -> float:
     """Nav-mesh shortest-path distance (sum of centroid hops). Euclid fallback."""
+    st = _nav_state()
     try:
-        path = _nav.find_path(a_id, b_id, weight="dist")
+        path = st["nav"].find_path(a_id, b_id, weight="dist")
     except Exception:
         path = None
     if not path or len(path) < 2:
-        return float(np.linalg.norm(_id_centroid[a_id] - _id_centroid[b_id]))
+        return float(np.linalg.norm(st["id_centroid"][a_id] - st["id_centroid"][b_id]))
     d = 0.0
     for p, q in zip(path[:-1], path[1:]):
         d += math.dist((p.centroid.x, p.centroid.y), (q.centroid.x, q.centroid.y))
@@ -163,14 +178,16 @@ def _local_control(bx, by, px, py, teams):
     """Area-weighted CT/T Voronoi control among nav areas within BOMB_LOCAL_RADIUS of (bx,by)."""
     if not np.isfinite(bx) or not np.isfinite(by) or len(px) == 0:
         return float("nan"), float("nan")
-    near = (_cents[:, 0] - bx) ** 2 + (_cents[:, 1] - by) ** 2 <= BOMB_LOCAL_RADIUS ** 2
+    st = _nav_state()
+    cents, sizes = st["cents"], st["sizes"]
+    near = (cents[:, 0] - bx) ** 2 + (cents[:, 1] - by) ** 2 <= BOMB_LOCAL_RADIUS ** 2
     idx = np.where(near)[0]
     if idx.size == 0:                       # bomb far from any centroid -> nearest area
-        idx = np.array([int(np.argmin((_cents[:, 0] - bx) ** 2 + (_cents[:, 1] - by) ** 2))])
+        idx = np.array([int(np.argmin((cents[:, 0] - bx) ** 2 + (cents[:, 1] - by) ** 2))])
     teams = _norm_side(teams)
     ptree = cKDTree(np.column_stack([np.asarray(px, float), np.asarray(py, float)]))
-    owner = teams[ptree.query(_cents[idx, :2])[1]]
-    w = _sizes[idx]
+    owner = teams[ptree.query(cents[idx, :2])[1]]
+    w = sizes[idx]
     tot = w.sum()
     ct = float(w[owner == "CT"].sum() / tot)
     t = float(w[owner == "T"].sum() / tot)
