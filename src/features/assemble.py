@@ -29,7 +29,8 @@ from features.mapcontrol import (control_features, control_trend,  # noqa: E402
                                  control_volatility, contest_control, TerritoryControl)
 from features.positional import tactical_features  # noqa: E402
 from features.bomb import (plant_info, bomb_features,  # noqa: E402
-                          BombTracker, bomb_live_features, defuse_race_features)
+                          BombTracker, bomb_live_features, defuse_race_features,
+                          DefuseTracker, defuse_progress_features)
 from features.firepower import firepower_features  # noqa: E402
 
 ROUNDS_DIR = ROOT / "data" / "parquet" / "rounds"
@@ -86,7 +87,10 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
                           & (pl.col("tick") <= rr["end"]))
         ctrl_series = []  # CT overall control over the round, for trend/volatility
         terr = TerritoryControl()  # stateful map control w/ memory+decay (per round)
-        bomb_track = BombTracker(bomb_raw.filter(pl.col("round_num") == rn))
+        bomb_round = bomb_raw.filter(pl.col("round_num") == rn)
+        bomb_track = BombTracker(bomb_round)
+        # defuse ATTEMPTS of this round (bomb events preferred; per-tick is_defusing fallback)
+        defuse_track = DefuseTracker(bomb_round, rt)
         for tick in sorted(rt["tick"].unique().to_list()):
             snap = rt.filter(pl.col("tick") == tick)
             if snap.height < 2:
@@ -108,6 +112,7 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
             bmb = bomb_features(snap, bomb_plants.get(rn), tick)
             bmb_live = bomb_live_features(snap, bomb_track, bomb_plants.get(rn), tick)
             bmb_def = defuse_race_features(snap, bomb_plants.get(rn), tick)
+            bmb_prog = defuse_progress_features(snap, defuse_track, bomb_plants.get(rn), tick)
             fp = firepower_features(snap, match_id)
             # interactions: control matters MORE when the round is even (else economy decides)
             even_eco = 1.0 - min(1.0, abs(feats["ct_equipment_value"]
@@ -121,7 +126,7 @@ def assemble_demo(match_id: str) -> pl.DataFrame | None:
                 "terr_x_equalalive": ter["ct_terr_deficit"] * equal_alive,
             }
             rows.append({"match_id": match_id, "tick": tick, **feats, **mc, **ter,
-                         **inter, **tac, **bmb, **bmb_live, **bmb_def, **fp,
+                         **inter, **tac, **bmb, **bmb_live, **bmb_def, **bmb_prog, **fp,
                          "ct_won": label})
         # update running score AFTER the round
         if rr["winner"] == "ct":

@@ -21,12 +21,12 @@ import polars as pl
 from scipy.spatial import cKDTree
 
 from features.mapcontrol import load_nav, nav_grid, _norm_side
+from features.defuse import (BOMB_TIMER_SEC, DEFUSE_KIT_SEC,  # noqa: F401  (re-exported)
+                            DEFUSE_NOKIT_SEC, DefuseTracker,
+                            defuse_progress_features, BOMB_PROGRESS_COLS)
 
 SITE_CODE = {"BombsiteA": 0, "BombsiteB": 1}
 _NEAR = 500.0
-BOMB_TIMER_SEC = 40.0    # CS2 C4 fuse
-DEFUSE_KIT_SEC = 5.0     # defuse time with kit
-DEFUSE_NOKIT_SEC = 10.0  # without kit
 CT_SPEED = 250.0         # ~run speed (u/s) for a rough defuse-race time
 BOMB_LOCAL_RADIUS = 600.0  # "around the bomb" neighbourhood
 

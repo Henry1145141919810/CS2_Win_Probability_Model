@@ -33,7 +33,8 @@ from features.economy import ECONOMY_COLS  # noqa: E402
 from features.mapcontrol import (MAPCONTROL_COLS, MAPCONTROL_LOS_COLS,  # noqa: E402
                                  TERRITORY_COLS, TERRITORY_ZONE_COLS)
 from features.positional import TACTICAL_COLS  # noqa: E402
-from features.bomb import BOMB_COLS, BOMB_LIVE_COLS, BOMB_DEFUSE_COLS  # noqa: E402
+from features.bomb import (BOMB_COLS, BOMB_LIVE_COLS, BOMB_DEFUSE_COLS,  # noqa: E402
+                           BOMB_PROGRESS_COLS)
 from features.firepower import FIREPOWER_COLS  # noqa: E402
 from features.assemble import INTERACTION_COLS  # noqa: E402
 
@@ -62,6 +63,14 @@ FEATURE_SETS = {
              + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS),  # full + defuse-race v2
     "EFB2": (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + TERRITORY_COLS  # ALL pillars:
              + FIREPOWER_COLS + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS),  # +firepower +bomb defuse-race
+    # --- defuse PROGRESS (in-flight defuse timer). Quarantined on purpose: a defuse that
+    # completes IS the CT win, so these sets are an ablation ("how much of the endgame is
+    # already implied by geometry?"), never the source of a headline map-control number.
+    "EB3": (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL
+            + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS + BOMB_PROGRESS_COLS),   # EB2 + defuse progress
+    "EFB3": (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + TERRITORY_COLS
+             + FIREPOWER_COLS + BOMB_LIVE_COLS + BOMB_DEFUSE_COLS
+             + BOMB_PROGRESS_COLS),                                      # EFB2 + defuse progress
 }
 WINDOWS = [5, 10, 15, 20, 25]
 
