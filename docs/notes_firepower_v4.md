@@ -365,6 +365,14 @@ out-of-time. v1 is recomputed (`features/firepower_v1.py`, vectorised, verified 
 against the original per-snapshot function); v3 is derived as v2 × team weight, exact
 because every alive player on a side shares one team.
 
+**Read the contested-AUC column first.** The paper's own argument is that "contested-AUC,
+not pooled AUC, is the metric a live model should be judged on" (draft §1) and that "pooled
+AUC systematically flatters win-probability models" (§3.2). The code comment calling
+AUC/Brier/log-loss "primary" is about comparability with the Xenopoulos/ESTA baseline, not
+about which metric carries the argument. On pooled AUC the firepower effect looks
+negligible; on contested-AUC it is not, and the gap between those two readings is the
+paper's thesis applied to its own pillar.
+
 **Δ vs EB2 (no firepower):**
 
 | | cols | ΔCV AUC | ΔCV cAUC | ΔOOT AUC | ΔOOT cAUC |
@@ -400,3 +408,31 @@ that is not.
 
 Caveat: 10 of 220 training matches could not have a team weight resolved and fall back to
 `DEFAULT_RANK = 35`, so v3's rows for those matches carry a flat weight.
+
+### On the paper's metric: how much contested-round signal each version costs
+
+contested-AUC has a floor of 0.5, so the quantity that matters is the distance above chance.
+Out-of-time, against EB2:
+
+| | OOT cAUC | Δ | share of the signal above chance that is lost |
+|---|---|---|---|
+| **logreg** — baseline 0.6551 (0.1551 above chance) | | | |
+| +v1 raw sums | 0.6510 | −0.0042 | **3%** |
+| +v2 sided sums | 0.5894 | −0.0658 | **42%** |
+| +v3 rank-weighted | 0.6103 | −0.0449 | **29%** |
+| +v4 means | 0.5916 | −0.0635 | **41%** |
+| **xgb** — baseline 0.6278 (0.1278 above chance) | | | |
+| +v1 raw sums | 0.6202 | −0.0076 | 6% |
+| +v2 sided sums | 0.5886 | −0.0392 | 31% |
+| +v3 rank-weighted | 0.6063 | −0.0215 | 17% |
+| +v4 means | 0.5965 | −0.0313 | 25% |
+
+On the paper's main model, adding firepower v2 or v4 destroys about **40% of the model's
+discriminating power in the rounds the paper says matter** — while the same change moves
+pooled AUC by −0.002, which reads as noise. That is exactly the failure mode §3.2 describes,
+occurring inside the project's own feature pillar.
+
+It also re-scores the versions. v1 costs 3%; every redesign after it costs 25–42%. And v3,
+filed as a negative result, is the least harmful of the three elaborate encodings on both
+models — the ranking weight is the one idea in the sequence that helps, sitting on top of a
+sum encoding that does not.
