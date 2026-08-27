@@ -1,0 +1,11 @@
+set,model,training_data,n_matches,oot_auc,oot_cauc
+EB2,logreg,leaked_247,247,0.8513,0.6699
+EB2,logreg,clean_220,220,0.8474,0.6551
+EB2_FPmean,logreg,leaked_247,247,0.8512,0.6146
+EB2_FPmean,logreg,clean_220,220,0.8458,0.5916
+EB2,xgb,leaked_247,247,0.8678,0.7378
+EB2,xgb,clean_220,220,0.8498,0.6278
+EB2_FPmean,xgb,leaked_247,247,0.8784,0.7554
+EB2_FPmean,xgb,clean_220,220,0.8370,0.5965
+EFB2,xgb,leaked_247,247,0.8793,0.7603
+EFB2,xgb,clean_220,220,0.8411,0.5844

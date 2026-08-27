@@ -37,8 +37,12 @@ from sklearn.preprocessing import StandardScaler
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 from features.assemble_defuse_pilot import PILOT_SETS  # noqa: E402
+from models.train_pipeline import FEATURE_SETS  # noqa: E402
 
 DATA = ROOT / "data" / "holdout2026" / "pilot_defuse.parquet"
+# PILOT_SETS are the nav-free sets usable on the pilot table; FEATURE_SETS are the real
+# ones, usable once the nav-derived columns are joined in (pilot_full.parquet).
+ALL_SETS = {**FEATURE_SETS, **PILOT_SETS}
 
 
 def fit_predict(df: pl.DataFrame, cols: list[str], folds: list[np.ndarray]) -> np.ndarray:
@@ -82,7 +86,10 @@ def main():
     print(f"{'set':<6}{'#feat':>6}{'AUC':>8}{'logloss':>9}{'Brier':>8}   |"
           f"{'  defusing rows: logloss':>24}{'Brier':>8}{'mean p':>8}")
     for name in args.sets.split(","):
-        cols = [c for c in PILOT_SETS[name] if c in df.columns]
+        cols = [c for c in ALL_SETS[name] if c in df.columns]
+        missing = [c for c in ALL_SETS[name] if c not in df.columns]
+        if missing:
+            print(f"  [warn] {name}: {len(missing)} columns absent, e.g. {missing[:3]}")
         p = fit_predict(df, cols, folds)
         preds[name] = p
         row = (f"{name:<6}{len(cols):>6}{roc_auc_score(y, p):>8.4f}"
