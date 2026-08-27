@@ -155,7 +155,24 @@ section records what could and could not be reproduced on the shared checkout, p
 findings that change how the results should be read. Code for all of it is on the
 `exp/defuse-time` branch.
 
-## Finding 1 — the 2026 OOT table's firepower is computed from **2024** stats
+## Finding 1 — CORRECTED: the stale-year table is the June bundle, not the one used above
+
+*(Superseded by the drive check on 2026-08-27. Kept because the diagnosis method is the
+same one that found the leak below.)*
+
+The 2026 table distributed in `cs2_test_bundle_2026.zip` (July, 115 columns) resolves its
+skill prior to **2024**, not 2026 — proven by recomputing `firepower_features()` at three
+lags and matching the shipped values exactly at 2024 (max diff 0.0000, 100%), while 2025
+and 2026 miss by up to 1.2. Cause: `year_for_match()` falls back to `DEFAULT_YEAR = 2024`
+for demos missing from `configs/demo_year_map.csv`.
+
+**But the table the §五 benchmark actually used is the rebuilt one (2026-08-25, 129
+columns), and that one resolves to 2026 correctly** (100% match at lag 0, zero rows with
+alive players and `rating_sum = 0`). So the stale year was already fixed before §五 ran,
+and it does not explain the OOT results. §六.1's statement that the OOT benchmark uses
+2026 stats is correct for that table. What does explain them is Finding 5.
+
+### Original text (applies only to the July bundle)
 
 `data/test_dataset_2026.parquet` was assembled with the skill prior resolved to **2024**,
 not 2026. Proven by recomputing `firepower_features()` at three lags against the shipped
@@ -252,3 +269,76 @@ awpy's data mirror is dead. Both benchmarks need a machine with the 129-column t
 
 `configs/hltv_rankings.csv` in the file index above does not exist; the rankings actually
 come from `configs/team_rankings.csv` via `firepower_v3._team_rank_lookup()`.
+
+
+## Finding 5 — the §五 benchmark trained on the out-of-time holdout
+
+`training_dataset.parquet` on the other machine holds **247 matches / 531,866 rows**, not
+220 / 476,595. The 27 extra matches are the entire 2026 holdout, present row-for-row
+(tick, ct_won, ct_players_alive, ct_equipment_value, ct_rating_mean all identical).
+
+**How.** The 2026 demos were parsed into `data/parquet/` — the default `--out` of
+`batch_parse.py` — where 32 files with "2026" in the name still sit. `assemble.py` globs
+that directory, `configs/excluded_offlist.txt` has two entries and neither is one of them,
+and the 27 that pass round validation went into the table. Nothing on that path errors.
+
+**Confirmed by reproduction.** Re-running the benchmark on the shipped table reproduces
+§五 exactly (EB2/logreg OOT 0.8513 vs 0.8513; EB2/XGB 0.8678 vs 0.8676; EB2_FPmean/XGB
+0.8784 vs 0.8792). Re-running with the 27 matches removed reproduces the *paper's* record
+instead (EB2/logreg OOT 0.8474 — the published value to four decimals).
+
+**Cost, measured:**
+
+| set / model | leaked OOT AUC | clean | Δ | leaked OOT cAUC | clean | Δ |
+|---|---|---|---|---|---|---|
+| EB2 / logreg | 0.8513 | 0.8474 | −0.0039 | 0.6699 | 0.6551 | −0.0148 |
+| EB2 / xgb | 0.8676 | 0.8498 | −0.0178 | 0.7371 | 0.6278 | **−0.1093** |
+| EFB2 / xgb | 0.8780 | 0.8411 | −0.0369 | 0.7601 | 0.5844 | **−0.1757** |
+| EB2_FPmean / xgb | 0.8792 | 0.8370 | −0.0422 | 0.7611 | 0.5965 | **−0.1646** |
+
+Trees are hit far harder than the linear model (they can memorise; logreg mostly cannot),
+and the more features a set has the more it gains from the leak. The one visible symptom
+was **OOT scoring above CV** (XGB 0.8676 vs 0.8516) — impossible for a genuine holdout, and
+gone once the leak is removed (0.8498 vs 0.8493).
+
+**All eight rows of §五 are void.** Guard added in `assemble.py` (`_guard_test_demos`); it
+compares on the bare demo name, because `demo_list_2026_test.csv` stores names without the
+`<series_id>__` prefix that parsed files carry, so a plain intersection matches nothing.
+
+## Clean re-run — `outputs/firepower_mean_benchmark_clean220.csv`
+
+Training: `data/training_dataset_clean220.parquet` (220 matches, identical match set to the
+paper's). Test: the 2026-08-25 table (2026 stats, verified above).
+
+| set | model | CV AUC | CV cAUC | OOT AUC | OOT cAUC |
+|---|---|---|---|---|---|
+| EB2 | logreg | 0.8508 | 0.5963 | **0.8474** | **0.6551** |
+| EB2 | xgb | 0.8493 | 0.5862 | **0.8498** | 0.6278 |
+| EFB2 | logreg | 0.8519 | 0.6035 | 0.8450 | 0.5851 |
+| EFB2 | xgb | 0.8483 | 0.5875 | 0.8411 | 0.5844 |
+| EB2_FPmean | logreg | 0.8520 | 0.6050 | 0.8458 | 0.5916 |
+| EB2_FPmean | xgb | 0.8487 | 0.5887 | 0.8370 | 0.5965 |
+| EFB3 | logreg | 0.8520 | 0.6026 | 0.8457 | 0.5874 |
+| EFB3 | xgb | 0.8482 | 0.5886 | 0.8382 | 0.5974 |
+
+**Firepower does not help in any configuration — it costs.** Relative to EB2:
+
+| | logreg AUC | logreg cAUC | xgb AUC | xgb cAUC |
+|---|---|---|---|---|
+| EFB2 (sum) | −0.0024 | −0.0700 | −0.0087 | −0.0434 |
+| EB2_FPmean (mean) | −0.0016 | −0.0635 | −0.0127 | −0.0313 |
+| EFB3 | −0.0017 | −0.0677 | −0.0115 | −0.0304 |
+
+Three things follow.
+
+1. **Conclusion 4 above survives, strengthened.** The skill prior does not merely add
+   nothing once the demo-derived features are present; out-of-time it actively hurts.
+2. **The §五 claim that "XGB extracts incremental signal from FP" is refuted.** Clean XGB
+   loses 0.030–0.043 contested-AUC when firepower is added, in every encoding.
+3. **Mean encoding is a real but small improvement over sums, and only for XGB**
+   (cAUC −0.031 vs −0.043; AUC is slightly worse). It fixes the count confound without
+   making the pillar useful — which is conclusion 1 above, now on clean data.
+
+The overfitting signature is visible directly: every FP set scores *higher* than EB2 on CV
+(0.8519–0.8520 vs 0.8508 for logreg) and *lower* out-of-time. That gap is the pillar's
+whole story.
