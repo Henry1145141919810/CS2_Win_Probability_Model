@@ -207,12 +207,17 @@ def main():
     ap.add_argument("--sets", default="A,B")
     ap.add_argument("--bootstrap", type=int, default=0,
                     help="match-level block-bootstrap B iterations for AUC + (set-A) diff CIs")
+    ap.add_argument("--data", type=Path, default=DATA,
+                    help="training table to read (default: data/training_dataset.parquet). "
+                         "Point this at an experimental table (e.g. one assembled from a "
+                         "re-parsed tree) instead of overwriting the table the published "
+                         "numbers came from.")
     args = ap.parse_args()
     models = args.models.split(",")
     sets = args.sets.split(",")
 
-    df = pl.read_parquet(DATA)
-    print(f"data: {df.height} snapshots, {df['match_id'].n_unique()} matches, "
+    df = pl.read_parquet(args.data)
+    print(f"data: {args.data.name} — {df.height} snapshots, {df['match_id'].n_unique()} matches, "
           f"ct_won={df['ct_won'].mean():.3f}\n")
 
     # --- overall metrics + DeLong vs set A ---
