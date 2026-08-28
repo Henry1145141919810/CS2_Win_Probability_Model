@@ -15,10 +15,25 @@ Per snapshot (post-plant, while an attempt is live; 0 everywhere else):
   - defuse_in_progress     : is someone on the bomb right now
   - defuse_elapsed_sec     : seconds into the CURRENT attempt          <- the feature
   - defuse_progress_frac   : elapsed / required, kit-aware, in [0,1]
-  - defuse_beats_fuse      : remaining defuse time fits in the remaining fuse
-  - defuse_attempts_so_far : attempts STARTED this round up to now (>1 = an earlier one failed)
+  - defuse_beats_fuse      : will the remaining defuse time fit inside the remaining fuse
 
-All five are 0 outside an attempt, which is the truthful value (no progress), so the
+`defuse_beats_fuse` looks redundant next to `defuse_in_progress` -- it is 1 on 616 of 631
+defusing rows -- but the 15 rows where it is 0 are the ones that decide the round: the
+defuse is running and the bomb explodes first. Measured, it is the single most valuable of
+these columns: on the pilot it takes log-loss over defusing rows from 0.1727 to 0.0605.
+
+It is also not learnable from what the model has. It compares the remaining defuse time
+against the remaining FUSE time, and "seconds since the plant" is in no feature set --
+`time_elapsed_sec` counts from freeze-end and `defuse_time_margin` folds the fuse into a
+distance term. Supplying the raw quantity does not help either: giving logreg a
+`fuse_time_left` column instead moved log-loss only 0.1727 -> 0.1719, because a linear
+model cannot express a threshold comparison at all. Hand-building it is the standard remedy
+for a GLM and is what the project already does for `ctrl_x_eveneco` and friends.
+
+A fifth column, `defuse_attempts_so_far`, was dropped: 0 on 98.6% of rows, and adding it
+made log-loss WORSE (0.1727 -> 0.1905).
+
+All four are 0 outside an attempt, which is the truthful value (no progress), so the
 `nan_to_num` in train_pipeline cannot invent an "about to finish" state.
 
 LEAKAGE NOTE. A defuse that runs to completion IS the CT win, so these columns are kept in
@@ -71,19 +86,14 @@ class DefuseTracker:
                 return a
         return None
 
-    def n_started_by(self, tick: int) -> int:
-        return sum(1 for a in self.attempts if a["start"] <= tick)
-
 
 def defuse_progress_features(tracker: DefuseTracker | None, plant: dict | None,
                              tick: int) -> dict:
     """How far into an in-flight defuse this snapshot is (0 everywhere else)."""
     base = {"defuse_in_progress": 0, "defuse_elapsed_sec": 0.0,
-            "defuse_progress_frac": 0.0, "defuse_beats_fuse": 0,
-            "defuse_attempts_so_far": 0}
+            "defuse_progress_frac": 0.0, "defuse_beats_fuse": 0}
     if tracker is None or plant is None or tick < plant["tick"]:
         return base
-    base["defuse_attempts_so_far"] = tracker.n_started_by(tick)
     att = tracker.active_at(tick)
     if att is None:
         return base
@@ -97,11 +107,10 @@ def defuse_progress_features(tracker: DefuseTracker | None, plant: dict | None,
         "defuse_elapsed_sec": float(min(elapsed, required)),
         "defuse_progress_frac": float(min(1.0, elapsed / required)),
         "defuse_beats_fuse": int(max(0.0, required - elapsed) <= fuse_left),
-        "defuse_attempts_so_far": base["defuse_attempts_so_far"],
     }
 
 
 BOMB_PROGRESS_COLS = [
     "defuse_in_progress", "defuse_elapsed_sec", "defuse_progress_frac",
-    "defuse_beats_fuse", "defuse_attempts_so_far",
+    "defuse_beats_fuse",
 ]

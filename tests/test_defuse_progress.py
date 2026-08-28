@@ -10,7 +10,7 @@ Covers what actually decides whether the feature is correct and honest:
   2. kit-awareness — the same wall-clock second is half the progress without a kit
   3. an INTERRUPTED attempt — progress exists mid-attempt, then returns to 0 (these are the
      rows that keep the feature from being a relabelling of `ct_won`)
-  4. two attempts in one round — the failed one is still remembered by attempts_so_far
+  4. two attempts in one round — each is timed from its own start
 """
 from __future__ import annotations
 import sys
@@ -79,31 +79,45 @@ def test_interrupted_attempt():
     check("at the last defusing tick", defuse_progress_features(tr, PLANT, end),
           {"defuse_in_progress": 1, "defuse_elapsed_sec": 314 / TR})
     check("after it was interrupted", defuse_progress_features(tr, PLANT, end + TR),
-          {"defuse_in_progress": 0, "defuse_elapsed_sec": 0.0,
-           "defuse_progress_frac": 0.0, "defuse_attempts_so_far": 1})
+          {"defuse_in_progress": 0, "defuse_elapsed_sec": 0.0, "defuse_progress_frac": 0.0})
 
 
 def test_two_attempts_one_round():
     a1, a2 = PLANT_TICK + 5 * TR, PLANT_TICK + 20 * TR
     tr = track([(1, a1, a1 + 2 * TR, False, 0), (1, a2, a2 + 5 * TR, True, 1)])
     check("before anything", defuse_progress_features(tr, PLANT, PLANT_TICK),
-          {"defuse_in_progress": 0, "defuse_attempts_so_far": 0})
+          {"defuse_in_progress": 0, "defuse_elapsed_sec": 0.0})
+    check("during the 1st try", defuse_progress_features(tr, PLANT, a1 + TR),
+          {"defuse_in_progress": 1, "defuse_elapsed_sec": 1.0, "defuse_progress_frac": 0.1})
     check("during the 2nd try", defuse_progress_features(tr, PLANT, a2 + TR),
-          {"defuse_in_progress": 1, "defuse_elapsed_sec": 1.0, "defuse_attempts_so_far": 2})
+          {"defuse_in_progress": 1, "defuse_elapsed_sec": 1.0, "defuse_progress_frac": 0.2})
+
+
+def test_beats_fuse_flips_when_the_bomb_wins():
+    """The 15-in-631 case that makes this column worth keeping: still defusing, fuse runs out."""
+    late = PLANT_TICK + 33 * TR                  # 7 s of fuse left
+    tr = track([(1, late, late + 10 * TR, False, 0)])   # no kit -> needs 10 s
+    check("no kit, 7s of fuse left", defuse_progress_features(tr, PLANT, late),
+          {"defuse_in_progress": 1, "defuse_beats_fuse": 0})
+    early = PLANT_TICK + 10 * TR
+    tr2 = track([(1, early, early + 10 * TR, False, 1)])
+    check("same defuse, 30s of fuse left", defuse_progress_features(tr2, PLANT, early),
+          {"defuse_in_progress": 1, "defuse_beats_fuse": 1})
 
 
 def test_pre_plant_is_neutral():
     start = PLANT_TICK + 10 * TR
     tr = track([(1, start, start + 5 * TR, True, 1)])
     check("before the plant", defuse_progress_features(tr, PLANT, PLANT_TICK - TR),
-          {"defuse_in_progress": 0, "defuse_attempts_so_far": 0})
+          {"defuse_in_progress": 0, "defuse_elapsed_sec": 0.0})
     check("no plant at all", defuse_progress_features(tr, None, start + TR),
-          {"defuse_in_progress": 0, "defuse_attempts_so_far": 0})
+          {"defuse_in_progress": 0, "defuse_elapsed_sec": 0.0})
 
 
 if __name__ == "__main__":
     for fn in (test_subsecond_precision, test_kit_vs_nokit, test_interrupted_attempt,
-               test_two_attempts_one_round, test_pre_plant_is_neutral):
+               test_two_attempts_one_round, test_beats_fuse_flips_when_the_bomb_wins,
+               test_pre_plant_is_neutral):
         print(fn.__name__)
         fn()
     print("\nall defuse-progress tests passed")

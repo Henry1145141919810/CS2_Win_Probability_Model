@@ -64,11 +64,32 @@ That this matters is visible in the data: the five attempts in one demo start at
 | `defuse_in_progress` | someone is on the bomb at this snapshot |
 | `defuse_elapsed_sec` | seconds into the current attempt |
 | `defuse_progress_frac` | elapsed / required, kit-aware (5 s with a defuse kit, 10 s without) |
-| `defuse_beats_fuse` | remaining defuse time fits inside the remaining fuse |
-| `defuse_attempts_so_far` | attempts started this round so far (>1 means an earlier one failed) |
+| `defuse_beats_fuse` | will the remaining defuse time fit inside the remaining fuse |
 
-All five are **0** outside an attempt — the truthful value, so `nan_to_num` in `train_pipeline`
+All four are **0** outside an attempt — the truthful value, so `nan_to_num` in `train_pipeline`
 cannot invent an "about to finish" state.
+
+**Column selection (2026-08-27).** A fifth column, `defuse_attempts_so_far`, was dropped: it
+is 0 on 98.6% of rows and adding it made log-loss over defusing rows *worse* (0.1727 →
+0.1905). `defuse_beats_fuse` was nearly dropped for looking redundant — it is 1 on 616 of
+631 defusing rows — but the 15 rows where it is 0 decide their rounds (the defuse is running
+and the bomb goes off first), and it is by far the most valuable of the four: 0.1727 → 0.0605.
+
+It is also **not learnable from what the model has**. It compares remaining defuse time
+against remaining *fuse* time, and "seconds since the plant" is in no feature set —
+`time_elapsed_sec` counts from freeze-end, `bomb_planted` is a flag, and `defuse_time_margin`
+folds the fuse into a distance term. Supplying the raw quantity does not help: adding a
+`fuse_time_left` column instead moved logreg from 0.1727 to 0.1719, because a linear model
+cannot express a threshold comparison at all. Hand-building the comparison is the standard
+remedy for a GLM and is what the project already does with `ctrl_x_eveneco` and friends.
+
+For XGB the picture is different and the pilot cannot settle it: XGB learns nothing here
+with *any* encoding (log-loss ~0.22 throughout, and its baseline curve slopes the wrong way),
+because the defusing regime is 1.14% of rows — ~315 in each half of the pilot — against
+`min_child_weight=10` and `reg_lambda=10`. On the full training set that regime is ~3,700
+rows, so whether a tree learns the threshold on its own is an open question worth re-testing
+there. `fuse_time_left` is worth adding as a feature in its own right regardless: how much
+fuse is left is a basic post-plant state variable the model currently cannot see.
 
 ## Data validation (32 re-parsed 2026 demos)
 
