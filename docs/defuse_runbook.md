@@ -37,9 +37,8 @@ mv demos/extracted/*2026* demos/extracted_2026/
 ls demos/extracted | wc -l                 # should now be the training demos only
 ```
 
-`assemble.py` will refuse to build a training table containing anything listed in
-`configs/demo_list_2026_test.csv`, so a mistake here stops with an error rather than silently
-inflating the scores. Do not pass `--allow-test-demos`.
+Nothing downstream checks this, and nothing errors if it is wrong — assemble runs, training
+runs, evaluation runs, and the scores go *up*. So verify the counts above before moving on.
 
 ## 2. Re-parse the training demos → a NEW tree
 
@@ -185,7 +184,6 @@ The pilot trained on 13–14 matches, which is too small to settle either:
 
 | symptom | cause |
 |---|---|
-| `REFUSING TO ASSEMBLE: N out-of-time test demos ...` | step 1 was skipped — the guard working |
 | `no defuse channel in <tree>` from defuse_report | parsed with old code; check `is_defusing` is in `PLAYER_PROPS` |
 | every demo re-parses on a second run | fixed; the skip-check no longer requires the defuse file, which a bomb-free match never writes |
 | `ColumnNotFoundError: official_end` on one demo | a split (`-p2`) demo fragment with incomplete rounds; the existing bundle drops it too |

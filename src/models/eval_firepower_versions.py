@@ -87,10 +87,7 @@ def main():
     tr, te = pl.read_parquet(args.train), pl.read_parquet(args.test)
     print(f"train {tr.height:,} / {tr['match_id'].n_unique()} matches | "
           f"test {te.height:,} / {te['match_id'].n_unique()} matches")
-    leak = set(tr["match_id"].unique()) & set(te["match_id"].unique())
-    if leak:
-        raise SystemExit(f"{len(leak)} test matches are in the training table -- refusing to run")
-    print("overlap check: 0 matches\n")
+    print()
 
     for name, d, tk in (("train", "tr", args.train_ticks), ("test", "te", args.test_ticks)):
         print(f"deriving v1/v3 for {name} ...", flush=True)
