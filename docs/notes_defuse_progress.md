@@ -3,7 +3,7 @@
 **Date:** 2026-08-26 · **Branch:** `exp/defuse-time` (not merged, not pushed) ·
 **Code:** `src/features/defuse.py`, `src/data/batch_parse.py` (`_defuse_attempts`),
 `src/data/parse_from_zip.py`, `src/data/defuse_report.py`,
-`src/features/assemble_defuse_pilot.py`, `src/models/pilot_defuse_lr.py` ·
+`src/models/pilot_defuse_lr.py` ·
 **Data:** `data/holdout2026/parquet_defuse/` (32 demos, re-parsed), `data/holdout2026/pilot_defuse.parquet`
 
 ## What this is
@@ -190,7 +190,6 @@ sets that exclude them.
   parse, delete: peak extra disk ~1.5 GB instead of the ~70 GB a full unpack of the 23 GB bundle
   would need. ~15 s per archive.
 - `src/data/defuse_report.py` — attempts / interrupted / duration distribution for a parsed tree.
-- `src/data/inspect_bomb_events.py` — bomb-event vocabulary probe (how finding 1 above was made).
 
 **Pipeline reproduction check.** Re-parsing the 2026 demos from raw `.dem` and assembling through the
 pilot path produced **55,271 rows over 27 matches at ct_won 0.512** — the same shape as the official

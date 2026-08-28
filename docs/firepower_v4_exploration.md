@@ -295,3 +295,46 @@ FIREPOWER_YEAR_LAG=1 python src/models/eval_firepower_mean.py
 | `outputs/firepower_mean_benchmark.csv` | 主流程均值 FP benchmark 结果 |
 | `docs/notes_firepower_v4.md` | 代理实验的详细记录（含公式和结论） |
 | `docs/firepower_v4_exploration.md` | 本文档（完整探索过程） |
+
+---
+
+## 更正（2026-08-27）
+
+**关于本文提到的文件。** 第七节文件索引里的 `firepower_v4_1/2/3.py`、`eval_firepower_v4.py`
+和 `notes_firepower_v4.md` 已从仓库移除——代理变体除以 `players_alive`，而正式集成版除以
+`n_with_stats`，两者算的不是同一个量（实测人均 rating 中位数 0.836 vs 1.086），保留它们只会
+让人误以为结论可以互相搬用。正式版（`FIREPOWER_MEAN_COLS`）和四版本对比
+（`eval_firepower_versions.py`）保留。本文其余部分原样保留，作为探索过程的记录。
+
+### 第五节的 benchmark 结果作废
+
+第五节那八行 benchmark 是在**混入了 2026 测试集的训练表**上跑的。
+
+`training_dataset.parquet` 当时是 **247 场 / 531,866 行**，而不是 220 场 / 476,595 行。
+多出来的 27 场正是 2026 out-of-time 测试集的全部比赛，逐行完全相同（tick、标签、存活
+人数、装备、rating 全部一致）。原因是 2026 的 demo 被解析进了 `data/parquet/`，而
+`assemble.py` 会扫描该目录下所有文件。
+
+**症状**：out-of-time 分数**高于**交叉验证（XGB 0.8676 vs 0.8516）。真正的 holdout 不可能
+比 CV 更容易。
+
+**剔除那 27 场后重跑**（`outputs/firepower_mean_benchmark_clean220.csv`）：
+
+| 特征集 | 模型 | CV AUC | CV cAUC | OOT AUC | OOT cAUC |
+|---|---|---|---|---|---|
+| EB2 | logreg | 0.8508 | 0.5963 | **0.8474** | **0.6551** |
+| EB2 | xgb | 0.8493 | 0.5862 | **0.8498** | 0.6278 |
+| EFB2 | logreg | 0.8519 | 0.6035 | 0.8450 | 0.5851 |
+| EFB2 | xgb | 0.8483 | 0.5875 | 0.8411 | 0.5844 |
+| EB2_FPmean | logreg | 0.8520 | 0.6050 | 0.8458 | 0.5916 |
+| EB2_FPmean | xgb | 0.8487 | 0.5887 | 0.8370 | 0.5965 |
+| EFB3 | logreg | 0.8520 | 0.6026 | 0.8457 | 0.5874 |
+| EFB3 | xgb | 0.8482 | 0.5886 | 0.8382 | 0.5974 |
+
+**结论反转**：干净数据下 firepower 在任何编码、任何模型上都**降低** out-of-time 表现。
+第五节"XGB 能从 FP 中多挤出约 0.024 cAUC"不成立——干净数据下 XGB 加 FP 反而损失
+0.030–0.043 cAUC。原本的结论 4（"技术水平在 demo 特征存在时不再提供信息"）不但成立，
+而且更强：它不只是没用，是有害。
+
+四个版本的横向对比见 `outputs/firepower_versions.csv` 和
+`src/models/eval_firepower_versions.py`。

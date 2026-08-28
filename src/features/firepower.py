@@ -148,7 +148,7 @@ def firepower_features(snap: pl.DataFrame, match_id: str) -> dict:
         out[f"{pfx}_awp_sniping_skill"] = awp_skill
         out[f"{pfx}_weighted_utility"] = weighted_util
 
-        # --- v4: mean-normalised variants (see docs/notes_firepower_v4.md) --------------
+        # --- v4: mean-normalised variants (see docs/firepower_v4_exploration.md) --------------
         # The sums are confounded with headcount: every pro rating is ~1.0, so a sum over
         # n alive players re-encodes n, which the model already sees as ct_players_alive.
         # The divisor is n_with_stats, NOT n: players missing from the HLTV table never

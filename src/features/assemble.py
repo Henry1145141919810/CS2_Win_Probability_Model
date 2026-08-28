@@ -56,6 +56,10 @@ def set_parquet_root(root: Path) -> None:
 
 
 SMOKE_DUR_TICKS = 18 * 64  # CS2 smoke ~18s of vision block
+INTERACTION_COLS = ["ctrl_x_eveneco", "terr_x_eveneco",
+                    "ctrl_x_equalalive", "terr_x_equalalive"]
+
+
 def _smokes_by_round(match_id):
     """round_num -> list of (start_tick, end_tick, x, y) for vision-blocking smokes."""
     f = SMOKES_DIR / f"{match_id}.parquet"

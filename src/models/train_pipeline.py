@@ -69,7 +69,7 @@ FEATURE_SETS = {
     # already implied by geometry?"), never the source of a headline map-control number.
     # Named *D (not EB3/EFB3) because firepower v4 claims EFB3 for its mean-encoded variant;
     # duplicate keys in a dict literal overwrite silently, with no error to notice.
-    # --- firepower v4: mean-encoded pillar (docs/notes_firepower_v4.md). Same 20 columns
+    # --- firepower v4: mean-encoded pillar (docs/firepower_v4_exploration.md). Same 20 columns
     # as FIREPOWER_COLS but divided by n_with_stats, removing the headcount confound that
     # made the summed encoding largely a restatement of ct_players_alive.
     "EB2_FPmean": (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + BOMB_LIVE_COLS

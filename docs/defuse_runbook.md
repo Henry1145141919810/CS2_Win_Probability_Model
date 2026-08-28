@@ -27,7 +27,7 @@ python tests/test_defuse_progress.py        # 6 cases, needs only polars
 **The 2026 out-of-time demos are currently inside the training tree.** `data/parquet/ticks/`
 holds 32 files with `2026` in the name, 27 of which are the holdout, and they are in the
 shipped `training_dataset.parquet` (247 matches instead of 220) — see
-`notes_firepower_v4.md`, Finding 5. If the same thing happens on the re-parse, the new table
+the correction at the end of `firepower_v4_exploration.md`. If the same thing happens on the re-parse, the new table
 inherits the same leak.
 
 ```bash

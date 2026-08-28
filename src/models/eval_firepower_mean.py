@@ -1,9 +1,8 @@
 """Integrated mean-firepower benchmark: EB2 / EFB2 / EB2_FPmean / EFB3.
 
-Unlike eval_firepower_v4.py (which derives proxy columns on the fly), this reads the
-`*_mean` columns produced by firepower.py during assemble, so the divisor is
-`n_with_stats` -- alive players actually present in the HLTV table -- rather than
-players_alive. Requires tables assembled AFTER the v4 change to firepower.py.
+Reads the `*_mean` columns produced by firepower.py during assemble, so the divisor is
+`n_with_stats` -- alive players actually present in the HLTV table -- rather than the
+headcount. Requires tables assembled AFTER the v4 change to firepower.py.
 
 Reports CV (5-fold GroupKFold OOF on the training set) and OOT (full train -> 2026),
 each as AUC and contested-AUC (equal alive counts and |dequip| <= $1500).

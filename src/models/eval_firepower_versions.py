@@ -2,7 +2,7 @@
 
 Each version was benchmarked against a different baseline at a different time, on tables of
 different vintages -- and the v4 run turned out to have trained on the out-of-time holdout
-(see docs/notes_firepower_v4.md, Finding 5). This puts all four encodings on ONE training
+(see docs/firepower_v4_exploration.md, the correction at the end). This puts all four encodings on ONE training
 table, ONE test set and ONE baseline, so the progression can actually be read.
 
   v1  sums of un-split rating/adr, kast mean, lone-survivor clutch   (9 cols, recomputed)

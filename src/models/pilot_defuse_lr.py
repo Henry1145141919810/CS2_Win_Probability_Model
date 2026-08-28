@@ -36,13 +36,9 @@ from sklearn.preprocessing import StandardScaler
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
-from features.assemble_defuse_pilot import PILOT_SETS  # noqa: E402
-from models.train_pipeline import FEATURE_SETS  # noqa: E402
+from models.train_pipeline import FEATURE_SETS as ALL_SETS  # noqa: E402
 
-DATA = ROOT / "data" / "holdout2026" / "pilot_defuse.parquet"
-# PILOT_SETS are the nav-free sets usable on the pilot table; FEATURE_SETS are the real
-# ones, usable once the nav-derived columns are joined in (pilot_full.parquet).
-ALL_SETS = {**FEATURE_SETS, **PILOT_SETS}
+DATA = ROOT / "data" / "test_dataset_2026_defuse.parquet"
 
 
 def fit_predict(df: pl.DataFrame, cols: list[str], folds: list[np.ndarray]) -> np.ndarray:
