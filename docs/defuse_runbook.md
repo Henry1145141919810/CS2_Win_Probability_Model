@@ -22,25 +22,7 @@ python -c "import sys; sys.path.insert(0,'src'); from features.defuse import BOM
 python tests/test_defuse_progress.py        # 6 cases, needs only polars
 ```
 
-## 1. ⚠️ Separate the 2026 demos first
-
-**The 2026 out-of-time demos are currently inside the training tree.** `data/parquet/ticks/`
-holds 32 files with `2026` in the name, 27 of which are the holdout, and they are in the
-shipped `training_dataset.parquet` (247 matches instead of 220) — see
-the correction at the end of `firepower_v4_exploration.md`. If the same thing happens on the re-parse, the new table
-inherits the same leak.
-
-```bash
-ls demos/extracted | grep -c 2026          # are the 2026 .dem in the training demo dir?
-mkdir -p demos/extracted_2026
-mv demos/extracted/*2026* demos/extracted_2026/
-ls demos/extracted | wc -l                 # should now be the training demos only
-```
-
-Nothing downstream checks this, and nothing errors if it is wrong — assemble runs, training
-runs, evaluation runs, and the scores go *up*. So verify the counts above before moving on.
-
-## 2. Re-parse the training demos → a NEW tree
+## 1. Re-parse the training demos → a NEW tree
 
 ```bash
 python src/data/batch_parse.py \
@@ -59,7 +41,7 @@ Progress lines now report the derived channel:
 **Try 3 demos first** (`--limit 3`) and confirm those lines appear before committing 4 hours.
 A match where nobody ever touched the bomb legitimately writes no defuse file.
 
-## 3. Check the parse before going further
+## 2. Check the parse before going further
 
 ```bash
 python src/data/defuse_report.py --tree data/parquet_defuse
@@ -73,7 +55,7 @@ Three things must hold, or something is wrong upstream:
 - **INTERRUPTED is a real fraction**, ~35% on the 2026 set. If it is near zero the feature is
   a relabelling of `ct_won` and should not be used.
 
-## 4. The 2026 holdout — already done, in the bundle
+## 3. The 2026 holdout — already done, in the bundle
 
 `cs2_2026_defuse_bundle.zip` contains the 2026 set already parsed *and* assembled, so this
 step can be skipped:
@@ -91,19 +73,19 @@ To rebuild it from scratch instead:
 
 ```bash
 python src/data/batch_parse.py \
-    --raw-dir demos/extracted_2026 \
+    --raw-dir demos/extracted \
     --out     data/holdout2026/parquet_defuse
 python src/data/defuse_report.py --tree data/holdout2026/parquet_defuse
 ```
 
 ```bash
 python src/data/batch_parse.py \
-    --raw-dir demos/extracted_2026 \
+    --raw-dir demos/extracted \
     --out     data/holdout2026/parquet_defuse
 python src/data/defuse_report.py --tree data/holdout2026/parquet_defuse
 ```
 
-## 5. Assemble both tables
+## 4. Assemble both tables
 
 `assemble.py` reads `data/parquet` by default, so both the input tree and the output file
 have to be given explicitly — otherwise it rebuilds the published table from the old tree.
@@ -135,7 +117,7 @@ PY
 
 Expect ~220 matches, **0 overlap**, and roughly 1% defusing rows (~3,700 on the training set).
 
-## 6. Train
+## 5. Train
 
 ```bash
 python src/models/train_pipeline.py \
@@ -148,7 +130,7 @@ python src/models/train_pipeline.py \
 `--data` matters: without it the run reads `data/training_dataset.parquet` and the
 comparison is against the wrong table.
 
-## 7. Read the result correctly
+## 6. Read the result correctly
 
 **Do not judge this on overall AUC.** The feature fires on ~1% of rows and moves pooled AUC
 by ~+0.001. That is expected, and it is the whole reason the paper argues contested-AUC
@@ -167,7 +149,7 @@ tracked it at 0.898 → 0.988. Log-loss over the defusing rows fell 65%, Brier 7
 INTERRUPTED attempts `EB2D` predicted 0.368 against `EB2`'s 0.501 and a true 0.0 — the
 feature makes the failures better calibrated too, not just the successes.
 
-## 8. Two things worth re-testing on the full data
+## 7. Two things worth re-testing on the full data
 
 The pilot trained on 13–14 matches, which is too small to settle either:
 

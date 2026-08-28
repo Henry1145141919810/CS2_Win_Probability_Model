@@ -107,7 +107,7 @@ defusing rows and on the shape of the curve above.
 |---|---|
 | `src/features/defuse.py` | the feature (polars only, no nav mesh, no awpy) |
 | `src/data/batch_parse.py` | `is_defusing` prop + `_defuse_attempts()` + the `defuse` channel |
-| `src/features/assemble.py` | loads the channel; also guards against holdout leakage |
+| `src/features/assemble.py` | loads the `defuse` channel into the snapshot loop |
 | `src/models/train_pipeline.py` | `EB2D`, `EFB2D` |
 | `src/data/defuse_report.py` | attempts / interrupted / duration check for a parsed tree |
 | `src/data/parse_from_zip.py` | macOS/Linux demo extraction (bsdtar, no 7-Zip) |
