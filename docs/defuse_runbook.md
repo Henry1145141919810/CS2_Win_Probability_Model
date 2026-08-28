@@ -74,7 +74,28 @@ Three things must hold, or something is wrong upstream:
 - **INTERRUPTED is a real fraction**, ~35% on the 2026 set. If it is near zero the feature is
   a relabelling of `ct_won` and should not be used.
 
-## 4. Re-parse the 2026 holdout → its own tree
+## 4. The 2026 holdout — already done, in the bundle
+
+`cs2_2026_defuse_bundle.zip` contains the 2026 set already parsed *and* assembled, so this
+step can be skipped:
+
+```bash
+unzip cs2_2026_defuse_bundle.zip        # at the repo root
+```
+
+It writes `data/test_dataset_2026_defuse.parquet` (55,271 x 135) and the parsed tree it came
+from. The table is a strict superset of the `test_dataset_2026.parquet` you already have —
+all 129 of its columns verified bit-identical, plus the 4 defuse columns and 2 coverage
+diagnostics — so it can be used as a drop-in replacement.
+
+To rebuild it from scratch instead:
+
+```bash
+python src/data/batch_parse.py \
+    --raw-dir demos/extracted_2026 \
+    --out     data/holdout2026/parquet_defuse
+python src/data/defuse_report.py --tree data/holdout2026/parquet_defuse
+```
 
 ```bash
 python src/data/batch_parse.py \
@@ -93,6 +114,7 @@ python src/features/assemble.py \
     --parquet-root data/parquet_defuse \
     --out          data/training_dataset_defuse.parquet
 
+# only if you rebuilt the 2026 tree yourself; the bundle already ships this table
 python src/features/assemble.py \
     --parquet-root data/holdout2026/parquet_defuse \
     --out          data/test_dataset_2026_defuse.parquet
@@ -140,9 +162,11 @@ python src/models/pilot_defuse_lr.py \
     --data data/training_dataset_defuse.parquet --sets EB2,EB2D
 ```
 
-The table to look at is *mean predicted P(CT win) by defuse progress*. On the 2026 pilot,
+The table to look at is *mean predicted P(CT win) by defuse progress*. On the 2026 set,
 `EB2` stayed flat at 0.894 → 0.897 while the empirical rate went 0.909 → 0.983, and `EB2D`
-tracked it at 0.897 → 0.988.
+tracked it at 0.898 → 0.988. Log-loss over the defusing rows fell 65%, Brier 72%, and on
+INTERRUPTED attempts `EB2D` predicted 0.368 against `EB2`'s 0.501 and a true 0.0 — the
+feature makes the failures better calibrated too, not just the successes.
 
 ## 8. Two things worth re-testing on the full data
 

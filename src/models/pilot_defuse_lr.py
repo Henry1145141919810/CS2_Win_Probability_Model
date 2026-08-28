@@ -79,7 +79,6 @@ def main():
 
     y = df["ct_won"].to_numpy()
     live = df["defuse_in_progress"].to_numpy() == 1
-    done = (df["defuse_attempts_so_far"].to_numpy() > 0)
     print(f"defusing rows: {live.sum()} ({live.mean() * 100:.2f}%)\n")
 
     preds = {}
@@ -112,7 +111,6 @@ def main():
         print(line)
 
     # completed vs interrupted: a model that only memorised "defusing => win" cannot separate
-    comp = df["defuse_in_progress"].to_numpy() * 0
     print(f"\nsame rows split by how the attempt ENDED")
     print(f"{'outcome':<12}{'n':>5}{'actual':>9}" + "".join(f"{s:>9}" for s in preds))
     for label, m in (("completed", live & (y == 1)), ("interrupted", live & (y == 0))):

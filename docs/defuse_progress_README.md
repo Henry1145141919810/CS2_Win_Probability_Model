@@ -1,7 +1,8 @@
 # Defuse progress — what it is and why it exists
 
-**Status:** implemented and validated on 32 re-parsed 2026 demos; needs the training set
-re-parsed before it can be evaluated properly. Branch `exp/defuse-time`.
+**Status:** implemented and validated on the 27-match 2026 set, assembled through the normal
+pipeline. Needs the *training* set re-parsed before it can be evaluated on the paper's data.
+Branch `exp/defuse-time`.
 **Deep dive:** [`notes_defuse_progress.md`](notes_defuse_progress.md) · **How to run:**
 [`defuse_runbook.md`](defuse_runbook.md)
 
@@ -38,8 +39,18 @@ Four columns, 0 whenever nobody is defusing:
 
 Feature sets: **`EB2D`** = EB2 + these four. **`EFB2D`** = EFB2 + these four.
 
-With them, the same model tracks the empirical curve almost exactly (0.897 → 0.988 against
-an actual 0.909 → 0.983), and log-loss over the defusing rows drops **58%**.
+With them, the same model tracks the empirical curve almost exactly:
+
+| defuse progress | actual | EB2 | **EB2D** |
+|---|---|---|---|
+| 0–20% | 0.909 | 0.894 | 0.898 |
+| 20–40% | 0.924 | 0.885 | 0.929 |
+| 40–60% | 0.951 | 0.892 | 0.960 |
+| 60–80% | 0.975 | 0.896 | 0.978 |
+| 80–100% | 0.983 | 0.897 | **0.988** |
+
+Log-loss over the defusing rows drops **65%** (0.1760 → 0.0613), Brier **72%**. Overall AUC
+moves +0.0006, which is the expected non-result — see "What it will and will not move".
 
 ## Where the data comes from
 
