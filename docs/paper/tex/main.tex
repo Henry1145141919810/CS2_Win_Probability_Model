@@ -28,6 +28,7 @@
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{amsmath}
 \usepackage{xcolor}
 \usepackage{caption}
@@ -43,7 +44,7 @@
 
 % DRAFT VERSION. Bump this on every substantive revision, add a CHANGELOG row,
 % git-tag it, and rebuild the zip. The version is stamped on the title page.
-\newcommand{\draftversion}{v10}
+\newcommand{\draftversion}{v11}
 
 \title{\textbf{Where Win Probability Comes From, and Where It Breaks}\\[2mm]
 \large Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check
@@ -1124,6 +1125,42 @@ so there is no upper-tail inflation, only the mild conservatism expected of a di
 \label{fig:pathwise}
 \end{figure}
 
+\subsection{Per-second honesty during a defuse}
+\label{sec:defuseprogress}
+
+The trajectory diagnostic above is global; here is a concrete, local instance of the same idea. Every
+bomb feature in Sect.~\ref{sec:bomb} is \emph{counterfactual}: the defuse-race margin and its relatives
+ask, from geometry, whether a CT \emph{could} reach the bomb and finish in time. None of them observes a
+defuse that is \emph{actually happening}. The cost is a flat curve: on the 2026 test set, as a defuse
+runs from start to completion the empirical CT win rate climbs from $0.91$ to $0.98$, while the EB2
+model, carrying the entire counterfactual bomb block, barely moves off $0.92$ (Fig.~\ref{fig:defuse}).
+
+We add four columns that measure the live defuse: whether one is in progress, seconds elapsed, the
+kit-aware fraction of the required time completed, and whether the remaining defuse fits inside the
+remaining fuse. They are derived from the per-tick defusing flag before down-sampling, which is why the
+demos were re-parsed, and they are quarantined into two feature sets (EB2D, EFB2D) rather than folded
+into the map-control sets, since a near-complete defuse is close to an endgame certainty and would
+otherwise credit the spatial pillar for it. The feature is not a relabelling of the outcome: 39.6\,\%
+of the 1{,}032 defuse attempts in training are interrupted, and the model stays calibrated on those.
+
+Because the feature fires on only $0.97\,\%$ of snapshots, it cannot and does not move a pooled metric:
+EB2D and EB2 are indistinguishable on overall AUC and on contested-AUC. Its value is entirely on the
+defusing rows, and there it is large. Adding it cuts log-loss on those rows by \textbf{60\,\%} ($0.158
+\to 0.063$) and Brier by $62\,\%$ for the logistic model, and the predicted curve tracks the empirical
+one almost exactly (Fig.~\ref{fig:defuse}). This is the contested-AUC argument in miniature: a metric
+pooled over all snapshots hides a six-point calibration error at the single most consequential moment a
+live overlay displays, and a slice reveals it.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{F11_defuse_curve.png}
+\caption{Predicted versus actual CT win rate as a defuse progresses (2026 test, logistic). The EB2
+model (red) stays flat as the defuse completes; adding the four defuse-progress columns (EB2D, green)
+recovers the empirical curve (black). The feature touches $\sim 1\,\%$ of snapshots, so it is invisible
+in pooled AUC while removing most of the calibration error on the defusing rows.}
+\label{fig:defuse}
+\end{figure}
+
 \subsection{What the model looks like live}
 \label{sec:live}
 
@@ -1558,6 +1595,131 @@ EFB2 & Random forest & 0.8422 & 0.4813 & 0.1614 & 0.020 & 0.553 & 1.12 & $+0.09$
 \bottomrule
 \end{tabular}
 \end{table}
+
+\section{Complete feature list}
+\label{app:features}
+
+Table~\ref{tab:features} enumerates every feature by pillar, with a short description. Symmetric
+counterpart features for the two sides are written once as \texttt{\{ct,t\}\_...} and counted as two.
+The feature sets used in the main text are compositions of these pillars:
+
+\begin{table}[H]
+\centering
+\caption{Feature-set composition. Each set is the union of the pillar blocks marked.}
+\label{tab:featuresets}
+\small
+\begin{tabular}{lll}
+\toprule
+Set & Pillars included & Count \\
+\midrule
+A     & Economy \& combat & 17 \\
+E     & A + Voronoi map control + Tactical + bomb-plant geometry & 60 \\
+EB2   & E + bomb-live + defuse-race & 72 \\
+EFB2  & EB2 + territory map control + Firepower & 97 \\
+EB2D  & EB2 + Defuse-progress & 76 \\
+EFB2D & EFB2 + Defuse-progress & 101 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+{\small
+\begin{longtable}{p{0.34\textwidth}p{0.58\textwidth}}
+\caption{Complete feature inventory, grouped by pillar. \texttt{\{ct,t\}} denotes a symmetric pair,
+one feature per side.}\label{tab:features}\\
+\toprule
+\textbf{Feature} & \textbf{Description} \\
+\midrule
+\endfirsthead
+\multicolumn{2}{c}{\textit{Table~\ref{tab:features} continued}}\\
+\toprule \textbf{Feature} & \textbf{Description} \\ \midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{2}{l}{\textbf{Pillar 1 — Economy \& combat state (17)}}\\
+\midrule
+\texttt{time\_elapsed\_sec} & Seconds since freeze-end. \\
+\texttt{\{ct,t\}\_players\_alive} & Living players on each side. \\
+\texttt{\{ct,t\}\_health\_total} & Summed health of living players. \\
+\texttt{\{ct,t\}\_armor\_total} & Summed armour of living players. \\
+\texttt{\{ct,t\}\_equipment\_value} & Summed dollar value of held equipment. \\
+\texttt{\{ct,t\}\_economy\_class} & Buy tier (eco / force / full) per side. \\
+\texttt{ct\_defuse\_kits} & Number of defuse kits held by CTs. \\
+\texttt{bomb\_planted} & Whether the bomb is currently planted. \\
+\texttt{\{ct,t\}\_score} & Rounds won so far this half. \\
+\texttt{score\_diff} & CT score minus T score. \\
+\texttt{round\_num} & Round index within the match. \\
+\midrule
+\multicolumn{2}{l}{\textbf{Pillar 2 — Map control (24)}}\\
+\midrule
+\texttt{ct\_voronoi\_control\_pct} & CT share of the map under Voronoi (nearest-player) control. \\
+\texttt{control\_deficit} & CT minus T controlled area. \\
+\texttt{ct\_\{a\_site,b\_site,banana,mid,ct\_spawn\}\_control} & CT control fraction of each macro-zone (5). \\
+\texttt{control\_trend} & Short rolling change in CT control. \\
+\texttt{control\_volatility} & Rolling variance of CT control. \\
+\texttt{\{ct,t\}\_los\_control} & Instantaneous LOS+FOV+smoke control per side (grey model). \\
+\texttt{contested\_pct} & Map share contested by both sides (grey model). \\
+\texttt{grey\_pct} & Map share controlled by nobody (grey model). \\
+\texttt{ct\_los\_deficit} & CT minus T instantaneous control. \\
+\texttt{\{ct,t\}\_terr\_control} & Territory-model control per side (grey + 15\,s memory). \\
+\texttt{terr\_contested\_pct} & Contested share, territory model. \\
+\texttt{terr\_grey\_pct} & Neutral share, territory model. \\
+\texttt{ct\_terr\_deficit} & CT minus T territory control. \\
+\texttt{terr\_\{a\_site,b\_site,banana,mid,ct\_spawn\}\_deficit} & Per-zone territory deficit (5). \\
+\midrule
+\multicolumn{2}{l}{\textbf{Pillar 3 — Tactical readiness \& bomb geometry (50)}}\\
+\midrule
+\texttt{\{ct,t\}\_positional\_entropy} & Shannon entropy of players over zones (spread). \\
+\texttt{\{ct,t\}\_\{a\_site,b\_site,banana,mid,ct\_spawn\}\_players} & Player count per zone per side (10). \\
+\texttt{\{ct,t\}\_awp\_alive} & Whether a living player holds an AWP. \\
+\texttt{\{ct,t\}\_awp\_zone} & Zone of the AWP holder. \\
+\texttt{bomb\_carrier\_zone} & Zone of the bomb carrier (pre-plant). \\
+\texttt{\{ct,t\}\_\{smokes,flashes,fire,he\}} & Grenade counts by type per side (8). \\
+\texttt{\{ct,t\}\_util\_total} & Total grenades held per side. \\
+\texttt{utility\_advantage} & CT minus T total utility. \\
+\texttt{bomb\_site} & Plant site (A / B / none). \\
+\texttt{bomb\_plant\_\{x,y\}} & Plant coordinates. \\
+\texttt{min\_ct\_dist\_to\_bomb} & Nearest-CT straight-line distance to the bomb. \\
+\texttt{min\_ct\_path\_to\_bomb} & Nearest-CT nav-mesh path distance to the bomb. \\
+\texttt{n\_ct\_near\_bomb} & CTs within a fixed radius of the bomb. \\
+\texttt{bomb\_state} & Carried / dropped / planted. \\
+\texttt{bomb\_dropped} & Whether the bomb is loose on the ground. \\
+\texttt{ct\_bomb\_local\_control} & CT control of the area around the live bomb. \\
+\texttt{ct\_bomb\_local\_deficit} & CT minus T local bomb-area control. \\
+\texttt{min\_\{ct,t\}\_dist\_to\_bomb\_live} & Nearest per side to the live bomb. \\
+\texttt{ct\_closer\_to\_bomb} & Whether a CT is nearer than any T. \\
+\texttt{defuse\_time\_margin} & Fuse time $-$ (nearest-CT path time $+$ defuse duration). \\
+\texttt{defuse\_margin\_kit} & Per-CT kit-aware defuse margin. \\
+\texttt{n\_ct\_can\_defuse} & CTs who could physically finish a defuse in time. \\
+\texttt{best\_defuser\_has\_kit} & Whether the fastest potential defuser holds a kit. \\
+\texttt{defuse\_contest\_margin} & Defuse margin net of the nearest T's interrupt window. \\
+\addlinespace
+\multicolumn{2}{l}{\textit{Defuse-progress (4) — measures an \emph{actual} running defuse; sets EB2D / EFB2D only}}\\
+\texttt{defuse\_in\_progress} & Whether a defuse is being performed right now. \\
+\texttt{defuse\_elapsed\_sec} & Seconds into the current defuse attempt. \\
+\texttt{defuse\_progress\_frac} & Elapsed / required (kit-aware), in $[0,1]$. \\
+\texttt{defuse\_beats\_fuse} & Whether the remaining defuse fits inside the remaining fuse. \\
+\midrule
+\multicolumn{2}{l}{\textbf{Pillar 4 — Firepower / skill prior (20, v2 sums)}}\\
+\midrule
+\texttt{\{ct,t\}\_rating\_sum} & Summed HLTV rating of living players. \\
+\texttt{\{ct,t\}\_adr\_sum} & Summed average damage per round. \\
+\texttt{\{ct,t\}\_kast\_mean} & Mean KAST of living players. \\
+\texttt{\{ct,t\}\_hltv\_firepower\_sum} & Summed HLTV firepower rating. \\
+\texttt{\{ct,t\}\_entry\_sum} & Summed entry-fragging rating (teammates alive). \\
+\texttt{\{ct,t\}\_trading\_sum} & Summed trading rating (teammates alive). \\
+\texttt{\{ct,t\}\_opening\_sum} & Summed opening-duel rating (5-v-5 only). \\
+\texttt{\{ct,t\}\_clutch\_score} & Lone-survivor clutch rating. \\
+\texttt{\{ct,t\}\_awp\_sniping\_skill} & Sniping rating of the AWP holder. \\
+\texttt{\{ct,t\}\_weighted\_utility} & Utility skill weighted by grenade value held. \\
+\midrule
+\multicolumn{2}{l}{\textbf{Interactions (4)}}\\
+\midrule
+\texttt{ctrl\_x\_eveneco} & Voronoi control $\times$ even-economy indicator. \\
+\texttt{terr\_x\_eveneco} & Territory control $\times$ even-economy indicator. \\
+\texttt{ctrl\_x\_equalalive} & Voronoi control $\times$ equal-players-alive indicator. \\
+\texttt{terr\_x\_equalalive} & Territory control $\times$ equal-players-alive indicator. \\
+\end{longtable}
+}
 
 \section{Supplementary figures}
 \label{app:extra}

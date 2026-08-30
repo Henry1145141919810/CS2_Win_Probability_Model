@@ -295,6 +295,28 @@ discrete null calibration for the extended version.
 
 ---
 
+## v11 — 2026-08-30 — defuse-progress feature + complete feature table
+
+Tag: `paper-v11`
+
+**Changed.** Adds (1) a new Results subsection "Per-second honesty during a defuse" (Sect. defuseprogress)
+with Fig. F11, and (2) a complete feature-list appendix (Appendix, longtable) plus a per-set composition
+table.
+
+The defuse-progress feature (4 columns measuring an ACTUAL running defuse, from a re-parse that adds the
+per-tick is_defusing flag) is a curve-honesty fix, not an accuracy gain: it fires on ~1% of snapshots so
+pooled AUC and contested-AUC do not move, but on the defusing rows it cuts log-loss 60% and makes the
+predicted curve track the empirical one (EB2 stays flat as a defuse completes; EB2D tracks it). Quarantined
+into EB2D/EFB2D. 39.6% of attempts are interrupted, so it is not a ct_won relabel. Framed as the
+contested-AUC argument in miniature.
+
+**Re-upload to Overleaf.** main.tex + one new figure F11_defuse_curve.png.
+
+**Data note.** Requires the re-parsed training_dataset_defuse.parquet (476,595 x 135, superset of the
+published table + 4 defuse cols). See docs/notes_defuse_results.md, docs/defuse_progress_README.md.
+
+---
+
 ## vNext — template (copy this block, don't edit v1)
 
 ```
