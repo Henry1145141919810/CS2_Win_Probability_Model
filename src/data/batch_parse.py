@@ -26,6 +26,7 @@ Usage:
 from __future__ import annotations
 import argparse
 import gc
+import os
 import sys
 import time
 import traceback
@@ -68,7 +69,8 @@ WORLD_PROPS = [
 TICK_COL_CANDIDATES = ["tick", "tick_id", "game_tick"]
 
 
-MIN_FREE_GB = 7.0  # a single demo can peak ~6.7GB during awpy parse
+MIN_FREE_GB = float(os.environ.get("PARSE_MIN_FREE_GB", "7.0"))  # a single demo can peak ~6.7GB;
+# override with PARSE_MIN_FREE_GB=5.0 on a machine with less free RAM (proceeds sooner, may page)
 
 
 def _wait_for_memory(min_free: float = MIN_FREE_GB, max_wait: int = 120):
