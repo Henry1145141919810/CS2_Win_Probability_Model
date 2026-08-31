@@ -6,7 +6,7 @@
 #SBATCH --error=/vast/projects/ajw/wharton/cs2-rwp/logs/%x_%j.err
 #SBATCH --partition=b200-mig45
 #SBATCH --gpus=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=6
 #SBATCH --mem=32G
 #SBATCH --time=00:30:00
 

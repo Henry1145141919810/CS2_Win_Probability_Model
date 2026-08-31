@@ -31,8 +31,12 @@ git fetch origin && git checkout feat/defuse-progress   # or whatever branch it 
 
 ## 1. Smoke test first (always)
 
+> **Cluster CLI-filter rule (since 2026-08-03):** `sbatch` rejects a wrong CPU:GPU ratio
+> (`CPUS_PER_GPU_MISMATCH`). Required CPUs/GPU: `b200-mig45` = **6**, `b200-mig90` = 14,
+> `dgx-b200` = 28 (mem cap 8 GB/CPU). All job scripts here use 6 on mig45.
+
 ```bash
-srun --partition=b200-mig45 --gpus=1 --cpus-per-task=4 --mem=32G --time=00:20:00 --pty bash
+srun --partition=b200-mig45 --gpus=1 --cpus-per-task=6 --mem=32G --time=00:20:00 --pty bash
 module load anaconda3 && source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "$HOME/envs/cs2-rwp"
 cd /vast/projects/ajw/wharton/cs2-rwp
