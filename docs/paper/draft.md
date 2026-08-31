@@ -183,13 +183,31 @@ post-economy feature in the study.
 We also tested **map control *around* the live bomb** and a **dropped-bomb scramble** feature. Both
 were weak/redundant — reported as negative results (§7.4).
 
-### 4.4 Pillar 4 — Firepower (player skill prior)
+### 4.4 Pillar 4 — Firepower, four ways (player skill prior)
 
 A pre-round skill prior from HLTV per-player statistics, joined on `(steamid, year)` because skill
-drifts season to season. **v1** summed Rating/ADR/KAST over alive players plus a 1-v-N clutch score
-(9 features). **v2** is side-aware (CT-side vs T-side Rating/Firepower/Entrying/Trading/Opening) with
-per-player situational gates (lone survivor → clutch; teammates alive → entry/trading; opening only at
-5-v-5), an AWP-holder sniping role flag, and grenade-value-weighted utility (20 features).
+drifts season to season. The statistics are fixed; what varies is how they are **aggregated** from
+players to a side. Four encodings, each addressing one defect of the one before it:
+
+- **(a) Summed rating (2).** Add each alive player's HLTV Rating. Dense and simple — and almost
+  entirely a re-encoding of *how many players are alive*, since pro ratings sit in a narrow band
+  around 1.0 (§7.5).
+- **(b) Mean rating (2).** Divide by the number of alive players **that have a database entry** —
+  not the headcount. Players absent from the table never entered the sum, so dividing by the
+  headcount would report low "skill" for a side that merely has poor coverage (implied per-player
+  rating: median 0.84 under the headcount divisor vs 1.09 under the correct one).
+- **(c) Mean × team-rank weight (2).** A rating does not say what calibre of opposition it was earned
+  against. Scale the mean by `w = 1/log2(rank+1)`, so a top-ranked team contributes at full weight and
+  a rank-30 team at roughly a fifth. Alternatives `1/rank` and linear `(31−rank)/30` also tested.
+- **(d) Mean + situational gates (20).** Side-aware (CT vs T Rating/Firepower/Entrying/Trading/Opening)
+  with per-player gates: lone survivor → clutch, entry/trading suppressed; teammates alive → entry and
+  trading; opening only at 5-v-5. Plus an AWP-holder sniping flag and grenade-value-weighted utility.
+  All averaged, so the confound of (a) does not return through the back door.
+
+§7.5 ablates all four on a common skill-free base. The firepower-bearing sets elsewhere in the paper
+(**F**, **EF**, **EFB2**) carry the **summed, gated** variant — the encoding the pillar was originally
+built with; §7.5 re-tests the out-of-time conclusion with the cross-validation-preferred encoding and
+it does not change.
 
 **This pillar is structurally different from the other three**, in a way that turns out to matter
 enormously (§7.8): pillars 1–3 are computed *from the demo itself* and are therefore always available
@@ -322,19 +340,40 @@ were both weak/redundant. A loose bomb is a *consequence* of a losing round, not
 bomb-neighbourhood ownership duplicates existing site-control features. What matters post-plant is
 the **race geometry**, not the local ownership.
 
-### 7.5 Firepower: a pillar with a confound (in-sample)
+### 7.5 Firepower: a confound, its repair, and what survives
 
-Firepower is the weakest pillar. In-sample, F − A is significant only on logistic regression
-(+0.0022, CI 0.0003–0.0045); on XGBoost/LightGBM/CatBoost the CI **includes zero**. Adding firepower on
-top of the other pillars (EF − E) is ≈ 0 on every model, and *significantly negative* on CatBoost
-(−0.0026) in v2, whose sparse, situationally-gated features the tree models overfit.
+**The confound.** `ct_rating_sum − t_rating_sum` is permutation-importance rank #1 of all 68 features —
+but it correlates **0.987** with the *player-count advantage* and predicts the outcome identically
+(both r = 0.498). Because rating is **summed over alive players** and pro ratings cluster near 1.0, the
+feature's values pile up at the integers 0–5: it is counting players, which economy already supplies.
+A cautionary tale about permutation importance on collinear features.
 
-**A confound we flag explicitly.** `ct_rating_sum − t_rating_sum` is permutation-importance rank #1 —
-but it correlates **0.987** with the *player-count advantage*, and predicts the outcome identically
-(both r = 0.498). Because rating is **summed over alive players**, the feature is largely a re-encoding
-of "who has more players alive", which economy already supplies. Its apparent dominance is an artifact;
-its marginal contribution is ≈ 0. We report this rather than repair it, because §7.8 shows the pillar's
-binding constraint is elsewhere.
+**The repair, and two directions from it.** Encoding (b) divides by the number of alive players with a
+database entry. It works in the narrow sense: averaged over the five classical models, moving (a) → (b)
+recovers two thirds of the out-of-time damage (contested-AUC −0.015 → −0.006). It is simply not enough
+— (b) is still behind using no skill prior at all. From the repaired base, (c) asks whether the rating
+needs adjusting for opponent calibre and (d) whether one aggregate per side is too coarse.
+
+**Contested-AUC vs the skill-free base, mean over five classical models:**
+
+| encoding | ΔCV | **ΔOOT** | OOT wins |
+|---|---|---|---|
+| (a) summed rating | +0.0030 | −0.0153 | 0/5 |
+| (b) mean rating | −0.0008 | −0.0056 | 1/5 |
+| (c) mean × team rank | **+0.0105** | −0.0006 | 3/5 |
+| (d) mean + gates | +0.0005 | **−0.0487** | 0/5 |
+
+**Cross-validation rewards every rung; the out-of-time test rejects every rung.** The encoding CV likes
+most, (d), fails hardest out of sample — on all five models, by a margin far outside the ±0.02–0.03
+bootstrap noise. Twenty sparse, frequently-NaN, gated features are exactly what a flexible model
+overfits, and CV cannot see it because every fold comes from the same era.
+
+**The conclusion does not depend on which encoding we chose.** Selecting on out-of-time performance
+would be selecting on the test set, so we select on CV, which prefers (c) by three times the next
+best. Re-running the out-of-time comparison with (c) leaves the conclusion intact: it lands 0.0006
+contested-AUC *below* the skill-free model. The pillar's binding constraint is not its encoding but its
+content — and that is now a tested claim rather than an assertion, because the encoding hypothesis was
+the obvious alternative explanation and has been ruled out.
 
 ### 7.6 Deep models: a statistical dead heat
 
@@ -461,7 +500,11 @@ fallback when coverage drops.
    we would expect the GAT in particular to benefit from substantially more data.
 3. **Firepower leakage.** Same-era player ratings are partly computed from the matches being
    predicted. We flag this; the lagged-prior variant (in progress) is the clean construction.
-4. **Firepower count confound.** The summed-rating feature is ≈ a player-count proxy (r = 0.987). We
+4. **Firepower count confound, repaired.** The summed-rating feature is ≈ a player-count proxy
+   (r = 0.987). §7.5 repairs it by averaging and tests two further encodings on the repaired base;
+   removing the confound helps and is not enough. The sets used elsewhere retain the summed encoding,
+   which is not the strongest of the four; the out-of-time conclusion was re-checked with the
+   CV-preferred encoding and is unchanged. We
    report it rather than repair it; a per-capita encoding was considered and not pursued, since §7.8
    showed the pillar's binding constraint is data coverage, not encoding.
 5. **Irreducible ceiling.** Contested rounds sit near 0.58 for *every* model tested. Some of this is
