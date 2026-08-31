@@ -51,7 +51,7 @@ that it still has the same-year firepower (training is **not** lagged — only t
 Never submit a full job untested. Grab a debug GPU for 30 min and run a tiny version:
 
 ```bash
-srun --partition=b200-mig45 --gpus=1 --cpus-per-task=6 --mem=16G --time=00:20:00 --pty bash
+srun --partition=b200-mig45 --gpus=1 --cpus-per-task=6 --mem=48G --time=00:20:00 --pty bash
 module load anaconda3 && source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "$HOME/envs/cs2-rwp"
 cd /vast/projects/ajw/wharton/cs2-rwp

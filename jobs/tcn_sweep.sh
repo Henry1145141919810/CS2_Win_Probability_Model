@@ -7,7 +7,7 @@
 #SBATCH --partition=b200-mig45
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=6
-#SBATCH --mem=32G
+#SBATCH --mem=48G
 #SBATCH --time=01:00:00
 
 set -euo pipefail

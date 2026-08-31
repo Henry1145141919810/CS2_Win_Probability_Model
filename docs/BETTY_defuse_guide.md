@@ -36,7 +36,7 @@ git fetch origin && git checkout feat/defuse-progress   # or whatever branch it 
 > `dgx-b200` = 28 (mem cap 8 GB/CPU). All job scripts here use 6 on mig45.
 
 ```bash
-srun --partition=b200-mig45 --gpus=1 --cpus-per-task=6 --mem=32G --time=00:20:00 --pty bash
+srun --partition=b200-mig45 --gpus=1 --cpus-per-task=6 --mem=48G --time=00:20:00 --pty bash
 module load anaconda3 && source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "$HOME/envs/cs2-rwp"
 cd /vast/projects/ajw/wharton/cs2-rwp
