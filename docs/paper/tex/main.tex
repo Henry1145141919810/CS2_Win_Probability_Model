@@ -1138,9 +1138,10 @@ model, carrying the entire counterfactual bomb block, barely moves off $0.92$ (F
 We add four columns that measure the live defuse: whether one is in progress, seconds elapsed, the
 kit-aware fraction of the required time completed, and whether the remaining defuse fits inside the
 remaining fuse. They are derived from the per-tick defusing flag before down-sampling, which is why the
-demos were re-parsed, and they are quarantined into two feature sets (EB2D, EFB2D) rather than folded
-into the map-control sets, since a near-complete defuse is close to an endgame certainty and would
-otherwise credit the spatial pillar for it. The feature is not a relabelling of the outcome: 39.6\,\%
+demos were re-parsed. They extend the bomb-geometry pillar (Appendix~\ref{app:features}) rather than
+forming a pillar of their own, but because a near-complete defuse is close to an endgame certainty --
+crediting it to the spatial pillars would inflate them -- we keep them out of the headline sets and
+toggle them as an ablation (EB2D, EFB2D denote EB2 and EFB2 with these four columns added). The feature is not a relabelling of the outcome: 39.6\,\%
 of the 1{,}032 defuse attempts in training are interrupted, and the model stays calibrated on those.
 
 Because the feature fires on only $0.97\,\%$ of snapshots, it cannot and does not move a pooled metric:
@@ -1616,11 +1617,13 @@ A     & Economy \& combat & 17 \\
 E     & A + Voronoi map control + Tactical + bomb-plant geometry & 60 \\
 EB2   & E + bomb-live + defuse-race & 72 \\
 EFB2  & EB2 + territory map control + Firepower & 97 \\
-EB2D  & EB2 + Defuse-progress & 76 \\
-EFB2D & EFB2 + Defuse-progress & 101 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\noindent The four live-defuse columns belong to the bomb-geometry pillar (Table~\ref{tab:features})
+and are not a separate set. They are evaluated as an ablation in Sect.~\ref{sec:defuseprogress}: EB2D
+and EFB2D denote EB2 and EFB2 with those four columns added (76 and 101 features respectively).
 
 {\small
 \begin{longtable}{p{0.34\textwidth}p{0.58\textwidth}}
@@ -1666,7 +1669,7 @@ one feature per side.}\label{tab:features}\\
 \texttt{ct\_terr\_deficit} & CT minus T territory control. \\
 \texttt{terr\_\{a\_site,b\_site,banana,mid,ct\_spawn\}\_deficit} & Per-zone territory deficit (5). \\
 \midrule
-\multicolumn{2}{l}{\textbf{Pillar 3 — Tactical readiness \& bomb geometry (50)}}\\
+\multicolumn{2}{l}{\textbf{Pillar 3 — Tactical readiness \& bomb geometry (54)}}\\
 \midrule
 \texttt{\{ct,t\}\_positional\_entropy} & Shannon entropy of players over zones (spread). \\
 \texttt{\{ct,t\}\_\{a\_site,b\_site,banana,mid,ct\_spawn\}\_players} & Player count per zone per side (10). \\
@@ -1693,7 +1696,9 @@ one feature per side.}\label{tab:features}\\
 \texttt{best\_defuser\_has\_kit} & Whether the fastest potential defuser holds a kit. \\
 \texttt{defuse\_contest\_margin} & Defuse margin net of the nearest T's interrupt window. \\
 \addlinespace
-\multicolumn{2}{l}{\textit{Defuse-progress (4) — measures an \emph{actual} running defuse; sets EB2D / EFB2D only}}\\
+\multicolumn{2}{l}{\textit{\quad live-defuse tracking (4) — the four features above are counterfactual (\emph{could} a}}\\
+\multicolumn{2}{l}{\textit{\quad CT defuse in time); these four measure an \emph{actual} running defuse, added in the}}\\
+\multicolumn{2}{l}{\textit{\quad re-parse (Sect.~\ref{sec:defuseprogress}), and toggled as an ablation (EB2D / EFB2D)}}\\
 \texttt{defuse\_in\_progress} & Whether a defuse is being performed right now. \\
 \texttt{defuse\_elapsed\_sec} & Seconds into the current defuse attempt. \\
 \texttt{defuse\_progress\_frac} & Elapsed / required (kit-aware), in $[0,1]$. \\
