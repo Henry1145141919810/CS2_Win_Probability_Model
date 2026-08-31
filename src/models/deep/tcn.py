@@ -224,6 +224,33 @@ def collect(model, Xs, M, Y, C, ridx, device, batch, G=None, Tk=None):
     return out + (np.concatenate(gs), np.concatenate(ts)) if G is not None else out
 
 
+def print_defuse_curve(hd, gh, th, yh, ph, model_name):
+    """Per-second calibration on the DEFUSING rows: predicted vs actual CT win by defuse-progress
+    bucket. Joins the flattened holdout predictions back to the holdout table on (match_id, tick),
+    keeps rows with a live defuse, and prints aggregate log-loss/Brier + a 5-bucket curve. This is
+    the point of the defuse-progress feature; a no-op if the holdout has no defuse columns."""
+    if "defuse_in_progress" not in hd.columns:
+        return
+    pred = pl.DataFrame({"match_id": gh, "tick": np.asarray(th, dtype=np.int64),
+                         "p": ph, "y": yh.astype(float)})
+    key = ["match_id", "tick"]
+    dd = (hd.select(key + ["defuse_in_progress", "defuse_progress_frac"])
+            .with_columns(pl.col("tick").cast(pl.Int64))
+            .join(pred, on=key, how="inner")
+            .filter(pl.col("defuse_in_progress") == 1))
+    if not dd.height:
+        print(f"\n{model_name} defusing-rows curve: no rows matched on (match_id, tick).")
+        return
+    yv, pv = dd["y"].to_numpy(), dd["p"].to_numpy()
+    print(f"\n{model_name} defusing-rows curve honesty (n={dd.height}):  "
+          f"log-loss {log_loss(yv, pv, labels=[0, 1]):.4f}  brier {brier_score_loss(yv, pv):.4f}")
+    print("  progress    n   actual  pred")
+    for lo, hi in [(0, .2), (.2, .4), (.4, .6), (.6, .8), (.8, 1.01)]:
+        b = dd.filter((pl.col("defuse_progress_frac") >= lo) & (pl.col("defuse_progress_frac") < hi))
+        if b.height:
+            print(f"  {lo:.1f}-{min(hi, 1.0):.1f}  {b.height:4d}   {b['y'].mean():.3f}   {b['p'].mean():.3f}")
+
+
 BASELINE = "classical best (logreg EFB2): AUC 0.8515  logloss 0.4559  brier 0.1552  ECE 0.016  cAUC 0.596"
 
 
@@ -293,15 +320,16 @@ def main():
                 f"versions (e.g. firepower v1 vs v2). Rebuild or re-sync so both have identical schemas.\n")
         Xh, Mh, Yh, Gh, Ch, Th = build_sequences(hd, cols, args.seq_len)
         Xhs = ((Xh - mu) / sd).astype(np.float32)
-        yh, ph, ch, gh, _ = collect(model, Xhs, Mh, Yh, Ch, np.arange(len(Yh)), device, args.batch,
-                                    G=Gh, Tk=Th)
+        yh, ph, ch, gh, th = collect(model, Xhs, Mh, Yh, Ch, np.arange(len(Yh)), device, args.batch,
+                                     G=Gh, Tk=Th)
         tag = Path(args.holdout).stem
         print("\n" + metric_line(f"TCN OUT-OF-TIME [{tag}]", yh, ph, ch))
         if args.bootstrap:
             print_bootstrap(block_bootstrap_metrics(yh, ph, gh, ch, args.bootstrap), args.bootstrap)
         print(BASELINE)
+        print_defuse_curve(hd, gh, th, yh, ph, "TCN")
         if args.save_oof:
-            pl.DataFrame({"match_id": gh, "y": yh, "p_tcn": ph}).write_parquet(args.save_oof)
+            pl.DataFrame({"match_id": gh, "tick": th, "y": yh, "p_tcn": ph}).write_parquet(args.save_oof)
             print(f"saved holdout preds -> {args.save_oof}")
     elif args.cv:
         # 5-fold GroupKFold by match -> out-of-fold predictions over EVERY round (no leakage),

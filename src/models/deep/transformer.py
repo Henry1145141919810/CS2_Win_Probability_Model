@@ -155,15 +155,16 @@ def main():
                 f"versions (e.g. firepower v1 vs v2). Rebuild or re-sync so both have identical schemas.\n")
         Xh, Mh, Yh, Gh, Ch, Th = tcn.build_sequences(hd, cols, args.seq_len)
         Xhs = ((Xh - mu) / sd).astype(np.float32)
-        yh, ph, ch, gh, _ = tcn.collect(model, Xhs, Mh, Yh, Ch, np.arange(len(Yh)), device, args.batch,
-                                        G=Gh, Tk=Th)
+        yh, ph, ch, gh, th = tcn.collect(model, Xhs, Mh, Yh, Ch, np.arange(len(Yh)), device, args.batch,
+                                         G=Gh, Tk=Th)
         tag = Path(args.holdout).stem
         print("\n" + tcn.metric_line(f"Transformer OUT-OF-TIME [{tag}]", yh, ph, ch))
         if args.bootstrap:
             tcn.print_bootstrap(tcn.block_bootstrap_metrics(yh, ph, gh, ch, args.bootstrap), args.bootstrap)
         print(tcn.BASELINE)
+        tcn.print_defuse_curve(hd, gh, th, yh, ph, "Transformer")
         if args.save_oof:
-            pl.DataFrame({"match_id": gh, "y": yh, "p_transformer": ph}).write_parquet(args.save_oof)
+            pl.DataFrame({"match_id": gh, "tick": th, "y": yh, "p_transformer": ph}).write_parquet(args.save_oof)
             print(f"saved holdout preds -> {args.save_oof}")
     elif args.cv:
         aY, aP, aC, aG, aT = [], [], [], [], []
