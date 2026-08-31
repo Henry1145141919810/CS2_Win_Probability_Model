@@ -295,25 +295,39 @@ discrete null calibration for the extended version.
 
 ---
 
-## v11 — 2026-08-30 — defuse-progress feature + complete feature table
+## v11 — 2026-08-31 — defuse-progress feature (curve honesty) + complete feature table
 
-Tag: `paper-v11`
+Tag: `paper-v11` · Zip: `CS2_winprob_overleaf_v11.zip`
 
 **Changed.** Adds (1) a new Results subsection "Per-second honesty during a defuse" (Sect. defuseprogress)
-with Fig. F11, and (2) a complete feature-list appendix (Appendix, longtable) plus a per-set composition
-table.
+with Fig. F11 and Table tab:defusecal, and (2) a complete feature-list appendix (Appendix, longtable)
+plus a per-set composition table.
 
 The defuse-progress feature (4 columns measuring an ACTUAL running defuse, from a re-parse that adds the
 per-tick is_defusing flag) is a curve-honesty fix, not an accuracy gain: it fires on ~1% of snapshots so
-pooled AUC and contested-AUC do not move, but on the defusing rows it cuts log-loss 60% and makes the
-predicted curve track the empirical one (EB2 stays flat as a defuse completes; EB2D tracks it). Quarantined
-into EB2D/EFB2D. 39.6% of attempts are interrupted, so it is not a ct_won relabel. Framed as the
-contested-AUC argument in miniature.
+pooled AUC and contested-AUC do not move, but on the defusing rows it cuts log-loss 60% (0.158 -> 0.063,
+logistic) and makes the predicted curve track the empirical one (EB2 stays flat as a defuse completes;
+EB2D tracks it). 39.6% of attempts are interrupted, so it is not a ct_won relabel. Framed as the
+contested-AUC argument in miniature. The four columns EXTEND the bomb-geometry pillar (not a pillar of
+their own); EB2D/EFB2D are an ablation label (EB2/EFB2 + those columns), kept out of the headline sets
+because a near-complete defuse is close to an endgame certainty.
 
-**Re-upload to Overleaf.** main.tex + one new figure F11_defuse_curve.png.
+**Deep-model corroboration (Betty, out-of-time on the 2026 holdout).** TCN and Transformer, which ingest
+all columns incl. the 4 defuse ones, tie the classical models on pooled AUC (0.843 / 0.838, CIs overlap
+~0.85 -> the dead heat persists) and track the defusing-row curve out-of-time. Table tab:defusecal ranks
+defusing-row calibration: logistic EB2D best (log-loss 0.063), then TCN (0.083), Transformer (0.124), all
+far below the featureless EB2 (0.158) -- feature, not model capacity.
 
-**Data note.** Requires the re-parsed training_dataset_defuse.parquet (476,595 x 135, superset of the
-published table + 4 defuse cols). See docs/notes_defuse_results.md, docs/defuse_progress_README.md.
+**Data.** The TRAINING table is adopted as the canonical superset (`data/training_dataset.parquet`,
+476,595 x 135) — byte-identical to the published table on all 115 prior columns (firepower included), so
+every in-time number is unchanged (re-confirmed by re-running the in-time classical benchmark). The 2026
+TEST table is deliberately NOT swapped: the re-parse populated 2026 firepower (coverage 91.6% -> 99.99%),
+which would silently convert the paper's firepower-collapse finding (EFB2 out-of-time 0.8236) into the
+same-year variant (0.8450). `data/test_dataset_2026.parquet` stays the original coverage-gap table; the
+defuse benchmark uses a separate `test_dataset_2026_defuse.parquet` (firepower-free EB2/EB2D curve, so
+unaffected). Old tables backed up as `data/*_predefuse_backup.parquet`.
+
+**Re-upload to Overleaf.** main.tex + one new figure `F11_defuse_curve.png`.
 
 ---
 

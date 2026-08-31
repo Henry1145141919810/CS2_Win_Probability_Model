@@ -84,11 +84,22 @@ the signal. OOF preds saved: `outputs/holdout_{tcn,transformer}_defuse.parquet`.
 **GAT / ensemble:** deferred. GAT reads raw trajectories (no 2026 trajectory set; would not ingest the
 tabular defuse columns anyway); the ensemble adds nothing over the transformer. Neither needed here.
 
-## Bonus from the re-parse
-The re-parsed training table is a clean superset of the published one (same 476,595 × 220, base rate
-0.445, plus the 4 defuse columns + 2 coverage diagnostics). **Adopted as canonical** (2026-08-31):
-`data/training_dataset.parquet` + `data/test_dataset_2026.parquet` now carry the feature; old tables
-backed up as `data/*_predefuse_backup.parquet`.
+## Bonus from the re-parse — and a firepower trap (2026-08-31)
+The re-parsed TRAINING table is a clean superset of the published one (same 476,595 × 220, base rate
+0.445, plus the 4 defuse columns), and **byte-identical on all 115 published columns** (firepower
+included), so every in-time number is unchanged. It is **adopted as canonical**
+(`data/training_dataset.parquet`).
+
+**The 2026 TEST table is a different story and was NOT swapped.** The re-parse used Leu's completed
+2026 stats, so `test_dataset_2026_defuse.parquet` has firepower coverage 99.99% vs the original's
+91.6%. That coverage gap IS the paper's headline firepower-collapse finding (EFB2 out-of-time 0.8236);
+populated firepower moves it to 0.8450 (the same-year variant). Swapping the canonical test table in
+would silently rewrite that result. So `data/test_dataset_2026.parquet` stays the **original**
+(coverage-gap) table, and the defuse benchmark uses the separate `test_dataset_2026_defuse.parquet`
+— which is safe because the defuse curve is measured on EB2/EB2D (firepower-free). Confirmed by
+re-running the full in-time + out-of-time classical benchmark on the canonical tables: in-time
+byte-identical to the paper; out-of-time A/E/EB2 identical, only EFB2 moved (the firepower-coverage
+effect above). Backups: `data/*_predefuse_backup.parquet`.
 
 ## Firepower v4 (Leu's separate exploration) — no paper change
 Mean-encoding (fixes the count confound) is a fourth failed firepower construction: CV 0.8520
