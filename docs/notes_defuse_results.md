@@ -57,10 +57,38 @@ Honest caveats to state: fires on ~1% of rows; pooled AUC and contested-AUC do n
 out-of-time paired deltas are marginally negative (noise). The claim is calibration on the defusing
 rows, nothing more.
 
+## Deep models (Betty, out-of-time on the 2026 defuse holdout) — 2026-08-31
+
+TCN and Transformer trained on all 2024–25 data, evaluated once on `test_dataset_2026_defuse.parquet`.
+Both consume every feature column, the 4 defuse-progress columns included. Curve honesty printed
+directly in the job log (`tcn.print_defuse_curve`, joins holdout preds to the table on match_id+tick).
+
+**Pooled AUC — dead heat persists out-of-time.** TCN 0.8432 (0.8241, 0.8618); Transformer 0.8384
+(0.8184, 0.8577). Both sit just below the best classical (EB2 lgbm 0.8501 / xgb 0.8497), all CIs
+overlapping — no deep advantage. Consuming firepower, they land in EFB2 territory, below EB2.
+
+**Defusing-row calibration (n=631) — the fix carries over to the sequence models:**
+
+| model (defusing rows) | log-loss | Brier |
+|---|---|---|
+| logistic EB2 (no feature) | 0.1580 | 0.0451 |
+| logistic EB2D (+ feature) | **0.0627** | **0.0172** |
+| TCN (+ feature) | 0.0833 | 0.0270 |
+| Transformer (+ feature) | 0.1241 | 0.0380 |
+
+TCN and Transformer both track the empirical curve (pred ≈ actual across all 5 progress buckets), far
+below the featureless 0.158. But the **logistic EB2D is the best calibrated (0.063)** even though all
+three include the feature — reinforcing that the physics-derived feature, not model capacity, supplies
+the signal. OOF preds saved: `outputs/holdout_{tcn,transformer}_defuse.parquet`.
+
+**GAT / ensemble:** deferred. GAT reads raw trajectories (no 2026 trajectory set; would not ingest the
+tabular defuse columns anyway); the ensemble adds nothing over the transformer. Neither needed here.
+
 ## Bonus from the re-parse
 The re-parsed training table is a clean superset of the published one (same 476,595 × 220, base rate
-0.445, plus the 4 defuse columns + 2 coverage diagnostics). It can become the canonical table if we
-adopt the feature.
+0.445, plus the 4 defuse columns + 2 coverage diagnostics). **Adopted as canonical** (2026-08-31):
+`data/training_dataset.parquet` + `data/test_dataset_2026.parquet` now carry the feature; old tables
+backed up as `data/*_predefuse_backup.parquet`.
 
 ## Firepower v4 (Leu's separate exploration) — no paper change
 Mean-encoding (fixes the count confound) is a fourth failed firepower construction: CV 0.8520

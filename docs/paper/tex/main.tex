@@ -1162,6 +1162,36 @@ in pooled AUC while removing most of the calibration error on the defusing rows.
 \label{fig:defuse}
 \end{figure}
 
+The effect is not specific to the logistic model. The two sequence models, trained on all 2024--25
+data and evaluated once on the 2026 holdout, consume every feature column---the four defuse-progress
+columns included---and their pooled out-of-time AUC is statistically indistinguishable from the
+classical models (TCN $0.843$, Transformer $0.838$; every $95\%$ interval overlaps the classical
+$\sim\!0.85$), so the dead heat of Sect.~\ref{sec:deep} persists here too. On the $631$ defusing
+rows the calibration correction carries over out-of-time (Table~\ref{tab:defusecal}): both sequence
+models track the empirical curve and sit far below the featureless baseline. The best-calibrated model
+on this slice is nonetheless the logistic EB2D, ahead of both networks that also ingest the feature---a
+concrete instance of the paper's recurring finding that the physics-derived signal, not model capacity,
+is what the pooled metric was missing.
+
+\begin{table}[H]
+\centering
+\caption{Calibration on the $631$ defusing rows of the 2026 holdout. Every row except the first
+includes the four defuse-progress columns. The logistic model with the feature is the best calibrated,
+ahead of the sequence models that also consume it.}
+\label{tab:defusecal}
+\small
+\begin{tabular}{lcc}
+\toprule
+Model (defusing rows) & log-loss & Brier \\
+\midrule
+Logistic, EB2 (no feature)  & $0.158$ & $0.045$ \\
+Logistic, EB2D (+ feature)  & $\mathbf{0.063}$ & $\mathbf{0.017}$ \\
+TCN (+ feature)             & $0.083$ & $0.027$ \\
+Transformer (+ feature)     & $0.124$ & $0.038$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{What the model looks like live}
 \label{sec:live}
 
