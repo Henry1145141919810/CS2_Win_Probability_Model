@@ -8,7 +8,7 @@ encoding at or above the base and prefers the situationally-gated one, while out
 same encoding falls furthest and none rises clearly above the base.
 
 Reads outputs/firepower_ladder.csv (src/models/eval_firepower_ladder.py).
-Writes outputs/figures/paper/F9_firepower_encodings.png.
+Writes outputs/figures/paper/F9_firepower_ladder.png.
 """
 from __future__ import annotations
 from pathlib import Path
@@ -21,7 +21,7 @@ import polars as pl
 
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "outputs" / "firepower_ladder.csv"
-OUT = ROOT / "outputs" / "figures" / "paper" / "F9_firepower_encodings.png"
+OUT = ROOT / "outputs" / "figures" / "paper" / "F9_firepower_ladder.png"
 
 BLUE, AQUA, YELLOW, RED = "#2a78d6", "#1baf7a", "#eda100", "#e34948"
 INK, INK2, MUTED = "#0b0b0b", "#52514e", "#898781"

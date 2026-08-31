@@ -1,5 +1,10 @@
 # Firepower rewrite — checklist
 
+**Version isolation.** `main.tex` and `draft.md` are left at v10, untouched. The rewrite
+lives in `main_fp_rewrite.tex` and `draft_fp_rewrite.md`, with its own figure
+`F9_firepower_ladder.png` so the original `F9_firepower_encodings.png` still renders for
+`main.tex`. The two can be compiled and compared side by side.
+
 **Decision:** restructure the firepower narrative from a chronological v1→v2→v3 account into
 parallel encodings evaluated on one baseline, matching the shape of the map-control section
 (§4.2 / §7.3). **EFB2 keeps the v2 (summed + gated) encoding** — no main table, appendix
