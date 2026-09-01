@@ -331,6 +331,32 @@ unaffected). Old tables backed up as `data/*_predefuse_backup.parquet`.
 
 ---
 
+## v12 — 2026-09-01 — firepower narrative restructured (Haiwen Lu) + author/ack finalized
+
+Tag: `paper-v12` · Zip: `CS2_winprob_overleaf_v12.zip`
+
+**Changed.** Merges Haiwen Lu's firepower rewrite (developed on v10, isolated in `main_fp_rewrite.tex`)
+into the v11 canonical `main.tex` via a clean 3-way merge — his firepower edits and the v11 defuse
+additions are in disjoint sections, so nothing collided. His changes: §4.4 and §7.5 reframe the
+firepower pillar from a chronological v1→v2→v3 account into **four parallel encodings on one skill-free
+base** — (a) summed rating, (b) mean rating (÷ n\_with\_stats, the count-confound repair), (c) mean ×
+team-rank weight, (d) mean + situational gates — with a new ladder table (`tab:fpladder`) and figure
+`F9_firepower_ladder.png` showing CV rewards every rung while out-of-time rejects every rung. EFB2 is
+unchanged (still summed+gated); no table, heatmap, or deep-model number is rerun. The Limitations line
+"we report rather than repair it" is replaced (the confound *was* repaired; the pillar still adds
+nothing). Conclusion unchanged, better supported. See `docs/paper/TODO_firepower_rewrite.md`.
+
+**Also.** Author 2 finalized: **Haiwen Lu**, College of Arts and Sciences, University of Washington
+(hlu24@uw.edu). PARCC acknowledgement replaced with the center's official wording. `\draftversion` →
+v12. Both remaining `\todo`s cleared — the paper now has zero todos.
+
+**Re-upload to Overleaf.** main.tex + one new figure `F9_firepower_ladder.png` (replaces the retired
+`F9_firepower_encodings.png`). The v11 additions (F11) are already in main.tex.
+
+**Still open.** None blocking. `F9_firepower_encodings.png` is retired (no longer referenced).
+
+---
+
 ## vNext — template (copy this block, don't edit v1)
 
 ```

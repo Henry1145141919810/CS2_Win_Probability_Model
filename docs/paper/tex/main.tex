@@ -44,7 +44,7 @@
 
 % DRAFT VERSION. Bump this on every substantive revision, add a CHANGELOG row,
 % git-tag it, and rebuild the zip. The version is stamped on the title page.
-\newcommand{\draftversion}{v11}
+\newcommand{\draftversion}{v12}
 
 \title{\textbf{Where Win Probability Comes From, and Where It Breaks}\\[2mm]
 \large Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check
@@ -52,7 +52,7 @@ for Live Win Probability in Counter-Strike~2}
 
 \author{Henry Huang\thanks{Wharton Sports Analytics \& Business Initiative,
 University of Pennsylvania. \texttt{hyhuang@sas.upenn.edu}}
-\and Leu\thanks{\todo{affiliation}}
+\and Haiwen Lu\thanks{College of Arts and Sciences, University of Washington. \texttt{hlu24@uw.edu}}
 \and Abraham J. Wyner\footnotemark[1]}
 
 \date{Working draft \textbf{\draftversion}, \today}
@@ -100,8 +100,11 @@ incomplete for the deployment period. This failure mode is invisible to
 cross-validation by construction. Reconstructing the prior under three data
 regimes, including a leak-free lagged prior and a leaky same-era prior at full
 coverage, restores calibration but does not enable the skill pillar to exceed the
-skill-free model out-of-time under any regime. The result is a controlled negative
-finding: a correctly constructed, coverage-complete external skill prior does not
+skill-free model out-of-time under any regime. Nor does re-encoding it: across four
+encodings that successively remove a player-count confound, adjust for opponent calibre
+and condition on situation, cross-validation prefers every one of them and the
+out-of-time test prefers none. The result is a controlled negative finding: a correctly
+constructed, coverage-complete and correctly encoded external skill prior does not
 improve out-of-time performance in this setting.
 \end{abstract}
 
@@ -284,7 +287,8 @@ them in. This sounds paranoid; it took one near-miss to justify.
 We organise 115 features into four pillars. Feature-set names used throughout:
 \textbf{A} = economy and combat state; \textbf{E} = A + map control + tactical/bomb;
 \textbf{EB2} = E + defuse-race; \textbf{F} = A + firepower; \textbf{EF} / \textbf{EFB2}
-= the corresponding combinations with firepower.
+= the corresponding combinations with firepower, carrying the summed, situationally-gated
+encoding of Sect.~\ref{sec:pillar4}.
 
 \subsection{Pillar 1, Economy and combat state (17 features)}
 \label{sec:pillar1}
@@ -417,40 +421,58 @@ We also computed (i) \emph{map control in the neighbourhood of the live bomb} an
 redundant. We report them in Sect.~\ref{sec:bomb} rather than quietly dropping them,
 because the \emph{reasons} they fail are informative and generalise.
 
-\subsection{Pillar 4, Firepower (player skill prior)}
+\subsection{Pillar 4, Firepower, four ways (player skill prior)}
 \label{sec:pillar4}
 
 A pre-round skill prior from HLTV per-player statistics, joined on
 $(\text{steamid}, \text{year})$, keyed by year because skill drifts season to season
-and a 2024 rating is not a 2026 rating. We built three versions and report all of them,
-because the progression is part of the finding.
+and a 2024 rating is not a 2026 rating. The statistics themselves are fixed; what varies
+is how they are \emph{aggregated} from players to a side. We evaluate four encodings,
+each addressing one defect of the one before it, which is what makes the comparison clean.
 
-\paragraph{Firepower v1 (9 features).}
-Sums of HLTV Rating, ADR and KAST over the players currently alive on each side, plus a
-1-v-$N$ clutch score. Simple, dense, and, as Sect.~\ref{sec:firepower} shows, almost
-entirely a re-encoding of the player count.
+\begin{description}
+  \item[(a) Summed rating, 2 features.] The obvious encoding, and the one the pillar
+    started as: add each alive player's HLTV Rating, once per side. Dense and simple.
+    It is also, as Sect.~\ref{sec:firepower} shows, almost entirely a re-encoding of
+    \emph{how many players are alive}: professional ratings live in a narrow band around
+    1.0, so a sum over $n$ players is dominated by $n$.
 
-\paragraph{Firepower v2 (20 features).}
-Built specifically to fix v1's confound. It is \emph{side-aware} (separate CT-side and
-T-side Rating, Firepower, Entrying, Trading and Opening statistics, since a player's CT-
-and T-side output genuinely differ) and applies \emph{per-player situational gates}: a
-lone survivor contributes his Clutching statistic and has Entry/Trading suppressed; a
-player with teammates alive contributes Entry and Trading; Opening statistics apply only
-when both sides are still 5-alive and an opening duel is actually possible. It adds an
-AWP-holder ``sniping'' role flag and a grenade-value-weighted utility term.
+  \item[(b) Mean rating, 2 features.] The direct repair: divide by the number of alive
+    players, giving a genuine per-player average. The divisor is the number of alive
+    players \emph{that have an HLTV entry}, not the headcount. Players absent from the
+    table never entered the sum, so dividing by the headcount would report a low ``skill''
+    for a side that merely has poor database coverage. This distinction is not cosmetic:
+    on the 2026 holdout the implied per-player rating has median $0.84$ under the headcount
+    divisor and $1.09$ under the correct one.
 
-\paragraph{Firepower v3 (18 features), opponent-quality weighting.}
-The individual HLTV rating does not distinguish the calibre of the team a player performs
-against: a 1.05 rating earned on the top-ranked team means more than the same figure on the
-thirtieth. v3 addresses this by re-computing every v2 statistic with a per-player
-\emph{team-ranking weight}, $w = 1/\log_2(\text{rank}+1)$, so that a player on the
-top-ranked team contributes at full weight ($w=1$) and one on a rank-30 team at roughly a
-fifth ($w \approx 0.20$). Team rank is resolved through a player-to-team-per-year table and
-an HLTV team-ranking table; players with no team record receive a rank-35-equivalent weight.
-We also test two alternative weightings, $1/\text{rank}$ and a linear $(31-\text{rank})/30$.
-Sect.~\ref{sec:firepower} reports the benchmark: no weighting scheme, and no version (v1, v2,
-or v3), significantly improves on the skill-free model, on any architecture. The team-ranking
-idea is sound, but the data does not support it.
+  \item[(c) Mean $\times$ team-rank weight, 2 features.] An individual rating does not say
+    what calibre of opposition it was earned against: 1.05 on the top-ranked team is not
+    1.05 on the thirtieth. This encoding scales the mean by a team-ranking weight
+    $w = 1/\log_2(\text{rank}+1)$, so a player on the top team contributes at full weight
+    ($w=1$) and one on a rank-30 team at roughly a fifth ($w \approx 0.20$). Rank is
+    resolved through a player-to-team-per-year table and an HLTV team-ranking table;
+    players with no team record receive a rank-35-equivalent weight. We also test
+    $1/\text{rank}$ and a linear $(31-\text{rank})/30$.
+
+  \item[(d) Mean + situational gates, 20 features.] Rather than one aggregate number per
+    side, condition on what each player can actually be doing. This encoding is
+    \emph{side-aware} (separate CT- and T-side Rating, Firepower, Entrying, Trading and
+    Opening statistics, since a player's CT- and T-side output genuinely differ) and
+    applies \emph{per-player situational gates}: a lone survivor contributes his Clutching
+    statistic and has Entry/Trading suppressed; a player with teammates alive contributes
+    Entry and Trading; Opening statistics apply only when both sides are still 5-alive and
+    an opening duel is actually possible. It adds an AWP-holder ``sniping'' role flag and a
+    grenade-value-weighted utility term. All averaged, so the count confound of (a) does
+    not return through the back door.
+\end{description}
+
+Sect.~\ref{sec:firepower} reports the ablation across all four on a common skill-free base.
+The result previews the pillar's fate: cross-validation rewards every encoding and the
+out-of-time test rejects every encoding. Throughout the rest of the paper the
+firepower-bearing sets (\textbf{F}, \textbf{EF}, \textbf{EFB2}) carry the \emph{summed},
+situationally-gated variant, the encoding the pillar was originally built with;
+Sect.~\ref{sec:firepower} also re-tests the out-of-time conclusion with the
+cross-validation-preferred encoding, and it does not change.
 
 \paragraph{Why this pillar is structurally different, and why that turned out to matter.}
 Pillars 1--3 are computed \emph{from the demo itself}: every input is present in the
@@ -876,13 +898,13 @@ helped; both were weak and redundant. The reasons generalise:
 The lesson is that what matters post-plant is the \emph{race geometry} of
 Eq.~\ref{eq:defuse}, not local ownership of the ground the bomb happens to sit on.
 
-\subsection{Firepower: anatomy of a confound}
+\subsection{Firepower: a confound, its repair, and what survives}
 \label{sec:firepower}
 
 Firepower is the weakest of the four pillars in-sample, and the most instructive.
 
-\paragraph{v1, and the most seductive artifact in the study.}
-The v1 feature $\texttt{ct\_rating\_sum} - \texttt{t\_rating\_sum}$ came out at
+\paragraph{The summed encoding, and the most seductive artifact in the study.}
+Encoding (a)'s feature $\texttt{ct\_rating\_sum} - \texttt{t\_rating\_sum}$ came out at
 \textbf{permutation-importance rank \#1} of all 68 features. Taken at face value this is a
 triumph for the skill pillar: player quality is the single most important thing in
 Counter-Strike, exactly as folklore says.
@@ -908,42 +930,89 @@ Its \emph{marginal} contribution is $\approx 0$.}
 This is a cautionary tale about permutation importance on collinear features: it will rank a
 proxy above the thing it proxies for, and it will do so confidently.
 
-\paragraph{v2, which half-works.}
-v2 (Sect.~\ref{sec:pillar4}) was built to fix this. It partially does: it helps the linear
-model (logistic contested-AUC $0.593 \to 0.603$; logistic EFB2 $0.8515 \to 0.8519$, the best
-single model in the study). But it \emph{hurts} the tree models. Twenty sparse,
-situationally-gated, frequently-\texttt{NaN} features are exactly what a gradient-boosted
-model overfits: EF $<$ E on every booster, significantly so on CatBoost ($-0.0026$). And
-because v2 kept the \emph{sums}, the count confound survives.
+\paragraph{The repair, and two directions from it.}
+Encoding (b) is the direct fix: divide by the number of alive players with a database entry.
+It works, in the narrow sense that it does what it was built to do. Averaged over the five
+classical models, moving from (a) to (b) recovers two thirds of the pillar's out-of-time
+damage, contested-AUC $-0.015 \to -0.006$ against the skill-free base. The confound is real
+and removing it is worth something. It is simply not worth enough: (b) is still, on average,
+\emph{behind} using no skill prior at all.
 
-\paragraph{v3: opponent-quality weighting does not help either.}
-The natural repair for the confound is to re-encode the prior so that it measures skill rather than
-headcount. We tested the strongest such candidate: weighting each player's statistics by their team's
-HLTV world ranking (weight $1/\log_2(\text{rank}+1)$, with $1/\text{rank}$ and a linear scheme as
-alternatives), on the reasoning that a rating earned on a top team should count for more than the same
-rating on a weaker team. It does not help. On a common EB2 base, no firepower encoding, neither the v2
-raw sum nor any of the three v3 weightings, produces an AUC gain over the skill-free model whose paired
-bootstrap interval excludes zero, for any of the five models (Fig.~\ref{fig:fpenc}); the v3 variants are
-statistically indistinguishable from v2. The result is intuitive in hindsight: HLTV rating already
-adjusts for opponent quality when it is computed, so re-weighting by team rank adds no independent
-information and, with steeper weightings, discards some.
+From the repaired base we explored the two directions the pillar plausibly had left.
+Encoding (c) asks whether the rating needs adjusting for the calibre of the team it was
+earned on; encoding (d) asks whether one aggregate per side is too coarse and the statistics
+should be conditioned on what each player can currently be doing. Table~\ref{tab:fpladder}
+gives all four on a common skill-free base.
+
+\begin{table}[t]
+\centering
+\caption{Firepower encodings on a common EB2 (skill-free) base, contested-AUC. Left block:
+five-fold out-of-fold cross-validation. Right block: the 2026 out-of-time holdout. Every
+encoding improves on the skill-free model somewhere in cross-validation; none improves on it
+out-of-time. The ordering between the two blocks is close to reversed.}
+\label{tab:fpladder}
+\small
+\begin{tabular}{lccccc|ccccc}
+\toprule
+& \multicolumn{5}{c|}{cross-validation} & \multicolumn{5}{c}{out-of-time (2026)} \\
+encoding & log & xgb & lgbm & cat & rf & log & xgb & lgbm & cat & rf \\
+\midrule
+EB2 (no firepower) & 0.596 & 0.586 & 0.590 & 0.588 & 0.586 & \textbf{0.655} & 0.628 & 0.637 & \textbf{0.650} & \textbf{0.577} \\
+(a) summed rating & 0.598 & 0.593 & 0.593 & 0.591 & 0.587 & 0.631 & 0.628 & 0.612 & 0.635 & 0.564 \\
+(b) mean rating & 0.596 & 0.588 & 0.588 & 0.582 & 0.589 & 0.644 & 0.631 & 0.628 & 0.644 & 0.571 \\
+(c) mean $\times$ team rank & 0.594 & \textbf{0.604} & \textbf{0.603} & \textbf{0.599} & \textbf{0.599} & 0.656 & \textbf{0.637} & \textbf{0.641} & 0.645 & 0.564 \\
+(d) mean + gates & \textbf{0.605} & 0.589 & 0.590 & 0.584 & 0.580 & 0.592 & 0.596 & 0.588 & 0.585 & 0.542 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Cross-validation rewards every rung; the out-of-time test rejects every rung.}
+Read the two blocks of Table~\ref{tab:fpladder} against each other. In cross-validation the
+mean gain over the skill-free base is $+0.003$ for (a), $-0.001$ for (b), $+0.011$ for (c)
+and $+0.001$ for (d); (c) is the best encoding on four of the five models and (d) on the
+fifth. Out-of-time the same four are $-0.015$, $-0.006$, $-0.001$ and $-0.049$, and the
+number of models on which each beats the skill-free base is $0$, $1$, $3$ and $0$ out of
+five. The encoding that cross-validation likes most, (d), is the one that fails hardest out
+of sample, by a margin (contested-AUC $-0.049$, on every one of the five models) far outside
+the bootstrap noise of $\pm 0.02$--$0.03$. Twenty sparse, frequently-\texttt{NaN},
+situationally-gated features are exactly what a flexible model overfits, and the
+cross-validated metric cannot see it because every fold is drawn from the same era.
+
+\paragraph{The conclusion does not depend on which encoding we chose.}
+The obvious objection to a negative result about a pillar is that it was encoded badly.
+Selecting an encoding on out-of-time performance would be selecting on the test set, so we
+select on cross-validation, which prefers (c) by a clear margin ($+0.011$ contested-AUC,
+three times the next best). Re-running the out-of-time comparison with (c) leaves the
+conclusion intact: averaged over the five models it lands $0.0006$ contested-AUC \emph{below}
+the skill-free model, inside the noise in the unhelpful direction. The firepower-bearing sets
+elsewhere in this paper carry the summed, gated encoding, which Table~\ref{tab:fpladder}
+shows is not the strongest one; the finding of Sect.~\ref{sec:lagged} is not an artifact of
+that choice, because the strongest one does not survive either.
 
 \paragraph{Summary.}
 Firepower carries a marginal signal over bare economy (the F versus A comparison is significant for
 logistic regression, $+0.0022$, 95\% CI $0.0003$ to $0.0045$), but that signal vanishes once the
-demo-derived pillars are present: on the EB2 base, no encoding of the prior improves on the skill-free
-model in-sample (Fig.~\ref{fig:fpenc}), and Sect.~\ref{sec:lagged} shows that every encoding degrades
-the model out-of-time. The pillar's binding constraint is therefore not its encoding but its content:
-the observable match state already absorbs whatever team-quality signal an external skill prior can
-provide.
+demo-derived pillars are present. We can now say why, rather than only that. The pillar had one
+identifiable defect, a summed statistic that mostly counted players; removing it recovers two thirds
+of the out-of-time damage and still leaves the prior behind the skill-free model. Neither direction
+available from the repaired encoding rescues it: adjusting for opponent calibre lands on the baseline,
+and conditioning on situation is the worst option out-of-time despite being the best in cross-validation.
+\textbf{The pillar's binding constraint is therefore not its encoding but its content}: the observable
+match state already absorbs whatever team-quality signal an external skill prior can provide. This is
+a stronger claim than a null result, because the encoding hypothesis was the obvious alternative
+explanation and it has been tested and ruled out.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.82\textwidth]{F9_firepower_encodings.png}
-\caption{AUC gain over EB2 (no firepower) for every firepower encoding and model, in-sample, with
-paired match-level bootstrap 95\% intervals. The v2 raw sum and the three team-ranking-weighted v3
-variants all produce intervals that cross zero on every model: no encoding of the skill prior
-significantly improves on the demo-only model.}
+\includegraphics[width=0.82\textwidth]{F9_firepower_ladder.png}
+\caption{Contested-AUC gain over EB2 (no firepower) for each firepower encoding and model; the heavy
+tick is the mean over the five models. \textbf{Left:} five-fold cross-validation, where every encoding
+sits at or above the skill-free base and the situationally-gated (d) is the best on the linear model.
+\textbf{Right:} the 2026 out-of-time holdout, where the ordering collapses: (d) falls furthest on all
+five models and no encoding rises clearly above the base. \textbf{Note the axes:} the panels are drawn
+on their own scales because the out-of-time losses are roughly four times the size of any in-fold gain
+($-0.065$ to $+0.010$ against $-0.007$ to $+0.018$). The reversal between the panels, not the level in
+either, is the finding.}
 \label{fig:fpenc}
 \end{figure}
 
@@ -1357,7 +1426,9 @@ leaky best case} (Table~\ref{tab:lagged}). Same-year 2026 (full coverage \emph{a
 same-season knowledge) still trails EB2 by $0.002$ to $0.011$ AUC on all five models, and its
 contested-AUC is worse ($0.55$--$0.59$ vs EB2's $0.63$--$0.66$) in every variant. Notably the lagged
 and same-year builds are nearly identical: \emph{which season} of statistics we sum barely matters,
-exactly as the count confound of Sect.~\ref{sec:firepower} predicts ($r = 0.987$ with the player count, the feature mostly counts players, so the ratings inside the sum are almost immaterial). The
+exactly as the count confound of Sect.~\ref{sec:firepower} predicts for the summed encoding these
+sets carry ($r = 0.987$ with the player count, so the feature mostly counts players and the ratings
+inside the sum are almost immaterial). The
 in-sample edge of firepower (logistic EFB2 $0.8519$, the study's best in-sample number) is an in-sample
 artifact that reverses out-of-time under every construction.
 
@@ -1470,10 +1541,13 @@ you that you need them}.
     is the clean construction and is what we recommend acting on. Its one caveat is that the models are
     trained on same-year firepower and evaluated on the lagged prior, a small, deployment-realistic
     skew.
-  \item \textbf{Firepower count confound.} The summed-rating feature is approximately a
-    player-count proxy ($r = 0.987$; Fig.~\ref{fig:shapfirepower}). We report rather than repair it;
-    Sect.~\ref{sec:lagged} shows that even with the confound left in and the coverage gap closed, the
-    pillar adds no out-of-time value, so re-encoding it would not change the recommendation.
+  \item \textbf{Firepower count confound, repaired.} The summed-rating feature is approximately a
+    player-count proxy ($r = 0.987$; Fig.~\ref{fig:shapfirepower}). Sect.~\ref{sec:firepower} repairs
+    it by averaging rather than summing, and tests two further encodings built on the repaired base.
+    Removing the confound helps, and not enough: out-of-time the mean encoding still sits behind the
+    skill-free model. The sets used elsewhere in the paper retain the summed encoding, which is not
+    the strongest of the four; the out-of-time conclusion was re-checked with the
+    cross-validation-preferred encoding and is unchanged.
   \item \textbf{Irreducible ceiling.} Contested rounds sit near $0.58$ for \emph{every} model
     tested. Some of this is genuine aleatoric randomness, a 5-v-5 on equal buys really is close
     to a coin flip, and it should be. How much is irreducible and how much is headroom is unknown,
@@ -1517,12 +1591,11 @@ defuse-race inequality) are the ones computed directly from the game itself.
 
 % =====================================================================
 \section*{Acknowledgements}
-The deep-learning experiments were performed on the Betty cluster of the Performant Advanced Research
-Computing Center (PARCC) at the University of Pennsylvania, and we gratefully acknowledge the computing
-allocation and support that made them possible. We thank the awpy maintainers for the demo-parsing
-library and HLTV for the publicly available player statistics used to construct the firepower pillar.
-\todo{Confirm the exact PARCC/Betty acknowledgement wording against their current code-of-conduct /
-acceptable-use page before submission; adjust the centre's official name if needed.}
+The authors gratefully acknowledge the Penn Advanced Research Computing Center (PARCC) core facility
+(\url{parcc.upenn.edu}) for providing the computational infrastructure used in this study. PARCC is made
+possible by financial support from the OVPR, Penn Engineering, SAS, and PSOM and a gift from the Penn
+Engineering overseers. We thank the awpy maintainers for the demo-parsing library and HLTV for the
+publicly available player statistics used to construct the firepower pillar.
 
 \bibliographystyle{plain}
 \bibliography{refs}
