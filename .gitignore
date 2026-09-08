@@ -126,3 +126,9 @@ cs2_share_bundle.zip
 # --- 2026 out-of-time holdout raw channels (isolated from training; regenerable from the bundle) ---
 data/holdout2026/
 outputs/pathwise_perround_*.parquet
+
+# --- Wyner export packages (exports/) ---
+# The bulk data is fully reproducible from src/data/build_wyner_export.py and
+# build_wyner_supplement.py, so only the documentation + manifest are tracked.
+exports/**/*.parquet
+exports/**/*.csv
