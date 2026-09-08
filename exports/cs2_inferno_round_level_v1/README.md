@@ -240,8 +240,10 @@ teams whenever players transfer between orgs.
    with no recorded date; its season was inferred as **2024** because all 10 of its players map to
    their 2024 rosters (FlyQuest 5 / Virtus.pro 5) and only 7/10 map to 2025.
 6. **`round_players.place` is uninformative** by construction (everyone is in spawn at round start).
-7. **This is `de_inferno` only**, and only the *training* portion of the project (2024–2025). The
-   held-out 2026 test set is deliberately excluded.
+7. **This is `de_inferno` only**, and this round-level table covers only the *training* era
+   (2024–2025). The out-of-time **2026 hold-out set is in the supplement package** under
+   `cs2_inferno_raw_supplement_v1/holdout_2026/` — please treat it as touch-once (it must not
+   inform model or feature selection, or the out-of-time results lose their meaning).
 
 ---
 
