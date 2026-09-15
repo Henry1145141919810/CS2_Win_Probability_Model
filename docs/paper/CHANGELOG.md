@@ -357,6 +357,35 @@ v12. Both remaining `\todo`s cleared — the paper now has zero todos.
 
 ---
 
+## v13 — 2026-09-15 — no-economy ablation + round-start prior (two new Results subsections)
+
+Tag: `paper-v13` (tag after commit) · Zip: `CS2_winprob_overleaf_v13.zip` (in `docs/paper/`)
+
+**Changed.** Two additions requested by Prof. Wyner, both computed from the raw supplement.
+- **Sect. "How much of the model is economy? The no-economy ablation"** (`sec:noecon`, after the model
+  matrix): each block fitted alone; money alone 0.830 and the only block informative at freeze-end; all
+  non-economy pillars 0.822 but late; dropping money from EB2 costs 0.010 and transfers unchanged; count
+  columns worth 0.017 to the spatial block. Table `tab:noecon`, Fig. F12, Appendix Table B3 (both models,
+  in-time + the single disclosed 2026 scoring). Code `src/models/noecon_ablation.py`, `src/viz/noecon_figure.py`,
+  results `docs/study_noecon_results.md`.
+- **Sect. "The round-start prior"** (`sec:prior`, after the trajectory-honesty paragraph): round-level
+  nested ladder (buy state is the whole t=0 signal; lagged priors add nothing detectable; stack on the
+  per-second model's first value is the right construction), two martingale identities anchored at the
+  prior (calibrated start; 31% excess quadratic variation from short-lag mean reversion, informative not
+  noise), the first-kill increment (T-side death over-reaction of 5 points), and the strength question
+  (higher-ranked team wins 53-59% at equal buys; the deployed curve says 0.50). Table `tab:prior`,
+  Fig. F13. **In-time only**; new Limitations item says so. Code `src/models/pilot_t0_round_start.py`,
+  `src/models/t0_table.py`, `src/viz/t0_examples.py`; plan `docs/plan_study1_t0_prior.md`.
+- `draft.md` mirrored (7.1b, 7.7b). No existing number, table, or figure changed.
+
+**Re-upload to Overleaf.** main.tex + two new figures `F12_noecon_ablation.png`, `F13_t0_examples.png`.
+
+**Figures regenerated.** F12, F13 (new). None of the existing figures changed.
+
+**Still open.** Round-start prior not scored on 2026; 2023 HLTV tables for lagged priors; the round-to-map
+study (`docs/study_round_to_map_results.md`) is not in the paper yet (a separate section once the
+known-truth simulation is done).
+
 ## vNext — template (copy this block, don't edit v1)
 
 ```

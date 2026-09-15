@@ -257,6 +257,20 @@ exclude zero).
 
 That logistic regression *wins* is itself informative: the aggregate signal is close to linear.
 
+### 7.1b How much of the model is economy? The no-economy ablation (v13)
+
+Every set above contains the economy block; the residual analysis (7.x) measures what the other pillars
+add *after* it. Here each block is fitted *alone* (logistic, 5-fold OOF; XGBoost within 0.02 everywhere;
+one disclosed 2026 scoring). Money alone (7 columns): AUC 0.830, 94% of EB2's above-chance discrimination,
+and the only block informative at freeze-end (0.69 in the first 5 s; every other block at chance). All
+non-economy pillars (55): 0.822, 92%, but late (0.67 in the first 10 s, which is the buy leaking through
+utility and armour). Combat state alone ends the round at 0.949, above money (0.933). Dropping money from
+EB2 costs 0.010 and transfers to 2026 unchanged (0.841 to 0.841). Removing the 14 count-type columns costs
+the spatial block 0.017; on equal-alive snapshots every non-economy set is at 0.68 vs 0.71 for economy.
+Contested-AUC never exceeds 0.60. Reading: economy dominates because it is the only information that
+exists before anyone moves, not because the other pillars are weak. Table `tab:noecon`, Fig. F12,
+Appendix Table B3.
+
 ### 7.2 Where the signal actually lives — contested-AUC
 
 *(Fig. 2)*
@@ -375,6 +389,21 @@ live model's *write-offs* are trustworthy. On the tails, the model says 5% → t
 time; says 10% → 6.8%. The eventual winner was written off (≤ 10%) at some moment in **7.2% of rounds**,
 and those calls are calibrated. A viewer watching the curve dip to 10% and seeing a comeback ~1 time in
 14 is seeing an honest number.
+
+### 7.7b The round-start prior (v13; in-time only)
+
+Round level, 4,866 rounds, 5-fold by match. Format and score alone: AUC 0.536; plus the buy state: 0.682
+(the whole freeze-end signal); plus history: +0.004; plus same-year priors (leaky): +0.010; plus lagged
+priors: +0.005 (CI includes 0); priors alone at chance. A round-level refit of the economy columns (0.691)
+does not beat the per-second model's first value (0.692); the right construction is a stack on that value
+plus history and lagged priors (0.695). Martingale checks anchored at the prior: terminal identity holds
+(ratio 1.02); the per-second path carries 31% excess quadratic variation (EB2 and economy-only alike) from
+short-lag mean reversion (autocorrelation -0.04 to -0.01 at 1-5 s); shrinking increments by 0.85 restores
+the identity at a cost of 0.011 log-loss, so the movement is informative and the remedy is a path-aware
+forecast. First kill: reaction to a CT death calibrated (0.216 vs 0.234), to a T death 5 points too strong
+(0.728 vs 0.678). At equal buys the higher-ranked team wins 53-59% when the rank gap is 6+, but the
+production curve says 0.50-0.51 (no team features). Table `tab:prior`, Fig. F13. Not scored on 2026;
+lagged priors undefined for 2024 (no 2023 tables).
 
 ### 7.8 ⭐ The out-of-time holdout: the model transfers; its skill prior does not
 

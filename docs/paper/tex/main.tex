@@ -44,15 +44,16 @@
 
 % DRAFT VERSION. Bump this on every substantive revision, add a CHANGELOG row,
 % git-tag it, and rebuild the zip. The version is stamped on the title page.
-\newcommand{\draftversion}{v12}
+\newcommand{\draftversion}{v13}
 
 \title{\textbf{Where Win Probability Comes From, and Where It Breaks}\\[2mm]
 \large Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check
 for Live Win Probability in Counter-Strike~2}
 
 \author{Henry Huang\thanks{Wharton Sports Analytics \& Business Initiative,
-University of Pennsylvania. \texttt{hyhuang@sas.upenn.edu}}
-\and Haiwen Lu\thanks{College of Arts and Sciences, University of Washington. \texttt{hlu24@uw.edu}}
+University of Pennsylvania. }
+\and Haiwen Lu\thanks{College of Arts and Sciences, University of Washington.}
+\and Jonathan David Pipping\footnotemark[1]
 \and Abraham J. Wyner\footnotemark[1]}
 
 \date{Working draft \textbf{\draftversion}, \today}
@@ -608,6 +609,79 @@ variance rather than bias.
 flat: the spread across nine architectures is smaller than the spread across feature sets,
 and both are small.}
 \label{fig:heatmap}
+\end{figure}
+
+\subsection{How much of the model is economy? The no-economy ablation}
+\label{sec:noecon}
+
+Every feature set in Fig.~\ref{fig:heatmap} contains the economy block, and the residual analysis of
+Sect.~\ref{sec:residual} measures what the other pillars add \emph{after} economy. The complementary
+question is how far each block gets \emph{alone}. Two definitional points shape the answer. The
+economy block is money (equipment value, economy class, armour, defuse kits; 7 columns) together with
+combat state (players alive, health, bomb planted, round time; 6 columns) and score (4 columns). And
+headcount leaks into the other pillars through columns that count alive players (per-zone player
+counts, AWP presence, counter-terrorists near the bomb; 14 columns), while the buy leaks through
+grenade counts and armour. We therefore split the economy block into its three parts, build variants of
+the non-economy sets with the count-type columns removed, and report every set on the equal-alive
+subset, where headcount carries no information.
+
+Table~\ref{tab:noecon} and Fig.~\ref{fig:noecon} give the result for logistic regression; XGBoost is
+within $0.02$ in every cell (Table~\ref{tab:appB3}). Money alone reaches an AUC of $0.830$, 94\,\% of
+the production model's above-chance discrimination, and it is the only block that is informative at
+the first second of the round: its AUC is $0.69$ in the first five seconds, when every other block sits
+at chance. The non-economy pillars together reach $0.822$ (92\,\%), but they do so late: they sit at
+$0.67$--$0.68$ in the first ten seconds, which is the buy leaking through utility and armour, and
+approach the economy block only after 40\,s. Combat state alone ends the round at $0.949$, above money
+($0.933$): in the last thirty seconds the round is read from who is alive, not from what was bought.
+Removing the money block from the production set costs only $0.010$ AUC, and the resulting set
+transfers to 2026 without degradation ($0.841 \to 0.841$), because grenade counts, armour and AWP
+presence re-encode most of the buy. Removing the fourteen count-type columns from the spatial block
+costs $0.017$; on the equal-alive subset every non-economy set sits at $0.68$ against $0.71$ for the
+economy block, and combat state alone falls to $0.57$, so the ``combat'' signal is headcount.
+Contested-AUC does not exceed $0.60$ for any set. All paired match-level bootstrap intervals exclude
+zero, and every set transfers to the 2026 holdout within $0.02$ of its in-time value with the ordering
+unchanged (one disclosed scoring).
+
+The reading is that economy dominates the pooled numbers because it is the only information that
+exists before anyone moves, not because the spatial and bomb pillars are weak: given time, they recover
+nine tenths of what the full model knows, and the two families are largely redundant with each other.
+
+\begin{table}[H]
+\centering
+\caption{No-economy ablation (logistic regression, 5-fold out-of-fold). AUC with match-level bootstrap
+95\,\% interval, the single disclosed 2026 scoring, AUC on the equal-alive subset, and contested-AUC.
+The number of columns is in parentheses.}
+\label{tab:noecon}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Feature set & AUC & 95\,\% CI & 2026 & equal alive & cont.-AUC \\
+\midrule
+EB2, production set (72)              & 0.851 & 0.844--0.857 & 0.847 & 0.715 & 0.596 \\
+A, economy block (17)                 & 0.847 & 0.840--0.853 & 0.842 & 0.710 & 0.587 \\
+Everything except money (65)          & 0.841 & 0.834--0.848 & 0.841 & 0.695 & 0.579 \\
+Money only (7)                        & 0.830 & 0.822--0.838 & 0.823 & 0.693 & 0.536 \\
+All non-economy pillars (55)          & 0.822 & 0.815--0.828 & 0.822 & 0.679 & 0.567 \\
+Voronoi + tactical (43)               & 0.818 & 0.811--0.824 & 0.815 & 0.677 & 0.557 \\
+All non-economy, no count columns (41) & 0.806 & 0.799--0.813 & 0.802 & 0.677 & 0.550 \\
+Combat state only (6)                 & 0.797 & 0.790--0.804 & 0.787 & 0.571 & 0.578 \\
+Voronoi control only (9)              & 0.723 & 0.717--0.729 & 0.703 & 0.585 & 0.538 \\
+Bomb geometry + defuse race (18)      & 0.686 & 0.680--0.691 & 0.675 & 0.539 & 0.540 \\
+Round clock only (1)                  & 0.555 & 0.549--0.560 & 0.539 & 0.535 & 0.548 \\
+Score and round number (4)            & 0.536 & 0.520--0.553 & 0.527 & 0.536 & 0.461 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{F12_noecon_ablation.png}
+\caption{No-economy ablation. \textbf{Left:} out-of-fold AUC of each block on its own (logistic with
+95\,\% match-level bootstrap interval; XGBoost; the single 2026 scoring). \textbf{Right:} AUC by
+seconds into the round for the four single blocks, with the economy block and the production set as
+references. Money is the only block informative at freeze-end; combat state, map control and bomb
+geometry start at chance and overtake money as the round unfolds.}
+\label{fig:noecon}
 \end{figure}
 
 \subsection{Where the signal actually lives: contested-AUC}
@@ -1194,6 +1268,96 @@ so there is no upper-tail inflation, only the mild conservatism expected of a di
 \label{fig:pathwise}
 \end{figure}
 
+\subsection{The round-start prior}
+\label{sec:prior}
+
+The trajectory benchmark above anchors each round at $p_0$, the forecast at freeze-end, which so far
+has been the per-second model's own first value. Two questions follow: what \emph{should} the forecast
+be before anyone moves, and is the per-second path consistent with its own starting point? Both are
+answered at the round level (4{,}866 rounds; 5-fold GroupKFold by match; paired match-level bootstrap,
+$B = 500$). The 2026 holdout is not used in this subsection; the results are in-time.
+
+\paragraph{What is known at freeze-end.}
+Table~\ref{tab:prior} is a nested ladder of round-level logistic models. Format and score alone give an
+AUC of $0.536$; the buy state (equipment, armour, kits, utility, AWPs) raises it to $0.682$ and is the
+whole of the round-start signal. Recent history (previous result, loss streak, previous equipment) adds
+$+0.004$. External priors add $+0.010$ in the same-year construction, which is leaky because season
+ratings are computed partly from the matches predicted, and $+0.005$ with a confidence interval that
+includes zero in the honest lagged construction. Priors alone are at chance. A dedicated round-level
+refit of the economy columns ($0.691$) is no better than the per-second model's own first value
+($0.692$), so the appropriate construction is a stack: the first-snapshot logit of the per-second
+economy model as an offset, plus history and lagged priors ($0.695$; $0.700$ with the leaky priors).
+This is the same conclusion as the firepower pillar, reached at the one point in a round where a prior
+has no in-round state to compete with: in this game, pre-round information beyond the buy is nearly
+uninformative about a single round.
+
+\begin{table}[H]
+\centering
+\caption{Round-start prior: nested logistic ladder at the round level (5-fold out-of-fold). The last
+column is the paired match-level bootstrap difference against the buy-state rung. ``Lagged'' priors use
+the previous season and are undefined for the 2024 matches, for which no 2023 tables exist.}
+\label{tab:prior}
+\small
+\begin{tabular}{lrrl}
+\toprule
+Rung & columns & AUC & $\Delta$AUC vs buy state (95\,\% CI) \\
+\midrule
+Format, side, score                             &  9 & 0.536 & $-0.146$ $(-0.165, -0.128)$ \\
++ buy state                                     & 37 & 0.682 & --- \\
++ recent history                                & 45 & 0.687 & $+0.004$ $(+0.000, +0.009)$ \\
++ team and player priors, same year (leaky)     & 54 & 0.692 & $+0.010$ $(+0.004, +0.016)$ \\
++ team and player priors, lagged                & 58 & 0.688 & $+0.005$ $(-0.000, +0.012)$ \\
+Priors only, lagged                             & 15 & 0.504 & $-0.179$ $(-0.201, -0.154)$ \\
+Per-second economy model, first snapshot        & 17 & 0.692 & $+0.010$ $(+0.003, +0.016)$ \\
+Stack: first-snapshot logit + history           &  9 & 0.695 & $+0.013$ $(+0.006, +0.019)$ \\
+Stack + lagged priors                           & 22 & 0.695 & $+0.013$ $(+0.005, +0.021)$ \\
+Stack + same-year priors (leaky)                & 18 & 0.700 & $+0.017$ $(+0.010, +0.024)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Is the path consistent with its start?}
+Anchoring the per-second EB2 curve at the demo-derived prior, two exact identities are checked. For a
+calibrated prior, $\mathbb{E}[(Y - p_0)^2] = \mathbb{E}[p_0(1-p_0)]$; the observed ratio is $1.02$, and the
+per-second model's first value differs from $p_0$ by $+0.001$ on average, so the prior is calibrated and
+the curve starts where it should. For a martingale, $(Y - p_0)^2$ equals the initial jump squared plus
+the summed squared increments plus the final jump squared, in expectation; the observed ratio is
+$1.31$ for EB2 and $1.31$ for the economy-only model. The per-second path therefore carries about
+30\,\% more squared movement than an honest sequential forecast that starts at $p_0$ and ends at the
+outcome. The excess is short-range mean reversion: increment autocorrelations are $-0.04$, $-0.03$,
+$-0.03$, $-0.01$ at lags of one to five seconds and vanish beyond ten. It is not noise to be smoothed
+away: shrinking every increment toward $p_0$ by a factor $0.85$ restores the identity exactly and costs
+$0.011$ in log-loss, so the movement is informative. The model is calibrated at each instant but not
+consistent with its own history; the remedy is a path-aware forecast (lagged values of $p_t$ as inputs,
+or the sequence models of Sect.~\ref{sec:deep} scored on the same identity), which we leave to future
+work. The pointwise extreme-path test above did not see this because it examines the maximum of the
+path, not its total variation.
+
+\paragraph{The first kill, and the stronger team.}
+The first kill of a round (median at 33\,s) moves the curve by about $0.2$ in even states. The reaction
+to a counter-terrorist death is calibrated (post-kill mean $0.216$ against a realised CT win rate of
+$0.234$; ECE $0.028$); the reaction to a terrorist death overshoots by about five points ($0.728$
+against $0.678$; ECE $0.052$). Fig.~\ref{fig:prior} shows four example rounds and the aggregate answer
+to whether the curve favours the stronger team at freeze-end. At equal buys the higher-ranked team wins
+53--59\,\% of rounds when the HLTV rank gap is six or more (pistol rounds and even full-buy rounds),
+but the production model's first value is $0.50$--$0.51$ for the favourite, because it has no team
+features; the stack with same-year priors tilts to $0.53$--$0.56$, the honest lagged stack to
+$0.51$--$0.52$. A five-point favourite at equal money is the size of the pre-round strength effect in
+this game, and it is invisible in the deployed curve.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{F13_t0_examples.png}
+\caption{Round-start priors and the live curve. Panels 1--4: per-second P(CT win) from the production
+model (out-of-fold) for a full-buy versus eco round won by the favourite, one won by the eco side, a
+pistol round between the 35th- and 1st-ranked teams, and an equal full-buy round between the 35th- and
+4th-ranked teams; dots mark deaths (blue: a CT died, orange: a T died), the dashed line the bomb
+plant, and the markers at $t=0$ the model's own first value (square) and the stacked prior with team and
+player priors (diamond). Panels 5--6: realised win rate of the higher-ranked team at equal buys by rank
+gap, with 95\,\% intervals, against the round-start models.}
+\label{fig:prior}
+\end{figure}
+
 \subsection{Per-second honesty during a defuse}
 \label{sec:defuseprogress}
 
@@ -1567,6 +1731,10 @@ you that you need them}.
     to establish the absence of over-reaction, but distinguishing the residual conservatism of a
     discrete forecast from mild under-reaction of a per-snapshot model would require the discrete
     correction, which we leave to future work.
+  \item \textbf{Round-start prior is in-time only.} Sect.~\ref{sec:prior} is evaluated by
+    cross-validation on the 220 training matches and has not been scored on the 2026 holdout. Its
+    lagged priors are undefined for the 2024 matches because no 2023 player or team tables exist, so
+    the lagged rungs rest on the 2025 matches alone.
 \end{enumerate}
 
 % =====================================================================
@@ -1696,6 +1864,33 @@ EFB2 & XGBoost & 0.8399 & 0.4742 & 0.1614 & 0.030 & 0.574 & 0.95 & $+0.06$ \\
 EFB2 & LightGBM & 0.8386 & 0.4747 & 0.1617 & 0.030 & 0.572 & 0.95 & $+0.08$ \\
 EFB2 & CatBoost & 0.8391 & 0.4754 & 0.1618 & 0.027 & 0.593 & 1.00 & $+0.10$ \\
 EFB2 & Random forest & 0.8422 & 0.4813 & 0.1614 & 0.020 & 0.553 & 1.12 & $+0.09$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{No-economy ablation, both models: AUC in-time (5-fold out-of-fold) and on the single 2026
+scoring. Sets as in Table~\ref{tab:noecon}.}
+\label{tab:appB3}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Feature set & Logistic & Logistic 2026 & XGBoost & XGBoost 2026 \\
+\midrule
+EB2, production set               & 0.851 & 0.847 & 0.850 & 0.850 \\
+A, economy block                  & 0.847 & 0.842 & 0.845 & 0.844 \\
+Everything except money           & 0.841 & 0.841 & 0.844 & 0.844 \\
+Money only                        & 0.830 & 0.823 & 0.834 & 0.829 \\
+All non-economy pillars           & 0.822 & 0.822 & 0.830 & 0.829 \\
+Voronoi + tactical                & 0.818 & 0.815 & 0.828 & 0.825 \\
+All non-economy, no count columns & 0.806 & 0.802 & 0.823 & 0.820 \\
+Voronoi + tactical, no count columns & 0.801 & 0.793 & 0.820 & 0.815 \\
+Combat state only                 & 0.797 & 0.787 & 0.800 & 0.799 \\
+Voronoi control only              & 0.723 & 0.703 & 0.745 & 0.732 \\
+Bomb geometry + defuse race       & 0.686 & 0.675 & 0.695 & 0.671 \\
+Round clock only                  & 0.555 & 0.539 & 0.550 & 0.539 \\
+Score and round number            & 0.536 & 0.527 & 0.537 & 0.558 \\
 \bottomrule
 \end{tabular}
 \end{table}
