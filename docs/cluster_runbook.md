@@ -1,7 +1,7 @@
 # PARCC Betty — Deep-Learning Test Runbook (TCN)
 
 Goal: run the first deep-learning model (causal **TCN**, per-second win prob) on Betty, the
-safe way. Full cluster reference: `e:/CLAUDE_CONTEXT.md`. **Golden rule: never run `python`
+safe way. Full cluster reference: [PARCC_betty_guide.md](PARCC_betty_guide.md) (the old `e:/CLAUDE_CONTEXT.md` did not transfer with the repo). **Golden rule: never run `python`
 on a login node — everything compute goes through Slurm (`sbatch`/`srun`).**
 
 The model + jobs are in this repo: `src/models/deep/tcn.py`, `jobs/tcn_smoke.sh`,
