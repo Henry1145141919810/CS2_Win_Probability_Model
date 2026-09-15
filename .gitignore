@@ -132,3 +132,15 @@ outputs/pathwise_perround_*.parquet
 # build_wyner_supplement.py, so only the documentation + manifest are tracked.
 exports/**/*.parquet
 exports/**/*.csv
+
+# --- uploaded Wyner supplement package (330 MB of parquet; never commit) ---
+data/cs2_inferno_raw_supplement_v1/
+data/holdout2026/
+data/parquet_defuse/
+outputs/t0_round_table.parquet
+
+# --- study outputs that are regenerable and large (map_wp / t0 pilot parquet dumps) ---
+outputs/*.parquet
+# third-party paper PDF kept locally for reference, not redistributed
+"JQAS WP Model Football Paper.pdf"
+JQAS*.pdf
