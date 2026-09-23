@@ -3,10 +3,10 @@
 # SAME-YEAR holdout (full coverage + same-era firepower -- the leaky best case). Companion to
 # jobs/transformer_holdout.sh (lagged). Submit:  sbatch jobs/transformer_holdout_sameyr.sh
 #
-# PREREQ: sync data/test_dataset_2026_sameyr.parquet to Betty first (see docs/BETTY_benchmark_guide.md).
+# PREREQ: sync data/test_dataset_2026_sameyr.parquet to Betty first (see docs/cluster/BETTY_benchmark_guide.md).
 #SBATCH --job-name=cs2-tf-holdout-sy
-#SBATCH --output=/vast/projects/ajw/wharton/cs2-rwp/logs/%x_%j.out
-#SBATCH --error=/vast/projects/ajw/wharton/cs2-rwp/logs/%x_%j.err
+#SBATCH --output=logs/%x_%j.out
+#SBATCH --error=logs/%x_%j.err
 #SBATCH --partition=b200-mig45
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=6
@@ -18,7 +18,7 @@ module load anaconda3
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "$HOME/envs/cs2-rwp"
 
-PROJ=/vast/projects/ajw/wharton/cs2-rwp
+PROJ="${PROJ:-${SLURM_SUBMIT_DIR:-$PWD}}"   # repo root; submit with `sbatch` from there (logs/ must exist)
 cd "$PROJ"
 echo "host=$(hostname)  date=$(date)"
 nvidia-smi

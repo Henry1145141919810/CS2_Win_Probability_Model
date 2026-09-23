@@ -36,7 +36,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 from features.firepower import FIREPOWER_MEAN_COLS, year_for_match  # noqa: E402
 from features.firepower_weighted_mean import (add_weighted_mean,  # noqa: E402
-                                              FIREPOWER_WMEAN_COLS)
+                                              )
 from models.train_pipeline import FEATURE_SETS, make_model  # noqa: E402
 import models.eval_firepower_v3 as v3mod  # noqa: E402
 

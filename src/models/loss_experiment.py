@@ -19,7 +19,7 @@ from pathlib import Path
 import numpy as np  # noqa: E402
 import polars as pl  # noqa: E402
 from sklearn.model_selection import GroupKFold  # noqa: E402
-from sklearn.metrics import roc_auc_score, log_loss, brier_score_loss  # noqa: E402
+from sklearn.metrics import roc_auc_score, log_loss  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))

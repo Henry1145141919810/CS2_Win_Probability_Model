@@ -26,7 +26,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from data.validate_parquet import clean_rounds  # noqa: E402
 from features.economy import economy_features  # noqa: E402
 from features.mapcontrol import (control_features, control_trend,  # noqa: E402
-                                 control_volatility, contest_control, TerritoryControl)
+                                 control_volatility, TerritoryControl)
 from features.positional import tactical_features  # noqa: E402
 from features.bomb import (plant_info, bomb_features,  # noqa: E402
                           BombTracker, bomb_live_features, defuse_race_features)

@@ -3,7 +3,7 @@
 Pooled ECE can hide phase-specific miscalibration (e.g. honest early, overconfident late).
 This bins snapshots by time-into-round and reports ECE + Brier per window, for the headline
 models, plus an ECE-vs-time plot. Part of the standard calibration protocol
-(docs/methodology.md) — run for every new model.
+(docs/methodology/methodology.md) — run for every new model.
 
 Usage: python src/models/calibration_over_time.py
 """

@@ -87,8 +87,8 @@ def main():
         won = "CT" if row["ct_won"] == 1 else "T"
         # title above the details block; dollar signs escaped so matplotlib does not parse mathtext
         sub = (f"CT {row['ct_team_clan']} (rank {int(row['ct_rank_same'])}, rating {row['ct_rating_same_mean']:.2f}, "
-               f"\${int(row['ct_equipment_value']):,})   vs   T {row['t_team_clan']} (rank {int(row['t_rank_same'])}, "
-               f"rating {row['t_rating_same_mean']:.2f}, \${int(row['t_equipment_value']):,})\n"
+               f"\\${int(row['ct_equipment_value']):,})   vs   T {row['t_team_clan']} (rank {int(row['t_rank_same'])}, "
+               f"rating {row['t_rating_same_mean']:.2f}, \\${int(row['t_equipment_value']):,})\n"
                f"{mid}, round {rn}: {won} won ({row['reason']}).  t=0: model {row['p0_snapEB2']:.2f}, "
                f"stacked prior {row['p0_stack_sameyr']:.2f}")
         ax.text(0, 1.10, title, transform=ax.transAxes, fontsize=10, color=INK, va="bottom")
@@ -109,8 +109,8 @@ def main():
     # ---------------------------------------------------------------- aggregate panels
     rt = rt.with_columns(rank_gap=(pl.col("t_rank_same") - pl.col("ct_rank_same")),
                          equip_diff=(pl.col("ct_equipment_value") - pl.col("t_equipment_value")))
-    conds = [("5. Pistol rounds (both sides \$800 to start)", pl.col("is_pistol_round") == 1),
-             ("6. Both full buy, |money difference| <= \$1,500", (pl.col("ct_equipment_value") >= 20000)
+    conds = [("5. Pistol rounds (both sides \\$800 to start)", pl.col("is_pistol_round") == 1),
+             ("6. Both full buy, |money difference| <= \\$1,500", (pl.col("ct_equipment_value") >= 20000)
               & (pl.col("t_equipment_value") >= 20000) & (pl.col("equip_diff").abs() <= 1500))]
     buckets = [("0", 0, 0), ("1-5", 1, 5), ("6-15", 6, 15), ("16+", 16, 99)]
     for ax, (title, cond) in zip(axes[4:], conds):

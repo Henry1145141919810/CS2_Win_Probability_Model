@@ -105,7 +105,7 @@ htmlcov/
 Thumbs.db
 
 # ---------------------------------------------------------------------------
-# Internal planning docs (contain funding / supervisor / process notes)
+# Local working notes, kept out of the public record
 # ---------------------------------------------------------------------------
 preprocess.md
 process.md
@@ -144,3 +144,7 @@ outputs/*.parquet
 # third-party paper PDF kept locally for reference, not redistributed
 "JQAS WP Model Football Paper.pdf"
 JQAS*.pdf
+
+# --- private correspondence drafts (never commit) ---
+docs/**/email_*.md
+docs/email_*.md

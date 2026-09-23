@@ -7,7 +7,7 @@ Default set = ET so the TERRITORY features are included and can be ranked. Expla
 sample of snapshots (full 476k is unnecessary for a stable summary).
 
 Per model: console mean|SHAP| top-15 + where each pillar's best feature ranks + a beeswarm
-and bar plot. Part of the standard interpretation protocol (docs/methodology.md).
+and bar plot. Part of the standard interpretation protocol (docs/methodology/methodology.md).
 
 NOTE: RandomForest is excluded by default — TreeSHAP on 300 deep unpruned RF trees is
 pathologically slow (>50 min even on a few-k sample). Use permutation_importance.py for RF

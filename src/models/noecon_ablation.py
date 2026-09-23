@@ -4,7 +4,7 @@ Every published feature set includes ECONOMY_COLS, and the residual analysis (St
 plan_beyond_economy.md) measures what the other pillars add *after* economy. This script asks the
 complementary question: what does each block predict *on its own*, with economy absent.
 
-The definitional trap (see docs/plan_t0_match_noecon.md): ECONOMY_COLS is money + combat state +
+The definitional trap (see docs/studies/plan_t0_match_noecon.md): ECONOMY_COLS is money + combat state +
 clock + score, and headcount leaks into every block that aggregates over alive players (per-zone
 player counts, utility totals, n_ct_near_bomb ...). So the ladder below separates the economy block
 into MONEY / COMBAT / SCORE, builds "minus count-like columns" variants, and reports every set on the

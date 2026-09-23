@@ -11,7 +11,7 @@ Players with no team info get DEFAULT_WEIGHT (rank-35 equivalent ~0.19).
 AWP sniping skill is not included (it is individual, not a team sum).
 
 Result: all three weighting formulas score below EFB2 (v2 raw sum).
-See docs/notes_firepower_v3.md for full analysis.
+See docs/pillars/notes_firepower_v3.md for full analysis.
 """
 from __future__ import annotations
 import math

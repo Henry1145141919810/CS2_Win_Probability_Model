@@ -1,4 +1,4 @@
-"""Map win probability from round win probability: the state-model ladder (docs/plan_round_to_map.md).
+"""Map win probability from round win probability: the state-model ladder (docs/studies/plan_round_to_map.md).
 
 Team X = the side that is CT in the first half. Label = X wins the map (curated winner).
 State at the start of round k: (a, b) = rounds won by X, Y (so k = a + b + 1), economy tiers

@@ -2,8 +2,8 @@
 # Hyperparameter sweep for the TCN (5-fold OOF each). Finds the best config; ~1 min/config on B200.
 # Submit:  sbatch jobs/tcn_sweep.sh   then read:  grep -E "CONFIG|OOF" logs/cs2-tcn-sweep_*.out
 #SBATCH --job-name=cs2-tcn-sweep
-#SBATCH --output=/vast/projects/ajw/wharton/cs2-rwp/logs/%x_%j.out
-#SBATCH --error=/vast/projects/ajw/wharton/cs2-rwp/logs/%x_%j.err
+#SBATCH --output=logs/%x_%j.out
+#SBATCH --error=logs/%x_%j.err
 #SBATCH --partition=b200-mig45
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=6
@@ -14,7 +14,7 @@ set -euo pipefail
 module load anaconda3
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "$HOME/envs/cs2-rwp"
-PROJ=/vast/projects/ajw/wharton/cs2-rwp
+PROJ="${PROJ:-${SLURM_SUBMIT_DIR:-$PWD}}"   # repo root; submit with `sbatch` from there (logs/ must exist)
 cd "$PROJ"
 echo "host=$(hostname)  date=$(date)"
 

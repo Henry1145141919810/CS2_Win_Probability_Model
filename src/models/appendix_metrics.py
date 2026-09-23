@@ -11,7 +11,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import numpy as np
 import polars as pl
 from sklearn.metrics import roc_auc_score, log_loss, brier_score_loss
 

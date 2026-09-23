@@ -6,7 +6,7 @@ uncertainty on the curve ("how much would the prediction move had we trained on 
 sample of matches"):
   - logistic: ANALYTIC delta-method interval (asymptotic coefficient covariance) — exact, instant.
   - tree models: match-level block BOOTSTRAP retrain band (resample matches, refit, re-predict).
-This CI band is part of the project's standard uncertainty protocol (docs/methodology.md).
+This CI band is part of the project's standard uncertainty protocol (docs/methodology/methodology.md).
 
 Usage:
   python src/viz/winprob_chart.py --match faze-vs-g2-m1-inferno              # logreg, analytic CI

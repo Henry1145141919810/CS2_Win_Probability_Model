@@ -13,8 +13,6 @@ pilot ladder can run on either source and the two can be diffed. Scores are TEAM
 round winners (the pipeline's ct_score/t_score are cumulative side wins and are ignored).
 """
 from __future__ import annotations
-import glob
-import os
 import re
 from pathlib import Path
 

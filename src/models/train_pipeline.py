@@ -69,7 +69,7 @@ FEATURE_SETS = {
     # already implied by geometry?"), never the source of a headline map-control number.
     # Named *D (not EB3/EFB3) because firepower v4 claims EFB3 for its mean-encoded variant;
     # duplicate keys in a dict literal overwrite silently, with no error to notice.
-    # --- firepower v4: mean-encoded pillar (docs/firepower_v4_exploration.md). Same 20 columns
+    # --- firepower v4: mean-encoded pillar (docs/pillars/firepower_v4_exploration.md). Same 20 columns
     # as FIREPOWER_COLS but divided by n_with_stats, removing the headcount confound that
     # made the summed encoding largely a restatement of ct_players_alive.
     "EB2_FPmean": (ECONOMY_COLS + MAPCONTROL_COLS + TACTICAL + BOMB_LIVE_COLS
@@ -236,7 +236,7 @@ def main():
     # contested subset = even economy AND equal alive-count (where economy ~ coin-flip,
     # so map control / firepower carry the signal). Primary metrics stay AUC/Brier/logloss
     # (comparable to Xenopoulos/ESTA); ECE + BSS + contested-AUC are complementary and show
-    # WHERE the spatial value really is. See docs/methodology.md "Evaluation metrics".
+    # WHERE the spatial value really is. See docs/methodology/methodology.md "Evaluation metrics".
     contested = (
         (df["ct_players_alive"] == df["t_players_alive"])
         & ((df["ct_equipment_value"] - df["t_equipment_value"]).abs() <= 1500)

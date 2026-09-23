@@ -2,7 +2,7 @@
 # Configure a fresh Ubuntu WSL distribution for the PARCC Betty cluster.
 # Runs as root inside WSL. Called by scripts/setup_wsl_parcc.ps1; can be re-run safely.
 #
-#   bash setup_ubuntu_parcc.sh <linux-username>     (username = your PennKey, e.g. hyhuang)
+#   bash setup_ubuntu_parcc.sh <PennKey>     (the Linux username is set to your PennKey)
 #
 # What it does (per https://parcc.upenn.edu/training/getting-started/logging-in/):
 #   * installs krb5-user (kinit/klist), openssh-client, rsync, git, tmux, python3, pipx
@@ -13,7 +13,7 @@
 #   * installs globus-cli for large transfers (login nodes must not be used for heavy rsync/scp)
 set -euo pipefail
 
-USER_NAME="${1:-hyhuang}"
+USER_NAME="${1:?usage: setup_ubuntu_parcc.sh <PennKey>}"
 REALM="UPENN.EDU"
 export DEBIAN_FRONTEND=noninteractive
 
@@ -101,7 +101,7 @@ fi
 
 echo "== shell helpers =="
 cat > "${HOME_DIR}/.bash_aliases" <<EOF
-# ---- PARCC Betty helpers (see docs/PARCC_betty_guide.md) ----
+# ---- PARCC Betty helpers (see docs/cluster/PARCC_betty_guide.md) ----
 alias kb='kinit ${USER_NAME}@${REALM}'      # 10 h Kerberos ticket (Duo follows on first ssh unless a key is registered)
 alias kl='klist'
 alias betty='ssh betty'

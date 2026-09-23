@@ -15,7 +15,6 @@ import glob
 import sys
 from pathlib import Path
 
-import numpy as np
 import polars as pl
 from scipy.spatial import cKDTree
 

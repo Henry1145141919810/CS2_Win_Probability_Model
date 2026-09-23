@@ -2,8 +2,8 @@
 # ONE-TIME environment build, run on a COMPUTE node (not the login node) via Slurm.
 # Submit:  sbatch jobs/setup_env.sh    then watch:  tail -f logs/cs2-setup-env_<JOBID>.out
 #SBATCH --job-name=cs2-setup-env
-#SBATCH --output=/vast/projects/ajw/wharton/cs2-rwp/logs/%x_%j.out
-#SBATCH --error=/vast/projects/ajw/wharton/cs2-rwp/logs/%x_%j.err
+#SBATCH --output=logs/%x_%j.out
+#SBATCH --error=logs/%x_%j.err
 #SBATCH --partition=genoa-std-mem
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G

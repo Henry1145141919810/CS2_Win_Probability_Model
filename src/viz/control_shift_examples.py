@@ -35,8 +35,6 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 from features.economy import ECONOMY_COLS  # noqa: E402
 from features.mapcontrol import MAPCONTROL_COLS, TERRITORY_COLS  # noqa: E402
-from features.positional import TACTICAL_COLS  # noqa: E402
-from features.bomb import BOMB_COLS  # noqa: E402
 
 DATA = ROOT / "data" / "training_dataset.parquet"
 OUT = ROOT / "outputs" / "figures"

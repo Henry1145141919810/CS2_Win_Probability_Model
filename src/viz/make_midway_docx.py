@@ -1,4 +1,4 @@
-"""Generate docs/midway_summary.docx (partner-facing) — mirrors docs/midway_summary.md.
+"""Generate docs/project/midway_summary.docx (partner-facing) — mirrors docs/project/midway_summary.md.
 Run: python src/viz/make_midway_docx.py
 """
 from __future__ import annotations
@@ -121,7 +121,7 @@ def main():
               "paper, not as work items. Rationale: the 2026 holdout showed the pillar's binding constraint "
               "is DATA COVERAGE ACROSS ERAS (missing 2026 player stats), not feature encoding -- so a "
               "per-capita redesign would not address the actual failure. The only remaining firepower work "
-              "is the 2026 scrape (see docs/TODO_leu_2026_scrape.md).")
+              "is the 2026 scrape (see docs/project/TODO_leu_2026_scrape.md).")
 
     h("5b. 2026 OUT-OF-TIME HOLDOUT — the big new result (+ action item for you)")
     doc.add_paragraph("Trained on all 220 demos (2024-25), evaluated ONCE on 27 fresh 2026 Inferno matches "
@@ -157,7 +157,7 @@ def main():
                       "Brier decomposition (reliability/resolution/uncertainty), sharpness, bin-free calibration "
                       "(slope+intercept, adaptive-ECE, KS-cal), and a comeback/tail honesty diagnostic. Uncertainty: "
                       "match-level block bootstrap (B=500) CIs on every metric; multi-seed std for deep models. "
-                      "Interpretation: coefficients, permutation importance, SHAP. Full glossary in docs/metrics.md. "
+                      "Interpretation: coefficients, permutation importance, SHAP. Full glossary in docs/methodology/metrics.md. "
                       "Standing rule: every new model/method runs the same interp+uncertainty+calibration battery.")
 
     h("7. Infrastructure")
@@ -167,13 +167,13 @@ def main():
 
     h("8. Next steps")
     bullets([
-        "THE ONLY BLOCKING TASK - 2026 HLTV scrape (Leu). Full spec: docs/TODO_leu_2026_scrape.md. Two scrapes: "
+        "THE ONLY BLOCKING TASK - 2026 HLTV scrape (Leu). Full spec: docs/project/TODO_leu_2026_scrape.md. Two scrapes: "
         "2026 stats for all 82 players (same-year variant) + 2025 stats for the 17 players missing them "
         "(leak-free lagged-prior variant). Unblocks the firepower holdout re-run. NO firepower v3 -- do not build one.",
         "2026 out-of-time holdout (Henry): DONE (s5b). Core model generalises (EB2 0.8493 -> 0.8501); firepower "
         "collapses due to the data gap. Re-runs once the scrape lands.",
         "More data (optional, together): ~2-5x matches and/or multi-map -- the only lever for spatial/deep models to surpass classical.",
-        "Paper draft: methods + results complete (docs/results_checkpoint.md + docs/metrics.md).",
+        "Paper draft: methods + results complete (docs/studies/results_checkpoint.md + docs/methodology/metrics.md).",
     ])
 
     h("9. Repo map")
@@ -181,7 +181,7 @@ def main():
         ["Features", "src/features/{economy,mapcontrol,positional,bomb,firepower,assemble,build_trajectory_dataset}.py"],
         ["Classical/eval", "src/models/{train_pipeline,calibration,conditional_analysis,logistic_coefficients,"
                            "permutation_importance,shap_analysis,extended_metrics,ensemble_oof}.py"],
-        ["Deep (Betty)", "src/models/deep/{tcn,gat,transformer}.py + jobs/*.sh + docs/cluster_runbook.md"],
+        ["Deep (Betty)", "src/models/deep/{tcn,gat,transformer}.py + jobs/*.sh + docs/cluster/cluster_runbook.md"],
         ["Docs", "docs/{results_checkpoint,metrics,methodology,firepower_pillar,midway_summary}.md"],
     ], bold0=True)
 

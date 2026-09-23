@@ -16,7 +16,6 @@ Usage:
 from __future__ import annotations
 import argparse
 import csv
-import datetime as _dt
 import re
 import sys
 import time

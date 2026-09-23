@@ -4,7 +4,7 @@ Takes OOF predictions for the headline model and finds the most confidently-wron
 (highest log-loss: predicted >0.8 for the side that lost, or <0.2 for the side that won).
 Then categorizes them by situation (post-plant, man-advantage, eco mismatch, contested) to
 see whether errors are systematic (a fixable blind spot) or just the irreducible noise of
-even rounds. Part of the standard error-analysis protocol (docs/methodology.md).
+even rounds. Part of the standard error-analysis protocol (docs/methodology/methodology.md).
 
 Usage: python src/models/worst_prediction_audit.py
 """

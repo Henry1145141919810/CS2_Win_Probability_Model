@@ -1,13 +1,13 @@
-"""Generate the partner-facing Word summary (docs/two_day_summary.docx).
+"""Generate the partner-facing Word summary (docs/project/two_day_summary.docx).
 
-Mirrors docs/two_day_summary.md but as a styled .docx (headings, tables, bullets) for easy
+Mirrors docs/project/two_day_summary.md but as a styled .docx (headings, tables, bullets) for easy
 sharing. Run: python src/viz/make_summary_docx.py
 """
 from __future__ import annotations
 from pathlib import Path
 
 from docx import Document
-from docx.shared import Pt, RGBColor, Inches
+from docx.shared import Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -201,7 +201,7 @@ def main():
         ["Models / eval", "src/models/{train_pipeline,calibration,conditional_analysis,tune_xgb,"
                           "logistic_coefficients}.py"],
         ["Visualization", "src/viz/{mapcontrol_viz,control_shift_examples,winprob_chart}.py"],
-        ["Docs", "docs/methodology.md (full protocol + every result), docs/map_control_models.md"],
+        ["Docs", "docs/methodology/methodology.md (full protocol + every result), docs/methodology/map_control_models.md"],
     ], bold_first_col=True)
     pr = doc.add_paragraph()
     pr.add_run("Reproduce the headline table:  ").bold = True

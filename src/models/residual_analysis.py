@@ -28,7 +28,7 @@ from sklearn.metrics import roc_auc_score, log_loss, brier_score_loss
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 from models.train_pipeline import (  # noqa: E402
-    FEATURE_SETS, ECONOMY_COLS, MAPCONTROL_COLS, TACTICAL, BOMB_LIVE_COLS, BOMB_DEFUSE_COLS,
+    ECONOMY_COLS, MAPCONTROL_COLS, TACTICAL, BOMB_LIVE_COLS, BOMB_DEFUSE_COLS,
     oof_predict, make_model, ece, bss)
 
 # Non-economy, non-firepower block = EB2 minus economy (Voronoi + tactical + bomb-live + defuse-race)

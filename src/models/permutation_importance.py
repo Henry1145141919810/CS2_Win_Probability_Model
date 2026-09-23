@@ -7,7 +7,7 @@ OOF AUC drops. A feature the model genuinely relies on causes a big drop; a redu
 (its info is carried by a correlated feature) causes little drop — which is the honest read.
 
 GroupKFold by match (no leakage); importance averaged over folds. Works for ANY model, so it
-is the standard interpretation step for new architectures (see docs/methodology.md protocol).
+is the standard interpretation step for new architectures (see docs/methodology/methodology.md protocol).
 
 Outputs: console table + outputs/permutation_importance_{set}.csv + a grouped bar chart
 (top features, colored by pillar) for the requested models.

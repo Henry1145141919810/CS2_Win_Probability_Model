@@ -1,13 +1,13 @@
 # Finish the WSL + Ubuntu setup for PARCC Betty. Run ONCE, AFTER the reboot that follows
 # `wsl --install --no-distribution` (already done on 2026-09-13). No admin rights needed.
 #
-#   powershell -ExecutionPolicy Bypass -File scripts\setup_wsl_parcc.ps1
+#   powershell -ExecutionPolicy Bypass -File scripts\setup_wsl_parcc.ps1 -LinuxUser <PennKey>
 #
 # Steps: register Ubuntu 24.04 without the interactive first-run, run scripts/setup_ubuntu_parcc.sh
 # as root inside it (packages, krb5.conf, user, ssh config), restart the distro, print a smoke test.
 param(
     [string]$Distro = "Ubuntu-24.04",
-    [string]$LinuxUser = "hyhuang"     # = PennKey, so `ssh betty` needs no username
+    [Parameter(Mandatory = $true)][string]$LinuxUser     # = your PennKey, so `ssh betty` needs no username
 )
 $ErrorActionPreference = "Stop"
 $env:WSL_UTF8 = "1"

@@ -1,6 +1,6 @@
 """Unified STANDARD EVALUATION BATTERY — run this for every new model/method.
 
-The project's consistency contract (docs/methodology.md "Standard evaluation protocol",
+The project's consistency contract (docs/methodology/methodology.md "Standard evaluation protocol",
 and the standing instruction): no model is "done" until it has the SAME interpretation +
 uncertainty + calibration evidence as the others. This one command produces all of it for
 any (model, feature-set) and writes a single markdown report so results stay comparable:

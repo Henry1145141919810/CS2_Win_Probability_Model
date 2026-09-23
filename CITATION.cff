@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this code or its results, please cite the working paper below."
+title: "Where Win Probability Comes From, and Where It Breaks"
+type: software
+repository-code: "https://github.com/Henry1145141919810/CS2_Win_Probability_Model"
+authors:
+  - family-names: Huang
+    given-names: Henry
+    affiliation: "Wharton Sports Analytics & Business Initiative, University of Pennsylvania"
+  - family-names: Lu
+    given-names: Haiwen
+    affiliation: "University of Washington"
+  - family-names: Pipping
+    given-names: Jonathan David
+    affiliation: "University of Pennsylvania"
+  - family-names: Wyner
+    given-names: Abraham J.
+    affiliation: "University of Pennsylvania"
+keywords:
+  - win probability
+  - Counter-Strike 2
+  - esports analytics
+  - sports analytics
+  - calibration
+  - out-of-time evaluation
+version: "13.1"
+date-released: "2026-09-23"
+preferred-citation:
+  type: unpublished
+  title: "Where Win Probability Comes From, and Where It Breaks: Spatial Control, Bomb Geometry, and an Out-of-Time Reality Check for Live Win Probability in Counter-Strike 2"
+  authors:
+    - family-names: Huang
+      given-names: Henry
+    - family-names: Lu
+      given-names: Haiwen
+    - family-names: Pipping
+      given-names: Jonathan David
+    - family-names: Wyner
+      given-names: Abraham J.
+  year: 2026
+  notes: "Working paper, version 13.1"
+  url: "https://github.com/Henry1145141919810/CS2_Win_Probability_Model"

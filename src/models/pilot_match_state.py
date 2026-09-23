@@ -11,7 +11,6 @@ Evaluated at every round start (4,866 rows) against the match winner, with match
 Usage: python src/models/pilot_match_state.py
 """
 from __future__ import annotations
-import sys
 from functools import lru_cache
 from pathlib import Path
 

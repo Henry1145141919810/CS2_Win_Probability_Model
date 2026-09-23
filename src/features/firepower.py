@@ -6,7 +6,7 @@ Conditional gates: clutch (lone survivor), entry/trading (has teammates),
 opening (5v5 only), sniping (AWP holder), utility (grenade value × skill).
 
 See src/features/firepower_v3.py for the team-ranking-weighted variant
-(negative result, kept for reproducibility — docs/notes_firepower_v3.md).
+(negative result, kept for reproducibility — docs/pillars/notes_firepower_v3.md).
 
 Source data:
   configs/player_stats_sided.csv  — (steamid, year) -> stats
@@ -148,7 +148,7 @@ def firepower_features(snap: pl.DataFrame, match_id: str) -> dict:
         out[f"{pfx}_awp_sniping_skill"] = awp_skill
         out[f"{pfx}_weighted_utility"] = weighted_util
 
-        # --- v4: mean-normalised variants (see docs/firepower_v4_exploration.md) --------------
+        # --- v4: mean-normalised variants (see docs/pillars/firepower_v4_exploration.md) --------------
         # The sums are confounded with headcount: every pro rating is ~1.0, so a sum over
         # n alive players re-encodes n, which the model already sees as ct_players_alive.
         # The divisor is n_with_stats, NOT n: players missing from the HLTV table never
